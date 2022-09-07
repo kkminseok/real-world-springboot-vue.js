@@ -58,6 +58,7 @@ bin/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+/lib
 
 ### NetBeans ###
 /nbproject/private/
