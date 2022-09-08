@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class UserController {
 
-    @PostMapping("/user")
+    @PostMapping("/users")
     public String createUser(){
         return "hello";
     }
