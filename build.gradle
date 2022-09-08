@@ -18,6 +18,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc:2.7.3'
+    implementation 'org.projectlombok:lombok:1.18.24'
 
     // https://mvnrepository.com/artifact/org.postgresql/postgresql
     //implementation group: 'org.postgresql', name: 'postgresql', version: '42.5.0'
