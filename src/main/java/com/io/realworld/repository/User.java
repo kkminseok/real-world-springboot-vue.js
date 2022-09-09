@@ -20,20 +20,21 @@ public class User {
 
     private String bio;
     private String image;
-    private String token;
 
     @Builder
-    public User(String username, String email, String password){
+    public User(String username, String email, String password, String bio, String image) {
         this.username = username;
         this.email = email;
         this.password = password;
+        this.bio = bio;
+        this.image = image;
     }
 
-    public static User of(String username, String email, String password){
-        return new User(username,email,password);
+    public static User of(String username, String email, String password) {
+        return new User(username, email, password, "", "");
     }
 
-    protected User(){
+    protected User() {
     }
 
 }

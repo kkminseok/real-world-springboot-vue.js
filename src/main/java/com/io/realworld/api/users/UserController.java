@@ -11,6 +11,7 @@ import javax.validation.Valid;
 
 @RestController
 public class UserController {
+
     @Autowired
     private UserServiceImpl userService;
 
@@ -21,7 +22,7 @@ public class UserController {
                 .email(user.getEmail())
                 .bio(user.getBio())
                 .image(user.getImage())
-                .token(user.getToken()).build();
+                .build();
 
     }
 }
