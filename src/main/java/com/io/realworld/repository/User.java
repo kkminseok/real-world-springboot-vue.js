@@ -1,11 +1,13 @@
 package com.io.realworld.repository;
 
 import lombok.Builder;
+import lombok.Getter;
 
 import javax.persistence.*;
 
 @Table(name = "users")
 @Entity
+@Getter
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,6 +17,10 @@ public class User {
 
     private String email;
     private String password;
+
+    private String bio;
+    private String image;
+    private String token;
 
     @Builder
     public User(String username, String email, String password){
