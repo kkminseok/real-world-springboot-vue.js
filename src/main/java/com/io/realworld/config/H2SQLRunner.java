@@ -5,6 +5,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.Statement;
@@ -13,11 +14,16 @@ import java.sql.Statement;
 @Component
 public class H2SQLRunner implements ApplicationRunner {
 
-    @Autowired
+
     DataSource dataSource;
+    JdbcTemplate jdbcTemplate;
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    public H2SQLRunner(DataSource dataSource, JdbcTemplate jdbcTemplate) {
+        this.dataSource = dataSource;
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
