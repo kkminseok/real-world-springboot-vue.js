@@ -27,7 +27,7 @@ public class WebConfig {
         http.csrf()
                 .disable()
                 .authorizeRequests()
-                .antMatchers("/users/**","/h2-console/**").permitAll()
+                .antMatchers("/api/users/**", "/h2-console/**", "/**").permitAll()
                 .anyRequest().authenticated()
                 .and().headers().frameOptions().sameOrigin()
                 .and()
@@ -37,4 +37,5 @@ public class WebConfig {
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
         return http.build();
     }
+
 }
