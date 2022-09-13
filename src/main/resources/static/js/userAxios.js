@@ -10,16 +10,12 @@ function register() {
         }
     })
 
-    $.ajax({
+    axios({
         url: "/api/users",
         data: userDTO,
-        contentType: "application/json",
-        async: false,
-        type: "POST",
-    }).success(function (data) {
-        // Todo redirect home login status
-        console.log(JSON.stringify(data));
-        window.location.href= "/index.html";
-        console.log(window.location.href)
-    });
+        headers:{ "Content-Type": "application/json"},
+        method: "post",
+    }).then(function(res){
+    alert(res);
+    })
 }

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
-<script type="text/javascript" th:src="@{/js/userAjax.js}"></script>
+<script type="text/javascript" th:src="@{/js/userAxios.js}"></script>
     <th:block th:replace="framents/header :: HeaderFragment"></th:block>
     <div class="auth-page">
         <div class="container page">
@@ -12,19 +12,19 @@
                         <a href="">Have an account?</a>
                     </p>
 
-                    <ul class="error-messages">
-                        <li>That email is already taken</li>
+                    <ul class="error-messages" id="error">
+                        <!--<li>That email is already taken</li>-->
                     </ul>
 
-                    <form onsubmit="return register()";>
+                    <form th:action="@{/api/users}" th:object="${user}" method="post">
                         <fieldset class="form-group">
-                            <input class="form-control form-control-lg" type="text" placeholder="Your Name" id="username">
+                            <input class="form-control form-control-lg" type="text" placeholder="Username" th:field="*{username}">
                         </fieldset>
                         <fieldset class="form-group">
-                            <input class="form-control form-control-lg" type="text" placeholder="Email" id="email">
+                            <input class="form-control form-control-lg" type="text" placeholder="Email" th:field="*{email}">
                         </fieldset>
                         <fieldset class="form-group">
-                            <input class="form-control form-control-lg" type="password" placeholder="Password" id="password">
+                            <input class="form-control form-control-lg" type="password" placeholder="Password" th:field="*{password}">
                         </fieldset>
                         <button class="btn btn-lg btn-primary pull-xs-right" >
                             Sign up

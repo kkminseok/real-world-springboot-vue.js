@@ -17,6 +17,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import org.springframework.test.web.servlet.ResultActions;
 
+import javax.xml.transform.Result;
+
 import static org.mockito.ArgumentMatchers.any;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -52,12 +54,11 @@ class UserControllerTest {
 
         //when
         ResultActions resultActions = mockMvc.perform(
-                post("/users")
+                post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(signupRequestTest))
                         .with(csrf())
         );
-
 
         // then
         resultActions.andExpect(status().isOk())

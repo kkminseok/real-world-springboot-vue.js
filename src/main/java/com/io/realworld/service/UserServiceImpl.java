@@ -7,10 +7,11 @@ import com.io.realworld.repository.User;
 import com.io.realworld.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +36,11 @@ public class UserServiceImpl implements UserService {
 
     private String madeHash(String password){
         return  passwordEncoder.encode(password);
+    }
+
+    @Transactional
+    public User findByEmail(String email){
+        return userRepository.findByEmail(email);
     }
 
 }
