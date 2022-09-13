@@ -9,15 +9,11 @@ assignees: ''
 
 ## Todo
 
-- []
-
-## Complete
-
-- []
+- [ ]
 
 ## Test
 
-- []
+- [ ]
 
 ## ETC
 > description
