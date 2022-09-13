@@ -1,5 +1,6 @@
 package com.io.realworld.api.users;
 
+import com.io.realworld.DTO.UserSigninRequest;
 import com.io.realworld.DTO.UserSignupRequest;
 import com.io.realworld.DTO.UserResponse;
 import com.io.realworld.repository.User;
@@ -12,7 +13,7 @@ import javax.validation.Valid;
 
 @RestController
 @Slf4j
-@RequestMapping("/api")
+@RequestMapping("/api/users")
 public class UserController {
 
 
@@ -27,10 +28,20 @@ public class UserController {
     }
 
 
-    @PostMapping(value = "/users")
+    @PostMapping(value = "")
     public UserResponse signup(@Valid @RequestBody  UserSignupRequest userSignupRequest) {
         User user = userService.signup(userSignupRequest);
-        log.info("register");
+        return UserResponse.builder().username(user.getUsername())
+                .email(user.getEmail())
+                .bio(user.getBio())
+                .image(user.getImage())
+                .token(jwtService.createToken(user.getEmail()))
+                .build();
+    }
+
+    @PostMapping(value = "/login")
+    public UserResponse signin(@Valid @RequestBody UserSigninRequest userSigninRequest){
+        User user = userService.signin(userSigninRequest);
 
         return UserResponse.builder().username(user.getUsername())
                 .email(user.getEmail())

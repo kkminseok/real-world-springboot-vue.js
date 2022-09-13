@@ -1,5 +1,6 @@
 package com.io.realworld.service;
 
+import com.io.realworld.DTO.UserSigninRequest;
 import com.io.realworld.DTO.UserSignupRequest;
 import com.io.realworld.Exception.CustomException;
 import com.io.realworld.Exception.Error;
@@ -43,4 +44,11 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByEmail(email);
     }
 
+    public User signin(UserSigninRequest userSigninRequest) {
+
+        User findUser = userRepository.findByEmail(userSigninRequest.getEmail());
+        if(findUser == null)
+            throw new CustomException(Error.SIGNIN_EMAILNULL_OR_INVALID);
+        return findUser;
+    }
 }

@@ -3,11 +3,13 @@ package com.io.realworld.api.users;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.io.realworld.DTO.UserSignupRequest;
 import com.io.realworld.repository.User;
+import com.io.realworld.service.JwtService;
 import com.io.realworld.service.UserServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -40,6 +42,9 @@ class UserControllerTest {
 
     @MockBean
     private UserServiceImpl userService;
+
+    @MockBean
+    private JwtService jwtService;
 
 
     @Test
