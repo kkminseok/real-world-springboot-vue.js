@@ -3,17 +3,21 @@ name: Feat
 about: Feature service, api etc..
 title: ''
 labels: ''
-assignees: ''
+assignees: 'kkminseok'
 
 ---
 
 ## Todo
 
-- [ ]
-
-## Test
+> Implement
 
 - [ ]
 
-## ETC
+## Todo
+
+> Test
+
+- [ ]
+
+## Trouble Shooting
 > description
