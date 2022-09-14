@@ -16,12 +16,17 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String username;
 
+    @Column(nullable = false, unique = true)
     private String email;
+    @Column(nullable = false)
     private String password;
 
+    @Column
     private String bio;
+    @Column
     private String image;
 
     @Builder
@@ -33,7 +38,9 @@ public class User implements UserDetails {
         this.image = image;
     }
 
-    protected User(){}
+    protected User() {
+    }
+
     public static User of(String username, String email, String password) {
         return new User(username, email, password, "", "");
     }
