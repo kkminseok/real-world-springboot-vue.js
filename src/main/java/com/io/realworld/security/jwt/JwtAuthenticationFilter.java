@@ -1,9 +1,12 @@
 package com.io.realworld.security.jwt;
 
 import com.io.realworld.domain.aggregate.user.entity.User;
-import com.io.realworld.domain.aggregate.service.JwtService;
+import com.io.realworld.domain.service.JwtService;
 import com.io.realworld.domain.aggregate.user.service.UserServiceImpl;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
+@Slf4j
 @Component
 @AllArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -30,6 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        log.info("hello jwt filter");
         Optional<String> token = getToken(request.getHeader(HEADER));
         String email = null;
         String jwt = null;

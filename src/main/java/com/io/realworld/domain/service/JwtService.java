@@ -1,4 +1,4 @@
-package com.io.realworld.domain.aggregate.service;
+package com.io.realworld.domain.service;
 
 import com.io.realworld.security.jwt.JwtConfig;
 import com.io.realworld.domain.aggregate.user.entity.User;

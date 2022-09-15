@@ -1,7 +1,7 @@
 package com.io.realworld.security;
 
 
-
+import com.io.realworld.security.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,9 +25,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class WebConfig {
 
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
-    PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -36,7 +37,7 @@ public class WebConfig {
         http.csrf()
                 .disable()
                 .authorizeRequests()
-                .antMatchers("/api/users/**", "/h2-console/**", "/**").permitAll()
+                .antMatchers("/api/users/**", "/h2-console/**").permitAll()
                 .anyRequest().authenticated()
                 .and().headers().frameOptions().sameOrigin()
                 .and()
@@ -44,7 +45,7 @@ public class WebConfig {
                 .disable()
                 .exceptionHandling()
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
-
+        http.addFilter(jwtAuthenticationFilter);
         return http.build();
     }
 

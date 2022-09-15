@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.io.realworld.domain.aggregate.user.dto.UserSignupRequest;
 import com.io.realworld.exception.CustomException;
 import com.io.realworld.exception.Error;
-import com.io.realworld.domain.aggregate.user.controller.UserController;
+import com.io.realworld.domain.aggregate.user.controller.UsersController;
 import com.io.realworld.domain.aggregate.user.entity.User;
-import com.io.realworld.domain.aggregate.service.JwtService;
+import com.io.realworld.domain.service.JwtService;
 import com.io.realworld.domain.aggregate.user.service.UserServiceImpl;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
@@ -33,8 +33,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 
-@WebMvcTest(controllers = UserController.class)
-class UserControllerTest {
+@WebMvcTest(controllers = UsersController.class)
+class UsersControllerTest {
     @Autowired
     MockMvc mockMvc;
 
@@ -42,7 +42,7 @@ class UserControllerTest {
     ObjectMapper objectMapper;
 
     @InjectMocks
-    private UserController userController;
+    private UsersController usersController;
 
     @MockBean
     private UserServiceImpl userService;
