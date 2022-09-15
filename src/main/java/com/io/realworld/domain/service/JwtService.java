@@ -1,5 +1,6 @@
 package com.io.realworld.domain.service;
 
+import com.io.realworld.domain.aggregate.user.service.UserServiceDetail;
 import com.io.realworld.security.jwt.JwtConfig;
 import com.io.realworld.domain.aggregate.user.entity.User;
 import io.jsonwebtoken.Claims;
@@ -8,6 +9,10 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -15,11 +20,14 @@ import java.security.Key;
 import java.util.Date;
 
 @Service
+@Slf4j
 @Getter
 @AllArgsConstructor
 public class JwtService {
 
     private final JwtConfig jwtConfig;
+
+    private final UserServiceDetail userServiceDetail;
 
     private Key getSignKey(String secretKey){
         byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
@@ -40,7 +48,7 @@ public class JwtService {
 
     public Boolean isTokenExpired(String token){
         final Date expiration = extractAllClaims(token).getExpiration();
-        return expiration.before(new Date());
+        return expiration.after(new Date());
     }
 
     public String createToken(String email){
@@ -55,9 +63,14 @@ public class JwtService {
                 .compact();
     }
 
-    public Boolean validateToken(String token, User user){
-        final String email = getEmail(token);
-        return email.equals(user.getEmail()) && !isTokenExpired(token);
+    public Boolean validateToken(String token){
+        return isTokenExpired(token);
+    }
+
+    public Authentication getAuthentication(String jwtToken) {
+        UserDetails userDetails = userServiceDetail.loadUserByUsername(getEmail(jwtToken));
+        log.info("PASSWORD : {}",userDetails.getPassword());
+        return new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
     }
 
 }

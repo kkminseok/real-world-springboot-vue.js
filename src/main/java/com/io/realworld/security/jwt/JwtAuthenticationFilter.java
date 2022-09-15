@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -30,26 +31,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
 
-    private final UserServiceImpl userService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.info("hello jwt filter");
-        Optional<String> token = getToken(request.getHeader(HEADER));
-        String email = null;
-        String jwt = null;
-        if(token.isPresent()){
-            jwt = String.valueOf(token);
-            email = jwtService.getEmail(jwt);
-        }
-        if(email != null){
-            User findUser = userService.findByEmail(email);
+        request.getHeaderNames().asIterator().forEachRemaining(
+                headerName -> log.info(headerName + ": " + request.getHeader(headerName))
+        );
 
-            if(jwtService.validateToken(jwt,findUser)){
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(findUser,null, AuthorityUtils.NO_AUTHORITIES);
-                usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-            }
+        Optional<String> token = getToken(request.getHeader(HEADER));
+        log.info("jwt token : {}",token);
+        if(token.isPresent() && jwtService.validateToken(token.get())){
+            String jwt = token.get();
+            log.info("parsing token : {}",jwt);
+            Authentication auth = jwtService.getAuthentication(jwt);
+            SecurityContextHolder.getContext().setAuthentication(auth);
         }
 
         filterChain.doFilter(request,response);
