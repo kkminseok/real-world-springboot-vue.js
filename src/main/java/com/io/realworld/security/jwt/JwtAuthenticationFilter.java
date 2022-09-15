@@ -1,8 +1,8 @@
-package com.io.realworld.config.jwt;
+package com.io.realworld.security.jwt;
 
-import com.io.realworld.repository.User;
-import com.io.realworld.service.JwtService;
-import com.io.realworld.service.UserServiceImpl;
+import com.io.realworld.domain.aggregate.user.entity.User;
+import com.io.realworld.domain.aggregate.service.JwtService;
+import com.io.realworld.domain.aggregate.user.service.UserServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;

@@ -1,18 +1,16 @@
-package com.io.realworld.service;
+package com.io.realworld.domain.aggregate.user.service;
 
-import com.io.realworld.DTO.UserSigninRequest;
-import com.io.realworld.DTO.UserSignupRequest;
-import com.io.realworld.Exception.CustomException;
-import com.io.realworld.Exception.Error;
-import com.io.realworld.repository.User;
-import com.io.realworld.repository.UserRepository;
+import com.io.realworld.domain.aggregate.user.dto.UserSigninRequest;
+import com.io.realworld.domain.aggregate.user.dto.UserSignupRequest;
+import com.io.realworld.exception.CustomException;
+import com.io.realworld.exception.Error;
+import com.io.realworld.domain.aggregate.user.entity.User;
+import com.io.realworld.domain.aggregate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

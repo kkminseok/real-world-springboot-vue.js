@@ -1,4 +1,4 @@
-package com.io.realworld.config.jwt;
+package com.io.realworld.security.jwt;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,11 +1,11 @@
-package com.io.realworld.api.users;
+package com.io.realworld.domain.aggregate.user.controller;
 
-import com.io.realworld.DTO.UserSigninRequest;
-import com.io.realworld.DTO.UserSignupRequest;
-import com.io.realworld.DTO.UserResponse;
-import com.io.realworld.repository.User;
-import com.io.realworld.service.JwtService;
-import com.io.realworld.service.UserServiceImpl;
+import com.io.realworld.domain.aggregate.user.dto.UserSigninRequest;
+import com.io.realworld.domain.aggregate.user.dto.UserSignupRequest;
+import com.io.realworld.domain.aggregate.user.dto.UserResponse;
+import com.io.realworld.domain.aggregate.user.entity.User;
+import com.io.realworld.domain.aggregate.service.JwtService;
+import com.io.realworld.domain.aggregate.user.service.UserServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 

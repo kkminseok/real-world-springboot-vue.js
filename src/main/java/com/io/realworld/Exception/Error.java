@@ -1,4 +1,4 @@
-package com.io.realworld.Exception;
+package com.io.realworld.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

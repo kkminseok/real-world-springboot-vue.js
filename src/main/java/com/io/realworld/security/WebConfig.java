@@ -1,4 +1,4 @@
-package com.io.realworld.config;
+package com.io.realworld.security;
 
 
 

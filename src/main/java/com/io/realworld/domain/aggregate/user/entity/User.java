@@ -1,4 +1,4 @@
-package com.io.realworld.repository;
+package com.io.realworld.domain.aggregate.user.entity;
 
 import lombok.Builder;
 import lombok.Getter;

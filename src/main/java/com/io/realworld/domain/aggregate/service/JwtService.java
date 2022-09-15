@@ -1,7 +1,7 @@
-package com.io.realworld.service;
+package com.io.realworld.domain.aggregate.service;
 
-import com.io.realworld.config.jwt.JwtConfig;
-import com.io.realworld.repository.User;
+import com.io.realworld.security.jwt.JwtConfig;
+import com.io.realworld.domain.aggregate.user.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
-import java.util.Optional;
 
 @Service
 @Getter

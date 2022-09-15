@@ -1,34 +1,28 @@
 package com.io.realworld.api.users;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.io.realworld.DTO.UserSignupRequest;
-import com.io.realworld.Exception.CustomException;
-import com.io.realworld.Exception.Error;
-import com.io.realworld.repository.User;
-import com.io.realworld.service.JwtService;
-import com.io.realworld.service.UserServiceImpl;
+import com.io.realworld.domain.aggregate.user.dto.UserSignupRequest;
+import com.io.realworld.exception.CustomException;
+import com.io.realworld.exception.Error;
+import com.io.realworld.domain.aggregate.user.controller.UserController;
+import com.io.realworld.domain.aggregate.user.entity.User;
+import com.io.realworld.domain.aggregate.service.JwtService;
+import com.io.realworld.domain.aggregate.user.service.UserServiceImpl;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-
-import javax.xml.transform.Result;
 
 import java.util.stream.Stream;
 

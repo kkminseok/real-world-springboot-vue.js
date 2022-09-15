@@ -1,4 +1,4 @@
-package com.io.realworld.DTO;
+package com.io.realworld.domain.aggregate.user.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

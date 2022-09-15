@@ -1,5 +1,6 @@
-package com.io.realworld.repository;
+package com.io.realworld.domain.aggregate.user.repository;
 
+import com.io.realworld.domain.aggregate.user.entity.User;
 import org.springframework.data.repository.CrudRepository;
 
 

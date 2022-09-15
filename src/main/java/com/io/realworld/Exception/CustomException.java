@@ -1,4 +1,4 @@
-package com.io.realworld.Exception;
+package com.io.realworld.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

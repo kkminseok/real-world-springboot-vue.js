@@ -1,4 +1,4 @@
-package com.io.realworld.Exception;
+package com.io.realworld.exception;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

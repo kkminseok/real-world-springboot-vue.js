@@ -1,5 +1,7 @@
 package com.io.realworld.repository;
 
+import com.io.realworld.domain.aggregate.user.entity.User;
+import com.io.realworld.domain.aggregate.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,7 @@ class UserRepositoryTest {
     private User user() {
         return User.builder()
                 .username("kms")
+                .password("")
                 .email("kms@gamil.com")
                 .bio("1")
                 .image("image")

@@ -1,4 +1,4 @@
-package com.io.realworld.DTO;
+package com.io.realworld.domain.aggregate.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -14,10 +14,8 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @JsonTypeName("user")
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)
-public class UserSignupRequest {
+public class UserSigninRequest {
 
-    @NotBlank
-    private String username;
     @Email
     private String email;
     @NotBlank
