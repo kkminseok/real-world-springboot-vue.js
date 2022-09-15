@@ -15,4 +15,18 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '18'
-      - run: ./gradlew test
+          
+      - name: Grant execute permission gradlew
+        run: chmod +x gradlew
+        
+      - name: Build
+        run: ./gradlew build -x test
+      
+      - name: Test
+        run: SPRING_PROFILES_ACTIVE=[test] ./gradlew test
+      
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: ${{ always() }}
+        with:
+          files: build/test-results/**/*.xml
