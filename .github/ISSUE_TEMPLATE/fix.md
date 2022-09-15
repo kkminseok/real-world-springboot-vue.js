@@ -1,6 +1,6 @@
 ---
 name: Fix
-about: Fix Somethin
+about: Fix Something
 title: ''
 labels: ''
 assignees: ''
