@@ -2,6 +2,7 @@ package com.io.realworld.api.users;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.io.realworld.domain.aggregate.user.dto.UserResponse;
+import com.io.realworld.domain.aggregate.user.dto.UserSigninRequest;
 import com.io.realworld.domain.aggregate.user.dto.UserSignupRequest;
 import com.io.realworld.exception.CustomException;
 import com.io.realworld.exception.Error;
@@ -109,6 +110,14 @@ class UsersControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
+    @WithMockUser
+    @MethodSource("validUsers")
+    @ParameterizedTest
+    @DisplayName("로그인 컨트롤러 테스트")
+    void login(UserSigninRequest user) throws  Exception{
+
+
+    }
 
 
     public static Stream<Arguments> validUsers() {
