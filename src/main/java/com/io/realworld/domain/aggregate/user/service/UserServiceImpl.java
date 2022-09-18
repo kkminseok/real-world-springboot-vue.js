@@ -1,7 +1,10 @@
 package com.io.realworld.domain.aggregate.user.service;
 
+import com.io.realworld.domain.aggregate.user.dto.UserAuth;
+import com.io.realworld.domain.aggregate.user.dto.UserResponse;
 import com.io.realworld.domain.aggregate.user.dto.UserSigninRequest;
 import com.io.realworld.domain.aggregate.user.dto.UserSignupRequest;
+import com.io.realworld.domain.service.JwtService;
 import com.io.realworld.exception.CustomException;
 import com.io.realworld.exception.Error;
 import com.io.realworld.domain.aggregate.user.entity.User;
@@ -21,32 +24,50 @@ public class UserServiceImpl implements UserService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final JwtService jwtService;
+
 
     @Transactional
-    public User signup(UserSignupRequest userSignupRequest) {
+    public UserResponse signup(UserSignupRequest userSignupRequest) {
         if (userRepository.findByEmail(userSignupRequest.getEmail()) != null) {
             throw new CustomException(Error.DUPLICATE_USER);
         } else {
-            return userRepository.save(User.of(userSignupRequest.getUsername(),
+            return convertUser(userRepository.save(User.of(userSignupRequest.getUsername(),
                     userSignupRequest.getEmail(),
-                    madeHash(userSignupRequest.getPassword())));
+                    madeHash(userSignupRequest.getPassword()))));
         }
     }
 
-    private String madeHash(String password){
-        return  passwordEncoder.encode(password);
+    private String madeHash(String password) {
+        return passwordEncoder.encode(password);
     }
 
-    @Transactional
-    public User findByEmail(String email){
-        return userRepository.findByEmail(email);
-    }
 
-    public User signin(UserSigninRequest userSigninRequest) {
+    public UserResponse signin(UserSigninRequest userSigninRequest) {
 
         User findUser = userRepository.findByEmail(userSigninRequest.getEmail());
-        if(findUser == null)
-            throw new CustomException(Error.SIGNIN_EMAILNULL_OR_INVALID);
-        return findUser;
+        if (findUser == null)
+            throw new CustomException(Error.EMAIL_NULL_OR_INVALID);
+        return convertUser(findUser);
+    }
+
+    @Override
+    public UserResponse getCurrentUser(UserAuth userAuth) {
+        User findUser = userRepository.findByEmail(userAuth.getEmail());
+        if (findUser == null) {
+            throw new CustomException(Error.EMAIL_NULL_OR_INVALID);
+        } else {
+            return convertUser(findUser);
+        }
+    }
+
+
+    private UserResponse convertUser(User user){
+        return UserResponse.builder().username(user.getUsername())
+                .email(user.getEmail())
+                .bio(user.getBio())
+                .image(user.getImage())
+                .token(jwtService.createToken(user.getEmail()))
+                .build();
     }
 }

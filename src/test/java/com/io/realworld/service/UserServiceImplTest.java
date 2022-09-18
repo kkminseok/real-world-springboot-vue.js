@@ -1,5 +1,6 @@
 package com.io.realworld.service;
 
+import com.io.realworld.domain.aggregate.user.dto.UserResponse;
 import com.io.realworld.domain.aggregate.user.dto.UserSignupRequest;
 import com.io.realworld.domain.aggregate.user.entity.User;
 import com.io.realworld.domain.aggregate.user.repository.UserRepository;
@@ -45,7 +46,7 @@ class UserServiceImplTest {
                 .save(any(User.class));
 
         // when
-        User user = userService.signup(request);
+        UserResponse user = userService.signup(request);
 
         // then
         assertThat(user.getEmail()).isEqualTo(request.getEmail());

@@ -1,5 +1,6 @@
 package com.io.realworld.domain.service;
 
+import com.io.realworld.domain.aggregate.user.dto.UserAuth;
 import com.io.realworld.domain.aggregate.user.service.UserServiceDetail;
 import com.io.realworld.security.jwt.JwtConfig;
 import com.io.realworld.domain.aggregate.user.entity.User;
@@ -69,8 +70,16 @@ public class JwtService {
 
     public Authentication getAuthentication(String jwtToken) {
         UserDetails userDetails = userServiceDetail.loadUserByUsername(getEmail(jwtToken));
+        User user = (User)userDetails;
         log.info("PASSWORD : {}",userDetails.getPassword());
-        return new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
+        UserAuth authenticatedUser = UserAuth.builder()
+                .bio(user.getBio())
+                .image(user.getImage())
+                .username(user.getUsername())
+                .id(user.getId())
+                .email(user.getEmail()).build();
+
+        return new UsernamePasswordAuthenticationToken(authenticatedUser,"", userDetails.getAuthorities());
     }
 
 }

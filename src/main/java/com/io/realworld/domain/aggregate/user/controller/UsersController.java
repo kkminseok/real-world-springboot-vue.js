@@ -29,24 +29,11 @@ public class UsersController {
 
     @PostMapping(value = "")
     public UserResponse signup(@Valid @RequestBody  UserSignupRequest userSignupRequest) {
-        User user = userService.signup(userSignupRequest);
-        return UserResponse.builder().username(user.getUsername())
-                .email(user.getEmail())
-                .bio(user.getBio())
-                .image(user.getImage())
-                .token(jwtService.createToken(user.getEmail()))
-                .build();
+        return userService.signup(userSignupRequest);
     }
 
     @PostMapping(value = "/login")
     public UserResponse signin(@Valid @RequestBody UserSigninRequest userSigninRequest){
-        User user = userService.signin(userSigninRequest);
-
-        return UserResponse.builder().username(user.getUsername())
-                .email(user.getEmail())
-                .bio(user.getBio())
-                .image(user.getImage())
-                .token(jwtService.createToken(user.getEmail()))
-                .build();
+        return userService.signin(userSigninRequest);
     }
 }
