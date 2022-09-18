@@ -1,6 +1,7 @@
 package com.io.realworld.api.users;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.io.realworld.domain.aggregate.user.dto.UserResponse;
 import com.io.realworld.domain.aggregate.user.dto.UserSignupRequest;
 import com.io.realworld.exception.CustomException;
 import com.io.realworld.exception.Error;
@@ -57,7 +58,10 @@ class UsersControllerTest {
     @DisplayName("회원가입 컨트롤러 테스트")
     void signup(UserSignupRequest userSignupRequest) throws Exception {
 
-        User result = User.builder().username(userSignupRequest.getUsername()).password(userSignupRequest.getPassword()).email(userSignupRequest.getEmail()).build();
+        UserResponse result = UserResponse.builder()
+                        .username(userSignupRequest.getUsername())
+                        .email(userSignupRequest.getEmail())
+                        .build();
         Mockito.doReturn(result).when(userService)
                 .signup(any(UserSignupRequest.class));
 
@@ -106,6 +110,7 @@ class UsersControllerTest {
     }
 
 
+
     public static Stream<Arguments> validUsers() {
         return Stream.of(
                 Arguments.of(UserSignupRequest.builder().username("kms").email("kms@gmail.com").password("password").build()),
@@ -121,4 +126,5 @@ class UsersControllerTest {
                 Arguments.of(UserSignupRequest.builder().username("kms").email("").password("password").build())
         );
     }
+
 }

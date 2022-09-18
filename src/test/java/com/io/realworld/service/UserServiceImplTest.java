@@ -42,7 +42,7 @@ class UserServiceImplTest {
         UserSignupRequest request = getUserSignupRequest();
         String encryptedPw = encoder.encode(request.getPassword());
 
-        doReturn(new User(request.getUsername(), request.getEmail(), encryptedPw, "", "")).when(userRepository)
+        doReturn(getUserResponse()).when(userRepository)
                 .save(any(User.class));
 
         // when
@@ -50,7 +50,7 @@ class UserServiceImplTest {
 
         // then
         assertThat(user.getEmail()).isEqualTo(request.getEmail());
-        assertThat(encoder.matches(request.getPassword(), user.getPassword())).isTrue();
+        assertThat(encoder.matches(request.getUsername(), user.getUsername())).isTrue();
 
         // verify
         verify(userRepository, times(1)).save(any(User.class));
@@ -66,12 +66,13 @@ class UserServiceImplTest {
                 .build();
     }
 
-    private User getUserResponse() {
-        return User.builder()
+    private UserResponse getUserResponse() {
+        return UserResponse.builder()
                 .username("kms")
-                .email("kms@gamil.com")
+                .email("kms@gmail.com")
                 .bio("1")
                 .image("image")
+                .token("jwtTokenTest")
                 .build();
     }
 }
