@@ -25,8 +25,11 @@ jobs:
       - name: Test
         run: ./gradlew test
       
-      - name: Publish Unit Test Results
+      - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
-        if: ${{ always() }}
+        if: always()
         with:
           junit_files: "test-results/junit/**/*.xml"
+          nunit_files: "test-results/nunit/**/*.xml"
+          xunit_files: "test-results/xunit/**/*.xml"
+          trx_files: "test-results/**/*.trx"
