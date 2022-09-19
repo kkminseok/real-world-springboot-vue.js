@@ -110,14 +110,7 @@ class UsersControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
-    @WithMockUser
-    @MethodSource("validUsers")
-    @ParameterizedTest
-    @DisplayName("로그인 컨트롤러 테스트")
-    void login(UserSigninRequest user) throws  Exception{
 
-
-    }
 
 
     public static Stream<Arguments> validUsers() {
