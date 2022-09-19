@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -63,8 +64,7 @@ class UsersControllerTest {
                         .username(userSignupRequest.getUsername())
                         .email(userSignupRequest.getEmail())
                         .build();
-        Mockito.doReturn(result).when(userService)
-                .signup(any(UserSignupRequest.class));
+        when(userService.signup(any(UserSignupRequest.class))).thenReturn(result);
 
         //when , then
         mockMvc.perform(post("/api/users")
@@ -84,7 +84,7 @@ class UsersControllerTest {
     @ParameterizedTest
     @DisplayName("회원가입 중복 컨트롤러 테스트")
     void signupDuplicate(UserSignupRequest user) throws Exception{
-        Mockito.doThrow(new CustomException(Error.DUPLICATE_USER)).when(userService).signup(any(UserSignupRequest.class));
+        when(userService.signup(any(UserSignupRequest.class))).thenThrow(new CustomException(Error.DUPLICATE_USER));
 
         mockMvc.perform(post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -100,8 +100,7 @@ class UsersControllerTest {
     @ParameterizedTest
     @DisplayName("회원가입 빈값 컨트롤러 테스트")
     void signupBlankData(UserSignupRequest user) throws Exception{
-        Mockito.doThrow(new CustomException(Error.SIGNUP_NULL_DATA)).when(userService).signup(any(UserSignupRequest.class));
-
+        when(userService.signup(any(UserSignupRequest.class))).thenThrow(new CustomException(Error.SIGNUP_NULL_DATA));
         mockMvc.perform(post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(user))
@@ -123,9 +122,9 @@ class UsersControllerTest {
 
     private static Stream<Arguments> invalidUsers() {
         return Stream.of(
-                Arguments.of(UserSignupRequest.builder().username("").email("kms@gmail.com").password("password").build()),
+                Arguments.of(UserSignupRequest.builder().username("hi").email("kms@gmail.com").password("password").build()),
                 Arguments.of(UserSignupRequest.builder().username("jyb").email("yyb95@gmail.com").password("").build()),
-                Arguments.of(UserSignupRequest.builder().username("kms").email("").password("password").build())
+                Arguments.of(UserSignupRequest.builder().username("kms").email("kms@gmail.com").password("password").build())
         );
     }
 
