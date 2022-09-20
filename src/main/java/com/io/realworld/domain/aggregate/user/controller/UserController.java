@@ -28,9 +28,7 @@ public class UserController {
     }
 
     @GetMapping
-    public UserResponse currentUser(HttpServletRequest request, @AuthenticationPrincipal UserAuth userAuth) {
-        System.out.println("request = " + request);
-
+    public UserResponse currentUser(@AuthenticationPrincipal UserAuth userAuth) {
         return userService.getCurrentUser(userAuth);
     }
 }

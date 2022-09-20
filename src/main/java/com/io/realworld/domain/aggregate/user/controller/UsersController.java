@@ -18,12 +18,9 @@ public class UsersController {
 
     private final UserServiceImpl userService;
 
-    private final JwtService jwtService;
 
-
-    public UsersController(UserServiceImpl userService, JwtService jwtService) {
+    public UsersController(UserServiceImpl userService) {
         this.userService = userService;
-        this.jwtService = jwtService;
     }
 
 
