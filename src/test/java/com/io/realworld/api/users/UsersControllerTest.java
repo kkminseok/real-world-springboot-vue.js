@@ -2,12 +2,10 @@ package com.io.realworld.api.users;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.io.realworld.domain.aggregate.user.dto.UserResponse;
-import com.io.realworld.domain.aggregate.user.dto.UserSigninRequest;
 import com.io.realworld.domain.aggregate.user.dto.UserSignupRequest;
 import com.io.realworld.exception.CustomException;
 import com.io.realworld.exception.Error;
 import com.io.realworld.domain.aggregate.user.controller.UsersController;
-import com.io.realworld.domain.aggregate.user.entity.User;
 import com.io.realworld.domain.service.JwtService;
 import com.io.realworld.domain.aggregate.user.service.UserServiceImpl;
 import org.hamcrest.Matchers;
@@ -16,24 +14,18 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-
 import java.util.stream.Stream;
-
 import static org.mockito.ArgumentMatchers.any;
-
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 
 @WebMvcTest(controllers = UsersController.class)

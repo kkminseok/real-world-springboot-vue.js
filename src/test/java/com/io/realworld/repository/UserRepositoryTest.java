@@ -3,9 +3,13 @@ package com.io.realworld.repository;
 import com.io.realworld.domain.aggregate.user.entity.User;
 import com.io.realworld.domain.aggregate.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,12 +21,10 @@ class UserRepositoryTest {
     private UserRepository userRepository;
 
 
-    @Test
+    @MethodSource("validUsers")
+    @ParameterizedTest
     @DisplayName("회원가입 레포 테스트")
-    void save() {
-
-        //given
-        User user = user();
+    void save(User user) {
 
         //when
         User saved_user = userRepository.save(user);
@@ -35,14 +37,7 @@ class UserRepositoryTest {
         assertThat(saved_user.getImage()).isEqualTo(user.getImage());
     }
 
-
-    private User user() {
-        return User.builder()
-                .username("kms")
-                .password("")
-                .email("kms@gamil.com")
-                .bio("1")
-                .image("image")
-                .build();
+    public static Stream<Arguments> validUsers() {
+        return Stream.of(Arguments.of(User.builder().username("kms").password("").email("kms@gamil.com").bio("1").image("image").build()));
     }
 }
