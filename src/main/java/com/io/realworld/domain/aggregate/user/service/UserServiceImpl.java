@@ -46,8 +46,9 @@ public class UserServiceImpl implements UserService {
     public UserResponse signin(UserSigninRequest userSigninRequest) {
 
         User findUser = userRepository.findByEmail(userSigninRequest.getEmail());
-        if (findUser == null)
+        if (findUser == null) {
             throw new CustomException(Error.EMAIL_NULL_OR_INVALID);
+        }
         return convertUser(findUser);
     }
 

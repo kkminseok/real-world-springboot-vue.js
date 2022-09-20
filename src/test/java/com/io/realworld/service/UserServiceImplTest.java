@@ -1,6 +1,7 @@
 package com.io.realworld.service;
 
 import com.io.realworld.domain.aggregate.user.dto.UserResponse;
+import com.io.realworld.domain.aggregate.user.dto.UserSigninRequest;
 import com.io.realworld.domain.aggregate.user.dto.UserSignupRequest;
 import com.io.realworld.domain.aggregate.user.entity.User;
 import com.io.realworld.domain.aggregate.user.repository.UserRepository;
@@ -23,8 +24,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
@@ -90,7 +90,35 @@ class UserServiceImplTest {
         when(userRepository.findByEmail(any(String.class))).thenReturn(null).thenThrow(new CustomException(Error.DUPLICATE_USER));
         when(userRepository.save(any(User.class))).thenReturn(user);
         userService.signup(requestUser);
+    }
 
+    @MethodSource("validLoginUsers")
+    @ParameterizedTest
+    @DisplayName("로그인 성공 서비스 테스트")
+    void loginSuccess(UserSigninRequest userSigninRequest){
+        User user = User.builder()
+                .bio("")
+                .email(userSigninRequest.getEmail())
+                .image("")
+                .password(userSigninRequest.getPassword())
+                .build();
+
+        when(userRepository.findByEmail(any(String.class))).thenReturn(user);
+        userService.signin(userSigninRequest);
+    }
+
+    @MethodSource("invalidLoginUsers")
+    @ParameterizedTest
+    @DisplayName("로그인 실패 서비스 테스트")
+    void loginFail(UserSigninRequest userSigninRequest){
+
+        when(userRepository.findByEmail(any(String.class))).thenReturn(null);
+        try {
+            userService.signin(userSigninRequest);
+        }catch (CustomException e){
+            assertThat(e.getError().equals(Error.EMAIL_NULL_OR_INVALID));
+            assertThat(e.getError().getMessage().equals(Error.EMAIL_NULL_OR_INVALID.getMessage()));
+        }
     }
 
 
@@ -106,6 +134,19 @@ class UserServiceImplTest {
         return Stream.of(
                 Arguments.of(UserSignupRequest.builder().username("kms").email("kms@gmail.com").password("password").build()),
                 Arguments.of(UserSignupRequest.builder().username("kms").email("kms@gmail.com").password("password").build())
+        );
+    }
+
+    private static Stream<Arguments> validLoginUsers(){
+        return Stream.of(
+                Arguments.of(UserSigninRequest.builder().email("kms@naver.com").password("password").build()),
+                Arguments.of(UserSigninRequest.builder().email("jjy@gmail.com").password("password").build())
+        );
+    }
+
+    private static Stream<Arguments> invalidLoginUsers(){
+        return Stream.of(
+                Arguments.of(UserSigninRequest.builder().email("invalidEmail").password("password").build())
         );
     }
 
