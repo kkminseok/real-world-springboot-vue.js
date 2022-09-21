@@ -53,7 +53,6 @@ class UsersControllerTest {
     @ParameterizedTest
     @DisplayName("회원가입 컨트롤러 테스트")
     void signup(UserSignupRequest userSignupRequest) throws Exception {
-
         UserResponse result = UserResponse.builder()
                 .username(userSignupRequest.getUsername())
                 .email(userSignupRequest.getEmail())
@@ -127,7 +126,6 @@ class UsersControllerTest {
         .andExpect(MockMvcResultMatchers.jsonPath("$.user.email", Matchers.is(loginUser.getEmail())))
         .andExpect(MockMvcResultMatchers.jsonPath("$.user.email", Matchers.equalTo(loginUser.getEmail())))
         .andExpect(MockMvcResultMatchers.jsonPath("$.user.token", Matchers.notNullValue()));
-
     }
 
     @WithMockUser
