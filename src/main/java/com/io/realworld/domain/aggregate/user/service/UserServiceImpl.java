@@ -1,9 +1,6 @@
 package com.io.realworld.domain.aggregate.user.service;
 
-import com.io.realworld.domain.aggregate.user.dto.UserAuth;
-import com.io.realworld.domain.aggregate.user.dto.UserResponse;
-import com.io.realworld.domain.aggregate.user.dto.UserSigninRequest;
-import com.io.realworld.domain.aggregate.user.dto.UserSignupRequest;
+import com.io.realworld.domain.aggregate.user.dto.*;
 import com.io.realworld.domain.service.JwtService;
 import com.io.realworld.exception.CustomException;
 import com.io.realworld.exception.Error;
@@ -60,6 +57,18 @@ public class UserServiceImpl implements UserService {
         } else {
             return convertUser(findUser);
         }
+    }
+
+    @Override
+    public UserResponse updateUser(UserUpdate userUpdate){
+        System.out.println(userUpdate.toString());
+        userRepository.save(User.builder()
+                .username(userUpdate.getUsername())
+                .image(userUpdate.getImage())
+                .bio(userUpdate.getBio())
+                .password(userUpdate.getPassword())
+                .email(userUpdate.getEmail()).build());
+        return convertUser();
     }
 
 
