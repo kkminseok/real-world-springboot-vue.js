@@ -1,5 +1,6 @@
 package com.io.realworld.domain.aggregate.user.entity;
 
+import com.io.realworld.domain.aggregate.user.dto.UserUpdate;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
@@ -68,5 +69,21 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    //비즈니스
+
+    public void changeUsername(String username){
+        this.username = username;
+    }
+
+    public void changeEmail(String email){
+        this.email = email;
+    }
+
+    public void update(UserUpdate userUpdate) {
+        this.password = userUpdate.getPassword();
+        this.bio = userUpdate.getBio();
+        this.image = userUpdate.getImage();
     }
 }

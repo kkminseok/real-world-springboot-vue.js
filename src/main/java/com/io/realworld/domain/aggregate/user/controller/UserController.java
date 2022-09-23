@@ -10,6 +10,7 @@ import com.io.realworld.domain.aggregate.user.service.UserServiceImpl;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +24,7 @@ public class UserController {
 
     private final UserServiceImpl userService;
 
-    public UserController(UserServiceImpl userService){
+    public UserController(UserServiceImpl userService) {
         this.userService = userService;
     }
 
@@ -33,7 +34,7 @@ public class UserController {
     }
 
     @PutMapping
-    public UserResponse updateUser(@Valid @RequestBody UserUpdate userUpdate){
-        return userService.updateUser(userUpdate);
+    public UserResponse updateUser(@Valid @RequestBody UserUpdate userUpdate, @AuthenticationPrincipal UserAuth userAuth) {
+        return userService.updateUser(userUpdate, userAuth);
     }
 }

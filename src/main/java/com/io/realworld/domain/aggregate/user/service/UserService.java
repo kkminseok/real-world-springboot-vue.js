@@ -10,5 +10,5 @@ public interface UserService {
 
     UserResponse getCurrentUser(UserAuth userAuth);
 
-    UserResponse updateUser(UserUpdate userUpdate);
+    UserResponse updateUser(UserUpdate userUpdate, UserAuth userAuth);
 }

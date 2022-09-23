@@ -8,12 +8,14 @@ import com.io.realworld.domain.aggregate.user.entity.User;
 import com.io.realworld.domain.aggregate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
@@ -55,20 +57,39 @@ public class UserServiceImpl implements UserService {
         if (findUser == null) {
             throw new CustomException(Error.EMAIL_NULL_OR_INVALID);
         } else {
+            System.out.println(findUser);
             return convertUser(findUser);
         }
     }
 
     @Override
-    public UserResponse updateUser(UserUpdate userUpdate){
-        System.out.println(userUpdate.toString());
-        userRepository.save(User.builder()
-                .username(userUpdate.getUsername())
-                .image(userUpdate.getImage())
-                .bio(userUpdate.getBio())
-                .password(userUpdate.getPassword())
-                .email(userUpdate.getEmail()).build());
-        return convertUser();
+    @Transactional
+    public UserResponse updateUser(UserUpdate userUpdate, UserAuth userAuth){
+        User user = userRepository.findById(userAuth.getId()).orElseThrow(() -> new CustomException(Error.USER_NOT_FOUND));
+
+        if(userUpdate.getUsername() != null){
+            userRepository.findByUsername(userUpdate.getUsername())
+                    .filter(found -> !found.getId().equals(userRepository.findById(user.getId())))
+                    .ifPresent(found -> new CustomException(Error.DUPLICATE_USER));
+            System.out.println(user.getUsername() + userUpdate.getUsername());
+            user.changeUsername(userUpdate.getUsername());
+            System.out.println("!!" + user.getUsername() );
+        }
+
+        if(userUpdate.getEmail() != null){
+            userRepository.findAllByEmail(userUpdate.getEmail())
+                    .stream().filter(found -> !found.getId().equals(userRepository.findById(user.getId())))
+                        .findAny().ifPresent(found -> new CustomException(Error.DUPLICATE_USER));
+            user.changeEmail(userUpdate.getEmail());
+        }
+        userUpdate.setId(user.getId());
+        user.update(userUpdate);
+
+        log.info(" {} , {} {}",userUpdate.hashCode(),  user.hashCode() , user.getId());
+        User test = userRepository.save(user);
+        log.info("test : {}",test.getBio());
+
+        return convertUser(test);
     }
 
 
