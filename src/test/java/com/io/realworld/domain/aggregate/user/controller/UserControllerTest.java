@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.io.realworld.config.WithAuthUser;
 import com.io.realworld.domain.aggregate.user.dto.UserAuth;
 import com.io.realworld.domain.aggregate.user.dto.UserResponse;
+import com.io.realworld.domain.aggregate.user.dto.UserUpdate;
 import com.io.realworld.domain.aggregate.user.service.UserServiceDetail;
 import com.io.realworld.domain.aggregate.user.service.UserServiceImpl;
 import com.io.realworld.domain.service.JwtService;
@@ -41,6 +42,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -77,10 +79,34 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.user.image", Matchers.equalTo(userResponse.getImage())));
     }
 
+    @WithAuthUser(email = "test@gmail.com",username = "kms",id = 1L)
+    @MethodSource("updateUser")
+    @ParameterizedTest
+    @DisplayName("유저 업데이트 컨트롤러 테스트")
+    void updateUserSuccess(UserUpdate userUpdate) throws Exception{
+        UserResponse userResponse = UserResponse.builder()
+                .username("update name")
+                .email("update@gmail.com")
+                .build();
+        when(userService.updateUser(any(UserUpdate.class),any(UserAuth.class))).thenReturn(userResponse);
+        mockMvc.perform(put("/api/user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userUpdate))
+                        .with(csrf())
+                ).andExpect(status().isOk())
+                .andExpect(jsonPath("$.user.email", Matchers.equalTo(userUpdate.getEmail())))
+                .andExpect(jsonPath("$.user.username", Matchers.equalTo(userUpdate.getUsername())));
+    }
+
     private static Stream<Arguments> validCurrentUser() {
         return Stream.of(
                 Arguments.of(UserAuth.builder().username("kms").email("test@gmail.com").build()
         ));
+    }
+    private static Stream<Arguments> updateUser(){
+        return Stream.of(
+                Arguments.of(UserUpdate.builder().username("update name").email("update@gmail.com").password("update password").build()
+                ));
     }
 
 }

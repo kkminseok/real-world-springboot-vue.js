@@ -57,7 +57,6 @@ public class UserServiceImpl implements UserService {
         if (findUser == null) {
             throw new CustomException(Error.EMAIL_NULL_OR_INVALID);
         } else {
-            System.out.println(findUser);
             return convertUser(findUser);
         }
     }
@@ -71,9 +70,7 @@ public class UserServiceImpl implements UserService {
             userRepository.findByUsername(userUpdate.getUsername())
                     .filter(found -> !found.getId().equals(userRepository.findById(user.getId())))
                     .ifPresent(found -> new CustomException(Error.DUPLICATE_USER));
-            System.out.println(user.getUsername() + userUpdate.getUsername());
             user.changeUsername(userUpdate.getUsername());
-            System.out.println("!!" + user.getUsername() );
         }
 
         if(userUpdate.getEmail() != null){
@@ -84,10 +81,7 @@ public class UserServiceImpl implements UserService {
         }
         userUpdate.setId(user.getId());
         user.update(userUpdate);
-
-        log.info(" {} , {} {}",userUpdate.hashCode(),  user.hashCode() , user.getId());
         User test = userRepository.save(user);
-        log.info("test : {}",test.getBio());
 
         return convertUser(test);
     }
