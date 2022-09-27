@@ -7,12 +7,14 @@ import com.io.realworld.domain.aggregate.user.service.UserServiceImpl;
 import com.io.realworld.domain.service.JwtService;
 import com.io.realworld.exception.CustomException;
 import com.io.realworld.exception.Error;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.AdditionalMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -176,6 +178,46 @@ class UserServiceImplTest {
 
     }
 
+    @DisplayName("유저 업데이트 실패 테스트")
+    @MethodSource("invalidUpdateUsers")
+    @ParameterizedTest
+    void updateUserFailCauseFoundNot(UserUpdate userUpdate, UserAuth userAuth){
+        UserAuth repoUser = UserAuth.builder().id(1L).username("update").email("update@gmail.com").build();
+
+        when(userRepository.findById(AdditionalMatchers.not(eq(repoUser.getId())))).thenThrow(new CustomException(Error.USER_NOT_FOUND));
+        // case 2
+        if(userUpdate.getUsername() != null){
+                lenient().when(userRepository.findByUsername(eq(repoUser.getUsername()))).thenThrow(new CustomException(Error.DUPLICATE_USER));
+            try{
+                userService.updateUser(userUpdate,userAuth);
+            }catch(CustomException e){
+                assertThat(e.getError().equals(Error.DUPLICATE_USER));
+                assertThat(e.getError().getMessage().equals(Error.DUPLICATE_USER.getMessage()));
+            }
+        }
+        // case 3
+        else if(userUpdate.getEmail() != null){
+            lenient().when(userRepository.findByEmail(eq(repoUser.getEmail()))).thenThrow(new CustomException(Error.DUPLICATE_USER));
+            try{
+                userService.updateUser(userUpdate,userAuth);
+            }catch(CustomException e){
+                assertThat(e.getError().equals(Error.DUPLICATE_USER));
+                assertThat(e.getError().getMessage().equals(Error.DUPLICATE_USER.getMessage()));
+            }
+        }
+        // case 1
+        else {
+            try {
+                userService.updateUser(userUpdate, userAuth);
+            } catch (CustomException e) {
+                assertThat(e.getError().equals(Error.USER_NOT_FOUND));
+                assertThat(e.getError().getMessage().equals(Error.USER_NOT_FOUND.getMessage()));
+            }
+        }
+    }
+
+
+
 
     public static Stream<Arguments> validUsers() {
         return Stream.of(
@@ -202,6 +244,16 @@ class UserServiceImplTest {
     private static Stream<Arguments> invalidLoginUsers(){
         return Stream.of(
                 Arguments.of(UserSigninRequest.builder().email("invalidEmail").password("password").build())
+        );
+    }
+    private static Stream<Arguments> invalidUpdateUsers(){
+        return Stream.of(
+                Arguments.of(UserUpdate.builder().username("update").email("update@gmail.com").id(1L).password("password").build(),
+                        UserAuth.builder().id(3L).build()),
+                Arguments.of(UserUpdate.builder().username("update").email("update@gmail.com").id(1L).password("password").build(),
+                        UserAuth.builder().id(3L).build()),
+                Arguments.of(UserUpdate.builder().email("update@gmail.com").id(1L).password("password").build(),
+                        UserAuth.builder().id(3L).build())
         );
     }
 
