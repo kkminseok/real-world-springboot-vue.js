@@ -1,8 +1,6 @@
 package com.io.realworld.service;
 
-import com.io.realworld.domain.aggregate.user.dto.UserResponse;
-import com.io.realworld.domain.aggregate.user.dto.UserSigninRequest;
-import com.io.realworld.domain.aggregate.user.dto.UserSignupRequest;
+import com.io.realworld.domain.aggregate.user.dto.*;
 import com.io.realworld.domain.aggregate.user.entity.User;
 import com.io.realworld.domain.aggregate.user.repository.UserRepository;
 import com.io.realworld.domain.aggregate.user.service.UserServiceImpl;
@@ -10,6 +8,7 @@ import com.io.realworld.domain.service.JwtService;
 import com.io.realworld.exception.CustomException;
 import com.io.realworld.exception.Error;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -21,10 +20,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
@@ -119,6 +121,59 @@ class UserServiceImplTest {
             assertThat(e.getError().equals(Error.EMAIL_NULL_OR_INVALID));
             assertThat(e.getError().getMessage().equals(Error.EMAIL_NULL_OR_INVALID.getMessage()));
         }
+    }
+
+    @Test
+    @DisplayName("현재 유저 가져오기 성공 테스트")
+    void currentUserSuccess(){
+        UserAuth userAuth = UserAuth.builder()
+                .bio("bio")
+                .email("authEmail@gmail.com")
+                .id(1L)
+                .username("authName")
+                .image("image").build();
+
+        User user = User.builder()
+                .username(userAuth.getUsername())
+                .email(userAuth.getEmail())
+                .image("iamge")
+                .username("authName")
+                .password("test password").build();
+
+        when(userRepository.findByEmail(eq(userAuth.getEmail()))).thenReturn(user);
+
+        UserResponse getUser = userService.getCurrentUser(userAuth);
+        assertThat(getUser.getEmail()).isEqualTo(userAuth.getEmail());
+    }
+
+    @DisplayName("현재유저 가져오기 실패 서비스 테스트")
+    @Test
+    void currentUserFail(){
+        UserAuth userAuth = UserAuth.builder().id(1L).build();
+        try {
+            userService.getCurrentUser(userAuth);
+        }catch (CustomException e){
+            assertThat(e.getError().equals(Error.EMAIL_NULL_OR_INVALID));
+            assertThat(e.getError().getMessage().equals(Error.EMAIL_NULL_OR_INVALID.getMessage()));
+        }
+    }
+
+    @DisplayName("유저 업데이트 성공 테스트")
+    @Test
+    void updateUserSuccess(){
+        UserUpdate userUpdate = UserUpdate.builder().username("fixuser").email("kms@gmail.com").build();
+        UserAuth userAuth = UserAuth.builder().id(1L).build();
+        User responseUser = User.builder().username(userUpdate.getUsername()).email(userUpdate.getEmail()).build();
+
+        when(userRepository.findById(eq(userAuth.getId()))).thenReturn(Optional.of(responseUser));
+        when(userRepository.save(any(User.class))).thenReturn(responseUser);
+        UserResponse userResponse = userService.updateUser(userUpdate, userAuth);
+
+        assertEquals(userUpdate.getUsername(), userResponse.getUsername());
+        assertEquals(userUpdate.getEmail(), userResponse.getEmail());
+        assertNotNull(userResponse.getEmail());
+        assertNotNull(userResponse.getUsername());
+
     }
 
 

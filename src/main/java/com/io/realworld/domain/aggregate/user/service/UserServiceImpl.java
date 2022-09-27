@@ -81,9 +81,7 @@ public class UserServiceImpl implements UserService {
         }
         userUpdate.setId(user.getId());
         user.update(userUpdate);
-        User test = userRepository.save(user);
-
-        return convertUser(test);
+        return convertUser(userRepository.save(user));
     }
 
 
