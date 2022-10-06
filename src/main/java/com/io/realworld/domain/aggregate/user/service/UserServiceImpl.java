@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Log4j2
-@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -25,8 +24,6 @@ public class UserServiceImpl implements UserService {
 
     private final JwtService jwtService;
 
-
-    @Transactional
     public UserResponse signup(UserSignupRequest userSignupRequest) {
         if (userRepository.findByEmail(userSignupRequest.getEmail()) != null) {
             throw new CustomException(Error.DUPLICATE_USER);
