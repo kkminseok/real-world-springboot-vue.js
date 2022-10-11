@@ -29,12 +29,9 @@ public class WebConfig {
         return new BCryptPasswordEncoder();
     }
 
-
-    // TODO
-    // how diff antMatchers, mvcMatchers
     @Bean
     public WebSecurityCustomizer configure() throws Exception{
-        return (web) -> web.ignoring().antMatchers("/h2-console/**");
+        return (web) -> web.ignoring().mvcMatchers("/h2-console/**");
     }
 
     @Bean
