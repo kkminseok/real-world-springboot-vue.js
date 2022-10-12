@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 @Configuration
 @RequiredArgsConstructor
@@ -31,7 +32,7 @@ public class WebConfig {
 
     @Bean
     public WebSecurityCustomizer configure() throws Exception{
-        return (web) -> web.ignoring().mvcMatchers("/h2-console/**");
+        return (web) -> web.ignoring().antMatchers("/h2-console/**");
     }
 
     @Bean
@@ -39,7 +40,7 @@ public class WebConfig {
         http.csrf()
                 .disable()
                 .authorizeRequests()
-                .antMatchers("/api/users/**", "/h2-console/**").permitAll()
+                .mvcMatchers("/api/users/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
