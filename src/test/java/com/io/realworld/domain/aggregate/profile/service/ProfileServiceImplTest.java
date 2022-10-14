@@ -1,8 +1,10 @@
 package com.io.realworld.domain.aggregate.profile.service;
 
+import com.io.realworld.domain.aggregate.profile.entity.Follow;
 import com.io.realworld.domain.aggregate.profile.repository.ProfileRepository;
 import com.io.realworld.domain.aggregate.user.dto.UserAuth;
 import com.io.realworld.domain.aggregate.user.dto.UserUpdate;
+import com.io.realworld.domain.aggregate.user.entity.User;
 import com.io.realworld.domain.aggregate.user.repository.UserRepository;
 import com.io.realworld.exception.CustomException;
 import com.io.realworld.exception.Error;
@@ -18,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.stream.Stream;
 
+import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -48,6 +51,17 @@ class ProfileServiceImplTest {
             assertThat(e.getError().getMessage().equals(Error.USER_NOT_FOUND.getMessage()));
         }
 
+    }
+
+    @Test
+    @DisplayName("프로필조회 성공")
+    void getProfile_Success() {
+        UserAuth userAuth = UserAuth.builder().id(1L).build();
+        User user = User.builder().username("username").bio("bio").password("password").image("image").build();
+        Follow follow = Follow.builder().build();
+        when(userRepository.findByUsername(any(String.class))).thenReturn(ofNullable(user));
+        when(profileRepository.findByFolloweeIdAndFollowerId(any(Long.class),eq(null))).thenReturn(ofNullable(follow));
+        profileService.getProfile(userAuth,"username");
     }
 
     @Test
