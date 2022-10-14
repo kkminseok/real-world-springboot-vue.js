@@ -1,9 +1,14 @@
 package com.io.realworld.domain.aggregate.profile.entity;
 
 import com.io.realworld.domain.aggregate.user.entity.User;
+import lombok.*;
 
 import javax.persistence.*;
 
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name="follows", uniqueConstraints = {
         @UniqueConstraint(name="follow_followee_pair_unique",columnNames = {"followee","follower"})
 })

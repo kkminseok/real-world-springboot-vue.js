@@ -9,5 +9,4 @@ public interface ProfileRepository extends JpaRepository<Follow,Long> {
 
     Optional<Follow> findByFolloweeIdAndFollowerId(Long followeeId, Long followerId);
 
-
 }
