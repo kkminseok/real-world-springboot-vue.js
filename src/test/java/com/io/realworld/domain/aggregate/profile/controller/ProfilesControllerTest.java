@@ -21,6 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -54,12 +55,24 @@ class ProfilesControllerTest {
                 .andExpect(jsonPath("$.profile.bio", Matchers.equalTo(profileResponse.getBio())))
                 .andExpect(jsonPath("$.profile.image", Matchers.equalTo(profileResponse.getImage())))
                 .andExpect(jsonPath("$.profile.following", Matchers.equalTo(profileResponse.getFollowing())));
-
-
-
     }
 
     @Test
-    void followUser() {
+    @WithAuthUser(email = "test@gmail.com",username = "kms",id = 1L)
+    @DisplayName("유저 팔로우하기 컨트롤러 테스트")
+    void followUser() throws Exception {
+        String username = "profileUser";
+        ProfileResponse profileResponse = ProfileResponse.builder().
+                username(username).
+                bio("bio").
+                image("image").
+                following(true).build();
+        when(profileService.followUser(any(UserAuth.class), eq(username))).thenReturn(profileResponse);
+        mockMvc.perform(post("/api/profiles/"+ username + "/follow")
+                ).andExpect(status().isOk())
+                .andExpect(jsonPath("$.profile.username", Matchers.equalTo(profileResponse.getUsername())))
+                .andExpect(jsonPath("$.profile.bio", Matchers.equalTo(profileResponse.getBio())))
+                .andExpect(jsonPath("$.profile.image", Matchers.equalTo(profileResponse.getImage())))
+                .andExpect(jsonPath("$.profile.following", Matchers.equalTo(profileResponse.getFollowing())));
     }
 }
