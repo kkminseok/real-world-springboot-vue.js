@@ -18,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
@@ -50,17 +51,16 @@ class ProfileServiceImplTest {
             assertThat(e.getError().equals(Error.USER_NOT_FOUND));
             assertThat(e.getError().getMessage().equals(Error.USER_NOT_FOUND.getMessage()));
         }
-
     }
 
-    @Test
+    @ParameterizedTest
+    @MethodSource("returnUserObject")
     @DisplayName("프로필조회 성공")
-    void getProfile_Success() {
+    void getProfile_Success(User user) {
         UserAuth userAuth = UserAuth.builder().id(1L).build();
-        User user = User.builder().username("username").bio("bio").password("password").image("image").build();
         Follow follow = Follow.builder().build();
         when(userRepository.findByUsername(any(String.class))).thenReturn(ofNullable(user));
-        when(profileRepository.findByFolloweeIdAndFollowerId(any(Long.class),eq(null))).thenReturn(ofNullable(follow));
+        when(profileRepository.findByFolloweeIdAndFollowerId(eq(userAuth.getId()),eq(user.getId()))).thenReturn(ofNullable(follow));
         profileService.getProfile(userAuth,"username");
     }
 
@@ -82,10 +82,10 @@ class ProfileServiceImplTest {
     @DisplayName("팔로워 실패 중복 이미 팔로워 대상인 경우")
     void followUser_Fail_DuplicateFollow(User user){
         UserAuth userAuth = UserAuth.builder().id(1L).build();
-        User authUserInRepo = User.builder().build();
+        User authUserInRepo = User.builder().id(userAuth.getId()).build();
         when(userRepository.findByUsername(eq(user.getUsername()))).thenReturn(ofNullable(user));
         when(userRepository.findById(eq(userAuth.getId()))).thenReturn(ofNullable(authUserInRepo));
-        when(profileRepository.findByFolloweeIdAndFollowerId(eq(userAuth.getId()),eq(null))).thenThrow(new CustomException(Error.ALREADY_FOLLOW));
+        when(profileRepository.findByFolloweeIdAndFollowerId(eq(authUserInRepo.getId()),eq(user.getId()))).thenThrow(new CustomException(Error.ALREADY_FOLLOW));
 
         try{
             profileService.followUser(userAuth,user.getUsername());
@@ -93,8 +93,20 @@ class ProfileServiceImplTest {
             assertThat(e.getError().equals(Error.ALREADY_FOLLOW));
             assertThat(e.getError().getMessage().equals(Error.ALREADY_FOLLOW.getMessage()));
         }
+    }
 
+    @ParameterizedTest
+    @MethodSource("returnUserObject")
+    @DisplayName("팔로워 성공")
+    void followUser_Success(User user){
+        UserAuth userAuth = UserAuth.builder().id(1L).build();
+        User authUserInRepo = User.builder().id(userAuth.getId()).build();
+        Follow follow = Follow.builder().followee(authUserInRepo).build();
+        when(userRepository.findByUsername(eq(user.getUsername()))).thenReturn(ofNullable(user));
+        when(userRepository.findById(eq(userAuth.getId()))).thenReturn(ofNullable(authUserInRepo));
+        when(profileRepository.save(any(Follow.class))).thenReturn(follow);
 
+        profileService.followUser(userAuth,user.getUsername());
     }
 
 
@@ -104,7 +116,7 @@ class ProfileServiceImplTest {
     }
 
     private static Stream<Arguments> returnUserObject(){
-        return Stream.of(Arguments.of(User.builder().username("username").bio("bio").password("password").image("image").build()));
+        return Stream.of(Arguments.of(User.builder().id(100L).username("username").bio("bio").password("password").image("image").build()));
 
     }
 }
