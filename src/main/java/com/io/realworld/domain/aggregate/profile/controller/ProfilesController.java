@@ -32,4 +32,10 @@ public class ProfilesController {
         return profileService.followUser(userAuth, username);
     }
 
+    @DeleteMapping("{username}/follow")
+    public ProfileResponse unfollowUser(@AuthenticationPrincipal UserAuth userAuth, @PathVariable("username") String username){
+        log.info("current user : {} , unFollow User : {}",userAuth.getUsername(), username);
+        return profileService.unfollowUser(userAuth,username);
+    }
+
 }

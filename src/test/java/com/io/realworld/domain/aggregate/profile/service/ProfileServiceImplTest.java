@@ -1,5 +1,6 @@
 package com.io.realworld.domain.aggregate.profile.service;
 
+import com.io.realworld.domain.aggregate.profile.dto.ProfileResponse;
 import com.io.realworld.domain.aggregate.profile.entity.Follow;
 import com.io.realworld.domain.aggregate.profile.repository.ProfileRepository;
 import com.io.realworld.domain.aggregate.user.dto.UserAuth;
@@ -26,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,9 +55,8 @@ class ProfileServiceImplTest {
         }
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "sv:프로필조회 성공")
     @MethodSource("returnUserObject")
-    @DisplayName("프로필조회 성공")
     void getProfile_Success(User user) {
         UserAuth userAuth = UserAuth.builder().id(1L).build();
         Follow follow = Follow.builder().build();
@@ -77,9 +78,8 @@ class ProfileServiceImplTest {
         }
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "sv:팔로워 실패 중복 이미 팔로워 대상인 경우")
     @MethodSource("returnUserObject")
-    @DisplayName("팔로워 실패 중복 이미 팔로워 대상인 경우")
     void followUser_Fail_DuplicateFollow(User user){
         UserAuth userAuth = UserAuth.builder().id(1L).build();
         User authUserInRepo = User.builder().id(userAuth.getId()).build();
@@ -95,9 +95,8 @@ class ProfileServiceImplTest {
         }
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "sv:팔로우성공")
     @MethodSource("returnUserObject")
-    @DisplayName("팔로워 성공")
     void followUser_Success(User user){
         UserAuth userAuth = UserAuth.builder().id(1L).build();
         User authUserInRepo = User.builder().id(userAuth.getId()).build();
@@ -106,14 +105,57 @@ class ProfileServiceImplTest {
         when(userRepository.findById(eq(userAuth.getId()))).thenReturn(ofNullable(authUserInRepo));
         when(profileRepository.save(any(Follow.class))).thenReturn(follow);
 
-        profileService.followUser(userAuth,user.getUsername());
+        ProfileResponse profileResponse= profileService.followUser(userAuth,user.getUsername());
+        assertThat(profileResponse.getFollowing()).isTrue();
+
+    }
+
+    @Test
+    @DisplayName("언팔로워 실패 대상을 못 찾음")
+    void unfollowUser_Fail_userNotFound() {
+        UserAuth userAuth = UserAuth.builder().id(1L).build();
+        when(userRepository.findByUsername(any(String.class))).thenThrow(new CustomException(Error.USER_NOT_FOUND));
+        try{
+            profileService.unfollowUser(userAuth,"username");
+        }catch (CustomException e){
+            assertThat(e.getError().equals(Error.USER_NOT_FOUND));
+            assertThat(e.getError().getMessage().equals(Error.USER_NOT_FOUND.getMessage()));
+        }
+    }
+
+    @ParameterizedTest(name = "sv:언팔로워 실패 중복 이미 언팔로워 대상인 경우")
+    @MethodSource("returnUserObject")
+    void unfollowUser_Fail_DuplicateUnFollow(User user){
+        UserAuth userAuth = UserAuth.builder().id(1L).build();
+        User authUserInRepo = User.builder().id(userAuth.getId()).build();
+        when(userRepository.findByUsername(eq(user.getUsername()))).thenReturn(ofNullable(user));
+        when(userRepository.findById(eq(userAuth.getId()))).thenReturn(ofNullable(authUserInRepo));
+        when(profileRepository.findByFolloweeIdAndFollowerId(eq(authUserInRepo.getId()),eq(user.getId()))).thenThrow(new CustomException(Error.ALREADY_UNFOLLOW));
+
+        try{
+            profileService.followUser(userAuth,user.getUsername());
+        }catch (CustomException e){
+            assertThat(e.getError().equals(Error.ALREADY_UNFOLLOW));
+            assertThat(e.getError().getMessage().equals(Error.ALREADY_UNFOLLOW.getMessage()));
+        }
+    }
+
+    @ParameterizedTest(name = "sv:언팔로워 성공")
+    @MethodSource("returnUserObject")
+    void unfollowUser_Success(User user){
+        UserAuth userAuth = UserAuth.builder().id(1L).build();
+        User authUserInRepo = User.builder().id(userAuth.getId()).build();
+        Follow follow = Follow.builder().build();
+        when(userRepository.findByUsername(eq(user.getUsername()))).thenReturn(ofNullable(user));
+        when(userRepository.findById(eq(userAuth.getId()))).thenReturn(ofNullable(authUserInRepo));
+        when(profileRepository.findByFolloweeIdAndFollowerId(eq(authUserInRepo.getId()),eq(user.getId()))).thenReturn(ofNullable(follow));
+        doNothing().when(profileRepository).delete((any(Follow.class)));
+
+        ProfileResponse profileResponse = profileService.unfollowUser(userAuth,user.getUsername());
+        assertThat(profileResponse.getFollowing()).isFalse();
     }
 
 
-
-    private static Stream<String> foundNotUsers(){
-        return Stream.of("username1","username2","username3");
-    }
 
     private static Stream<Arguments> returnUserObject(){
         return Stream.of(Arguments.of(User.builder().id(100L).username("username").bio("bio").password("password").image("image").build()));

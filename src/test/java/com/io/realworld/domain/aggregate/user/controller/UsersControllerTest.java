@@ -50,8 +50,7 @@ class UsersControllerTest {
 
     @WithMockUser
     @MethodSource("validUsers")
-    @ParameterizedTest
-    @DisplayName("회원가입 컨트롤러 테스트")
+    @ParameterizedTest(name = "controller:회원가입 성공 테스트")
     void signup(UserSignupRequest userSignupRequest) throws Exception {
         UserResponse result = UserResponse.builder()
                 .username(userSignupRequest.getUsername())
@@ -74,8 +73,7 @@ class UsersControllerTest {
 
     @WithMockUser
     @MethodSource("validUsers")
-    @ParameterizedTest
-    @DisplayName("회원가입 중복 컨트롤러 테스트")
+    @ParameterizedTest(name = "conroller:회원가입 중복 테스트")
     void signupDuplicate(UserSignupRequest user) throws Exception {
         when(userService.signup(any(UserSignupRequest.class))).thenThrow(new CustomException(Error.DUPLICATE_USER));
 
@@ -90,8 +88,7 @@ class UsersControllerTest {
 
     @WithMockUser
     @MethodSource("invalidUsers")
-    @ParameterizedTest
-    @DisplayName("회원가입 빈값 컨트롤러 테스트")
+    @ParameterizedTest(name = "controller:회원가입 빈값 테스트")
     void signupBlankData(UserSignupRequest user) throws Exception {
         when(userService.signup(any(UserSignupRequest.class))).thenThrow(new CustomException(Error.SIGNUP_NULL_DATA));
         mockMvc.perform(post("/api/users")
@@ -105,8 +102,7 @@ class UsersControllerTest {
 
     @WithMockUser
     @MethodSource("validLoginUsers")
-    @ParameterizedTest
-    @DisplayName("로그인 성공 테스트")
+    @ParameterizedTest(name = "controller:로그인 성공 테스트")
     void signInSuccess(UserSigninRequest loginUser) throws Exception {
         UserResponse user = UserResponse.builder()
                         .username("")
@@ -130,8 +126,7 @@ class UsersControllerTest {
 
     @WithMockUser
     @MethodSource("invalidLoginUsers")
-    @ParameterizedTest
-    @DisplayName("로그인 실패 컨트롤러 테스트")
+    @ParameterizedTest(name = "controller:로그인 실패 테스트")
     void signInFail(UserSigninRequest loginUser) throws Exception {
         when(userService.signin(any(UserSigninRequest.class))).thenThrow(new CustomException(Error.EMAIL_NULL_OR_INVALID));
 

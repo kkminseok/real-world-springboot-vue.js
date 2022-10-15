@@ -42,6 +42,15 @@ public class ProfileServiceImpl implements ProfileService {
         return convertProfile(followStatus,follower);
     }
 
+    @Override
+    public ProfileResponse unfollowUser(UserAuth userAuth, String username){
+        Optional<User> follower = Optional.ofNullable(userRepository.findByUsername(username).orElseThrow(() -> new CustomException(Error.USER_NOT_FOUND)));
+        Optional<User> followee = userRepository.findById(userAuth.getId());
+        Follow follow = profileRepository.findByFolloweeIdAndFollowerId(followee.get().getId(),follower.get().getId()).orElseThrow(() -> {throw new CustomException(Error.ALREADY_UNFOLLOW);});
+        profileRepository.delete(follow);
+        return convertProfile(false,follower);
+    }
+
 
     private ProfileResponse convertProfile(Boolean followStatus, Optional<User> user) {
         return ProfileResponse.builder().

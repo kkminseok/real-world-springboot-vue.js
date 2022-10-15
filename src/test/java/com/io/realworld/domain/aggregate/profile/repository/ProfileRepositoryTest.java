@@ -27,9 +27,8 @@ class ProfileRepositoryTest {
     @Autowired
     UserRepository userRepository;
 
-    @DisplayName("팔로잉 저장 테스트")
     @MethodSource("getFolloweeAndFollower")
-    @ParameterizedTest(name = "{index} => followee={0}, follower={1}")
+    @ParameterizedTest(name = "repo:팔로잉 저장 테스트")
     void save_follow(User followee, User follower){
 
         userRepository.save(followee);
@@ -43,9 +42,8 @@ class ProfileRepositoryTest {
         assertThat(getFollow.getFollower()).isEqualTo(follower);
     }
 
-    @DisplayName("팔로잉대상 없을때")
     @MethodSource("getFolloweeAndFollower")
-    @ParameterizedTest(name = "{index} => followee={0}, follower={1}")
+    @ParameterizedTest(name = "repo:팔로잉대상이 없을때")
     void findByFolloweeIdAndFollowerId(User followee, User follower) {
 
         //when
@@ -56,10 +54,10 @@ class ProfileRepositoryTest {
     }
 
 
-    @DisplayName("팔로잉대상 있때")
     @MethodSource("getFolloweeAndFollower")
-    @ParameterizedTest(name = "{index} => followee={0}, follower={1}")
+    @ParameterizedTest(name = "repo:팔로잉대상 있을때")
     void findByFolloweeIdAndFollowerId_already_exits(User followee, User follower) {
+        //given
         userRepository.save(followee);
         userRepository.save(follower);
         Follow follow = Follow.builder().followee(followee).follower(follower).build();
@@ -72,6 +70,22 @@ class ProfileRepositoryTest {
         assertThat(getFollow.get().getFollowee()).isEqualTo(followee);
         assertThat(getFollow.get().getFollower()).isEqualTo(follower);
     }
+
+    @MethodSource("getFolloweeAndFollower")
+    @ParameterizedTest(name = "repo:팔로잉 제거 테스거")
+    void deleteFollow(User followee, User follower){
+        //given
+        userRepository.save(followee);
+        userRepository.save(follower);
+        Follow follow = Follow.builder().followee(followee).follower(follower).build();
+        //when
+        profileRepository.save(follow);
+        Optional<Follow> getFollow = profileRepository.findByFolloweeIdAndFollowerId(followee.getId(),follower.getId());
+        profileRepository.delete(getFollow.get());
+        //then
+    }
+
+
 
     private static Stream<Arguments> getFolloweeAndFollower(){
         return Stream.of(

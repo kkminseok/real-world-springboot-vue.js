@@ -66,8 +66,7 @@ class UserControllerTest {
 
     @WithAuthUser(email = "test@gmail.com",username = "kms",id = 1L)
     @MethodSource("updateUser")
-    @ParameterizedTest
-    @DisplayName("유저 업데이트 컨트롤러 테스트")
+    @ParameterizedTest(name = "controller:유저 업데이트 성공 테스트")
     void updateUserSuccess(UserUpdate userUpdate) throws Exception{
         UserResponse userResponse = UserResponse.builder()
                 .username("update name")

@@ -8,4 +8,5 @@ public interface ProfileService {
 
     ProfileResponse followUser(UserAuth userAuth, String username);
 
+    ProfileResponse unfollowUser(UserAuth userAuth, String username);
 }

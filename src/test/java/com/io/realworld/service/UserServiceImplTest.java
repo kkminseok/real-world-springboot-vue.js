@@ -7,7 +7,6 @@ import com.io.realworld.domain.aggregate.user.service.UserServiceImpl;
 import com.io.realworld.domain.service.JwtService;
 import com.io.realworld.exception.CustomException;
 import com.io.realworld.exception.Error;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +25,6 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -51,8 +49,7 @@ class UserServiceImplTest {
 
 
     @MethodSource("validUsers")
-    @ParameterizedTest
-    @DisplayName("회원가입_서비스_테스트")
+    @ParameterizedTest(name = "sv:회원가입 성공 테스트")
     void signup(UserSignupRequest requestUser) {
 
         User user = User.builder()
@@ -80,8 +77,7 @@ class UserServiceImplTest {
 
 
     @MethodSource("duplicateUsers")
-    @ParameterizedTest
-    @DisplayName("회원가입_중복_서비스_테스트")
+    @ParameterizedTest(name = "sv:회원가입 중복 테스트")
     void duplicateSignup(UserSignupRequest requestUser) {
         User user = User.builder()
                 .username(requestUser.getUsername())
@@ -97,8 +93,7 @@ class UserServiceImplTest {
     }
 
     @MethodSource("validLoginUsers")
-    @ParameterizedTest
-    @DisplayName("로그인 성공 서비스 테스트")
+    @ParameterizedTest(name = "sv:로그인 성공 테스트")
     void loginSuccess(UserSigninRequest userSigninRequest){
         User user = User.builder()
                 .bio("")
@@ -112,8 +107,7 @@ class UserServiceImplTest {
     }
 
     @MethodSource("invalidLoginUsers")
-    @ParameterizedTest
-    @DisplayName("로그인 실패 서비스 테스트")
+    @ParameterizedTest(name = "sv:로그인 실패 테스트")
     void loginFail(UserSigninRequest userSigninRequest){
 
         when(userRepository.findByEmail(any(String.class))).thenReturn(null);
@@ -178,9 +172,8 @@ class UserServiceImplTest {
 
     }
 
-    @DisplayName("유저 업데이트 실패 테스트")
     @MethodSource("invalidUpdateUsers")
-    @ParameterizedTest
+    @ParameterizedTest(name = "sv:유저 업데이트 실패 테스트")
     void updateUserFailCauseFoundNot(UserUpdate userUpdate, UserAuth userAuth){
         UserAuth repoUser = UserAuth.builder().id(1L).username("update").email("update@gmail.com").build();
 

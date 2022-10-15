@@ -22,8 +22,7 @@ class UserRepositoryTest {
 
 
     @MethodSource("validUsers")
-    @ParameterizedTest
-    @DisplayName("회원가입 레포 테스트")
+    @ParameterizedTest(name = "repo:회원가입 성공 테스트")
     void save(User user) {
 
         //when
