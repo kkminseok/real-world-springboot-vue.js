@@ -65,12 +65,46 @@ class ProfileServiceImplTest {
     }
 
     @Test
-    void followUser() {
+    @DisplayName("팔로워 실패 대상을 못 찾음")
+    void followUser_Fail_userNotFound() {
+        UserAuth userAuth = UserAuth.builder().id(1L).build();
+        when(userRepository.findByUsername(any(String.class))).thenThrow(new CustomException(Error.USER_NOT_FOUND));
+        try{
+            profileService.followUser(userAuth,"username");
+        }catch (CustomException e){
+            assertThat(e.getError().equals(Error.USER_NOT_FOUND));
+            assertThat(e.getError().getMessage().equals(Error.USER_NOT_FOUND.getMessage()));
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("returnUserObject")
+    @DisplayName("팔로워 실패 중복 이미 팔로워 대상인 경우")
+    void followUser_Fail_DuplicateFollow(User user){
+        UserAuth userAuth = UserAuth.builder().id(1L).build();
+        User authUserInRepo = User.builder().build();
+        when(userRepository.findByUsername(eq(user.getUsername()))).thenReturn(ofNullable(user));
+        when(userRepository.findById(eq(userAuth.getId()))).thenReturn(ofNullable(authUserInRepo));
+        when(profileRepository.findByFolloweeIdAndFollowerId(eq(userAuth.getId()),eq(null))).thenThrow(new CustomException(Error.ALREADY_FOLLOW));
+
+        try{
+            profileService.followUser(userAuth,user.getUsername());
+        }catch (CustomException e){
+            assertThat(e.getError().equals(Error.ALREADY_FOLLOW));
+            assertThat(e.getError().getMessage().equals(Error.ALREADY_FOLLOW.getMessage()));
+        }
+
+
     }
 
 
 
     private static Stream<String> foundNotUsers(){
         return Stream.of("username1","username2","username3");
+    }
+
+    private static Stream<Arguments> returnUserObject(){
+        return Stream.of(Arguments.of(User.builder().username("username").bio("bio").password("password").image("image").build()));
+
     }
 }

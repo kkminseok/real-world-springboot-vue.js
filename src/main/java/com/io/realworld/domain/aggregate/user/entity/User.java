@@ -31,7 +31,8 @@ public class User implements UserDetails {
     private String image;
 
     @Builder
-    public User(String username, String email, String password, String bio, String image) {
+    public User(Long id, String username, String email, String password, String bio, String image) {
+        this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
@@ -42,9 +43,6 @@ public class User implements UserDetails {
     protected User() {
     }
 
-    public static User of(String username, String email, String password) {
-        return new User(username, email, password, "", "");
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -73,11 +71,11 @@ public class User implements UserDetails {
 
     //비즈니스
 
-    public void changeUsername(String username){
+    public void changeUsername(String username) {
         this.username = username;
     }
 
-    public void changeEmail(String email){
+    public void changeEmail(String email) {
         this.email = email;
     }
 

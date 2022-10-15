@@ -28,9 +28,10 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByEmail(userSignupRequest.getEmail()) != null) {
             throw new CustomException(Error.DUPLICATE_USER);
         } else {
-            return convertUser(userRepository.save(User.of(userSignupRequest.getUsername(),
-                    userSignupRequest.getEmail(),
-                    madeHash(userSignupRequest.getPassword()))));
+            return convertUser(userRepository.save(User.builder().
+                            username(userSignupRequest.getUsername()).
+                            email(userSignupRequest.getEmail()).
+                            password(madeHash(userSignupRequest.getPassword())).build()));
         }
     }
 
