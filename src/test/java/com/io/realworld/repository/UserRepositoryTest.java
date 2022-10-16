@@ -2,16 +2,21 @@ package com.io.realworld.repository;
 
 import com.io.realworld.domain.aggregate.user.entity.User;
 import com.io.realworld.domain.aggregate.user.repository.UserRepository;
+import org.hibernate.annotations.Filter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
 
 
 @DataJpaTest
