@@ -1,6 +1,6 @@
 package com.io.realworld.domain.aggregate.article.controller;
 
-import com.io.realworld.domain.aggregate.article.dto.Article;
+import com.io.realworld.domain.aggregate.article.dto.Articledto;
 import com.io.realworld.domain.aggregate.article.dto.ResponseArticle;
 import com.io.realworld.domain.aggregate.article.service.ArticleService;
 import com.io.realworld.domain.aggregate.user.dto.UserAuth;
@@ -22,7 +22,7 @@ public class ArticleController {
 
 
     @PostMapping
-    public ResponseArticle createArticle(@AuthenticationPrincipal UserAuth userAuth, @RequestBody Article article){
-        return articleService.createArticle(userAuth,article);
+    public ResponseArticle createArticle(@AuthenticationPrincipal UserAuth userAuth, @RequestBody Articledto articledto){
+        return articleService.createArticle(userAuth, articledto);
     }
 }
