@@ -64,7 +64,7 @@ public class ArticleServiceImpl implements ArticleService{
     }
 
     private Boolean getFavoritesStatus(UserAuth userAuth, Article article){
-        Optional<Favorite> favoriteStatus = favoriteRepository.findByArticleIdAndUserId(article.getId(), userAuth.getId());
+        Optional<Favorite> favoriteStatus = favoriteRepository.findByArticleIdAndAuthorId(article.getId(), userAuth.getId());
         return false ? favoriteStatus.isEmpty() : true;
     }
 
