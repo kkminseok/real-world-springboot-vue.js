@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.Statement;
 
 
+/*
 @Component
 @Log4j2
 public class H2SQLRunner implements ApplicationRunner {
@@ -42,3 +43,4 @@ public class H2SQLRunner implements ApplicationRunner {
         //jdbcTemplate.execute("INSERT INTO t_product VALUES (1, 'Big shirt')");
     }
 }
+ */
