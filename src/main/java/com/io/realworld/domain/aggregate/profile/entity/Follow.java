@@ -9,8 +9,8 @@ import javax.persistence.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="follows", uniqueConstraints = {
-        @UniqueConstraint(name="follow_followee_pair_unique",columnNames = {"followee","follower"})
+@Table(name = "follows", uniqueConstraints = {
+        @UniqueConstraint(name = "follow_followee_pair_unique", columnNames = {"followee", "follower"})
 })
 @Entity
 public class Follow {
@@ -23,7 +23,7 @@ public class Follow {
     private User followee;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, name="follower")
+    @JoinColumn(nullable = false, name = "follower")
     private User follower;
 }
 

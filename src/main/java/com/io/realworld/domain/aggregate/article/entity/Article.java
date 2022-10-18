@@ -1,5 +1,6 @@
 package com.io.realworld.domain.aggregate.article.entity;
 
+import com.io.realworld.base.entity.DateEntity;
 import com.io.realworld.domain.aggregate.tag.entity.Tag;
 import com.io.realworld.domain.aggregate.user.entity.User;
 import lombok.AllArgsConstructor;
@@ -19,9 +20,8 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
 @Table(name = "articles")
-public class Article {
+public class Article extends DateEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,10 +49,5 @@ public class Article {
     @OneToMany(mappedBy = "article", fetch = FetchType.LAZY)
     private List<Favorite> favorites;
 
-    @CreatedDate
-    private LocalDateTime createdDate;
-
-    @LastModifiedDate
-    private LocalDateTime modifiedDate;
 
 }

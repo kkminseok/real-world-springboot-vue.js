@@ -9,14 +9,10 @@ import com.io.realworld.domain.aggregate.user.repository.UserRepository;
 import com.io.realworld.exception.CustomException;
 import com.io.realworld.exception.Error;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import org.mockito.internal.matchers.Null;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
 import java.util.Optional;
 
-@Log4j2
 @Service
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
@@ -36,19 +32,23 @@ public class ProfileServiceImpl implements ProfileService {
     public ProfileResponse followUser(UserAuth userAuth, String username) {
         Optional<User> follower = Optional.ofNullable(userRepository.findByUsername(username).orElseThrow(() -> new CustomException(Error.USER_NOT_FOUND)));
         Optional<User> followee = userRepository.findById(userAuth.getId());
-        profileRepository.findByFolloweeIdAndFollowerId(followee.get().getId(),follower.get().getId()).ifPresent(follow -> {throw new CustomException(Error.ALREADY_FOLLOW);});
+        profileRepository.findByFolloweeIdAndFollowerId(followee.get().getId(), follower.get().getId()).ifPresent(follow -> {
+            throw new CustomException(Error.ALREADY_FOLLOW);
+        });
         Follow followPair = Follow.builder().followee(followee.get()).follower(follower.get()).build();
         Boolean followStatus = profileRepository.save(followPair).getFollowee().equals(followee.get());
-        return convertProfile(followStatus,follower);
+        return convertProfile(followStatus, follower);
     }
 
     @Override
-    public ProfileResponse unfollowUser(UserAuth userAuth, String username){
+    public ProfileResponse unfollowUser(UserAuth userAuth, String username) {
         Optional<User> follower = Optional.ofNullable(userRepository.findByUsername(username).orElseThrow(() -> new CustomException(Error.USER_NOT_FOUND)));
         Optional<User> followee = userRepository.findById(userAuth.getId());
-        Follow follow = profileRepository.findByFolloweeIdAndFollowerId(followee.get().getId(),follower.get().getId()).orElseThrow(() -> {throw new CustomException(Error.ALREADY_UNFOLLOW);});
+        Follow follow = profileRepository.findByFolloweeIdAndFollowerId(followee.get().getId(), follower.get().getId()).orElseThrow(() -> {
+            throw new CustomException(Error.ALREADY_UNFOLLOW);
+        });
         profileRepository.delete(follow);
-        return convertProfile(false,follower);
+        return convertProfile(false, follower);
     }
 
 
