@@ -8,11 +8,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Immutable;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -49,5 +51,12 @@ public class Article extends DateEntity {
     @OneToMany(mappedBy = "article", fetch = FetchType.LAZY)
     private List<Favorite> favorites;
 
+
+    public void setTagList(List<Tag> tags){
+        if(this.getTagList() == null){
+            this.tagList = new ArrayList<>();
+        }
+        this.tagList.addAll(tags);
+    }
 
 }

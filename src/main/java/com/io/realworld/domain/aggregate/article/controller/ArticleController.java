@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/api/articles")
 public class ArticleController {
@@ -20,9 +22,8 @@ public class ArticleController {
         this.articleService = articleService;
     }
 
-
     @PostMapping
-    public ArticleResponse createArticle(@AuthenticationPrincipal UserAuth userAuth, @RequestBody Articledto articledto){
+    public ArticleResponse createArticle(@AuthenticationPrincipal UserAuth userAuth, @Valid @RequestBody Articledto articledto){
         return articleService.createArticle(userAuth, articledto);
     }
 }
