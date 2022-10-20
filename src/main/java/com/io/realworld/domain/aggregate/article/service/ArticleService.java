@@ -6,6 +6,7 @@ import com.io.realworld.domain.aggregate.user.dto.UserAuth;
 
 
 public interface ArticleService {
+    ArticleResponse getArticle(String slug);
     ArticleResponse createArticle(UserAuth userAuth, Articledto article);
 
 }

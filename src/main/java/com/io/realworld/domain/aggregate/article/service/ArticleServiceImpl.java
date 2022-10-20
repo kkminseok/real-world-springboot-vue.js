@@ -6,6 +6,7 @@ import com.io.realworld.domain.aggregate.article.entity.Article;
 import com.io.realworld.domain.aggregate.article.entity.Favorite;
 import com.io.realworld.domain.aggregate.article.repository.ArticleRepository;
 import com.io.realworld.domain.aggregate.article.repository.FavoriteRepository;
+import com.io.realworld.domain.aggregate.profile.dto.ProfileResponse;
 import com.io.realworld.domain.aggregate.profile.service.ProfileService;
 import com.io.realworld.domain.aggregate.tag.entity.Tag;
 import com.io.realworld.domain.aggregate.tag.service.TagService;
@@ -20,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -34,10 +37,15 @@ public class ArticleServiceImpl implements ArticleService {
     private final FavoriteRepository favoriteRepository;
 
     @Override
+    public ArticleResponse getArticle(String slug){
+        // TODO 없는경우 error 리턴
+        Optional<Article> article = articleRepository.findAll().stream().filter(findArticle -> findArticle.getSlug() == slug).findFirst();
+        return
+    }
+    @Override
     public ArticleResponse createArticle(UserAuth userAuth, Articledto article) {
         Optional<User> findUser = userRepository.findById(userAuth.getId());
         String slug = initSlug(article.getTitle());
-
 
         Article articleEntity = Article.builder().slug(slug).body(article.getBody()).title(article.getTitle()).description(article.getDescription()).author(findUser.get()).build();
         List<Tag> tags = convertTag(article.getTagList(), articleEntity);
@@ -45,7 +53,7 @@ public class ArticleServiceImpl implements ArticleService {
         log.debug(articleEntity.getTagList().get(0).getTagName());
         articleRepository.save(articleEntity);
         tagService.save(articleEntity);
-        return convertDto(articleEntity, userAuth);
+        return convertDtoWithUser(articleEntity, userAuth);
     }
 
     private String initSlug(String title) {
@@ -61,7 +69,7 @@ public class ArticleServiceImpl implements ArticleService {
         return tags;
     }
 
-    private ArticleResponse convertDto(Article article, UserAuth userAuth) {
+    private ArticleResponse convertDtoWithUser(Article article, UserAuth userAuth) {
         // TODO : favoritesCount
         return ArticleResponse.builder().
                 slug(article.getSlug()).
@@ -72,7 +80,20 @@ public class ArticleServiceImpl implements ArticleService {
                 favorited(getFavoritesStatus(userAuth, article)).
                 favoritesCount(0L).
                 author(profileService.getProfile(userAuth, userAuth.getUsername())).build();
+    }
 
+    //TODO : favoritesCount
+    private ArticleResponse convertDto(Article article){
+
+        return ArticleResponse.builder().
+                slug(article.getSlug()).
+                title(article.getTitle()).
+                description(article.getDescription()).
+                body(article.getBody()).
+                tagList(article.getTagList().stream().map(Tag::getTagName).collect(Collectors.toList())).
+                favorited(true).
+                favoritesCount(0L).
+                author(profileService.getProfile(userAuth, userAuth.getUsername())).build();
     }
 
     private Boolean getFavoritesStatus(UserAuth userAuth, Article article) {

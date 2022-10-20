@@ -5,10 +5,7 @@ import com.io.realworld.domain.aggregate.article.dto.ArticleResponse;
 import com.io.realworld.domain.aggregate.article.service.ArticleService;
 import com.io.realworld.domain.aggregate.user.dto.UserAuth;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -20,6 +17,11 @@ public class ArticleController {
 
     public ArticleController(ArticleService articleService){
         this.articleService = articleService;
+    }
+
+    @GetMapping("/{slug}")
+    public ArticleResponse getArticle(@PathVariable("slug") String slug){
+        return articleService.getArticle(slug);
     }
 
     @PostMapping
