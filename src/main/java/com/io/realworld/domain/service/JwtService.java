@@ -71,7 +71,7 @@ public class JwtService {
     public Authentication getAuthentication(String jwtToken) {
         UserDetails userDetails = userServiceDetail.loadUserByUsername(getEmail(jwtToken));
         User user = (User)userDetails;
-        //log.info("PASSWORD : {}",userDetails.getPassword());
+
         UserAuth authenticatedUser = UserAuth.builder()
                 .bio(user.getBio())
                 .image(user.getImage())

@@ -10,7 +10,5 @@ import java.util.List;
 
 
 public interface TagService {
-    List<String> getTag(Long articleId);
-
     void save(Article article);
 }

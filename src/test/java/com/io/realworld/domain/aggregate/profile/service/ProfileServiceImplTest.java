@@ -18,12 +18,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -42,7 +40,7 @@ class ProfileServiceImplTest {
     private ProfileRepository profileRepository;
 
     @Test
-    @DisplayName("프로필조회 팔로워 못 찾을때")
+    @DisplayName("sv:프로필조회 팔로워 못 찾을때")
     void getProfile_userNotFound() {
         UserAuth userAuth = UserAuth.builder().id(1L).build();
         when(userRepository.findByUsername(any(String.class))).thenThrow(new CustomException(Error.USER_NOT_FOUND));
@@ -65,7 +63,7 @@ class ProfileServiceImplTest {
     }
 
     @Test
-    @DisplayName("팔로워 실패 대상을 못 찾음")
+    @DisplayName("sv:팔로워 실패 대상을 못 찾음")
     void followUser_Fail_userNotFound() {
         UserAuth userAuth = UserAuth.builder().id(1L).build();
         when(userRepository.findByUsername(any(String.class))).thenThrow(new CustomException(Error.USER_NOT_FOUND));
@@ -110,7 +108,7 @@ class ProfileServiceImplTest {
     }
 
     @Test
-    @DisplayName("언팔로워 실패 대상을 못 찾음")
+    @DisplayName("sv:언팔로워 실패 대상을 못 찾음")
     void unfollowUser_Fail_userNotFound() {
         UserAuth userAuth = UserAuth.builder().id(1L).build();
         when(userRepository.findByUsername(any(String.class))).thenThrow(new CustomException(Error.USER_NOT_FOUND));

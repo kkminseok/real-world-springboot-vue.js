@@ -18,13 +18,12 @@ import com.io.realworld.exception.Error;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -50,6 +49,8 @@ public class ArticleServiceImpl implements ArticleService {
         return convertDto(article.get());
     }
 
+    //하나만 세이브되지 않도록 원자성 보장.
+    @Transactional
     @Override
     public ArticleResponse createArticle(UserAuth userAuth, Articledto article) {
         Optional<User> findUser = userRepository.findById(userAuth.getId());
@@ -78,14 +79,17 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     private ArticleResponse convertDtoWithUser(Article article, UserAuth userAuth) {
+
         return ArticleResponse.builder().
                 slug(article.getSlug()).
                 title(article.getTitle()).
                 description(article.getDescription()).
                 body(article.getBody()).
-                tagList(tagService.getTag(article.getId())).
+                tagList(article.getTagList().stream().map(Tag::getTagName).distinct().collect(Collectors.toList())).
                 favorited(getFavoritesStatus(userAuth, article)).
                 favoritesCount(getFavoritesCount(article.getId())).
+                createdAt(article.getCreatedDate()).
+                updatedAt(article.getModifiedDate()).
                 author(profileService.getProfile(userAuth, userAuth.getUsername())).build();
     }
 
@@ -99,6 +103,8 @@ public class ArticleServiceImpl implements ArticleService {
                 tagList(article.getTagList().stream().map(Tag::getTagName).collect(Collectors.toList())).
                 favorited(false).
                 favoritesCount(getFavoritesCount(article.getId())).
+                createdAt(article.getCreatedDate()).
+                updatedAt(article.getModifiedDate()).
                 author(
                         ProfileResponse.builder().bio(article.getAuthor().getBio())
                                 .image(article.getAuthor().getImage())
