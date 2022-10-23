@@ -10,7 +10,8 @@ public enum Error {
     EMAIL_NULL_OR_INVALID("email is blank or invalid check plz",HttpStatus.BAD_REQUEST),
     USER_NOT_FOUND("user not found check your info",HttpStatus.NOT_FOUND),
     ALREADY_FOLLOW("already follow",HttpStatus.UNPROCESSABLE_ENTITY),
-    ALREADY_UNFOLLOW("already unfollow",HttpStatus.UNPROCESSABLE_ENTITY);
+    ALREADY_UNFOLLOW("already unfollow",HttpStatus.UNPROCESSABLE_ENTITY),
+    ARTICLE_NOT_FOUND("article not found check your slug", HttpStatus.NOT_FOUND);
 
 
     private final String message;

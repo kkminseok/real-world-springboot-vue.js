@@ -4,7 +4,6 @@ import com.io.realworld.domain.aggregate.profile.dto.ProfileResponse;
 import com.io.realworld.domain.aggregate.profile.entity.Follow;
 import com.io.realworld.domain.aggregate.profile.repository.ProfileRepository;
 import com.io.realworld.domain.aggregate.user.dto.UserAuth;
-import com.io.realworld.domain.aggregate.user.dto.UserUpdate;
 import com.io.realworld.domain.aggregate.user.entity.User;
 import com.io.realworld.domain.aggregate.user.repository.UserRepository;
 import com.io.realworld.exception.CustomException;

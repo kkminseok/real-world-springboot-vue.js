@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface FavoriteRepository extends JpaRepository<Favorite,Long> {
     Optional<Favorite> findByArticleIdAndAuthorId(Long articleId, Long authorId);
-
+    Long countByArticleId(Long articleId);
 }
