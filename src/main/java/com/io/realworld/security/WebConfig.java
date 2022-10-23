@@ -32,7 +32,7 @@ public class WebConfig {
     @Order(0)
     public SecurityFilterChain resources(HttpSecurity http) throws Exception {
         http.csrf().disable()
-                .requestMatchers((matchers) -> matchers.antMatchers("/h2-console/**"))
+                .requestMatchers((matchers) -> matchers.antMatchers("/h2-console/**", "/api/articles/{slug}"))
                 .authorizeHttpRequests((authorize) -> authorize.anyRequest().permitAll())
                 .requestCache().disable()
                 .securityContext().disable()

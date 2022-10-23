@@ -39,7 +39,7 @@ public class ArticleServiceImpl implements ArticleService {
 
     // TODO token을 받을수도 있음.
     @Override
-    public ArticleResponse getArticle(String slug) {
+    public ArticleResponse getArticle(UserAuth userAuth, String slug) {
         // TODO 없는경우 error 리턴
         Optional<Article> article = articleRepository.findAll().stream().filter(findArticle -> findArticle.getSlug().equals(slug)).findAny();
         if (article.isEmpty()) {

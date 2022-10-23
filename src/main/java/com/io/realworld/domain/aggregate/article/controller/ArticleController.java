@@ -20,8 +20,8 @@ public class ArticleController {
     }
 
     @GetMapping("/{slug}")
-    public ArticleResponse getArticle(@PathVariable("slug") String slug){
-        return articleService.getArticle(slug);
+    public ArticleResponse getArticle(@AuthenticationPrincipal UserAuth userAuth, @PathVariable("slug") String slug){
+        return articleService.getArticle(userAuth,slug);
     }
 
     @PostMapping
