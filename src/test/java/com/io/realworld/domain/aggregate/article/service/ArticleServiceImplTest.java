@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -49,7 +50,7 @@ class ArticleServiceImplTest {
     @DisplayName("sv: 게시글 만들기 성공")
     void createArticle() {
         UserAuth userAuth = UserAuth.builder().id(1L).username("kms").build();
-        User user = User.builder().id(userAuth.getId()).build();
+        User user = User.builder().id(userAuth.getId()).username("username").build();
         Articledto article = Articledto.builder()
                 .title("title create")
                 .body("body create")
@@ -58,7 +59,7 @@ class ArticleServiceImplTest {
                 build();
 
         when(userRepository.findById(eq(userAuth.getId()))).thenReturn(Optional.ofNullable(user));
-        when(profileService.getProfile(eq(userAuth), eq(userAuth.getUsername()))).thenReturn(ProfileResponse.builder().username(userAuth.getUsername()).build());
+        when(profileService.getProfile(eq(userAuth), any(String.class))).thenReturn(ProfileResponse.builder().username(userAuth.getUsername()).build());
 
         ArticleResponse articleResponse = articleService.createArticle(userAuth, article);
 
