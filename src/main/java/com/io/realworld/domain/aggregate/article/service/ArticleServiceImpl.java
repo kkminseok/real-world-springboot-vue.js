@@ -68,7 +68,6 @@ public class ArticleServiceImpl implements ArticleService {
         Stream<Article> articles = articleRepository.findAll().stream().filter(findArticle -> findArticle.getSlug().equals(slug));
         for(Article article : articles.toList()){
             if(article.getAuthor().getUsername().equals(userAuth.getUsername())){
-                System.out.println(article.getId());
                 articleRepository.delete(article);
             }
         }
@@ -110,7 +109,7 @@ public class ArticleServiceImpl implements ArticleService {
 
     private Boolean getFavoritesStatus(UserAuth userAuth, Article article) {
         Optional<Favorite> favoriteStatus = favoriteRepository.findByArticleIdAndAuthorId(article.getId(), userAuth.getId());
-        return false ? favoriteStatus.isEmpty() : true;
+        return favoriteStatus.isEmpty() ? false : true;
     }
 
     private Long getFavoritesCount(Long articleId) {
