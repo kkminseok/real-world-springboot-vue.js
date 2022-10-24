@@ -46,7 +46,7 @@ public class ArticleServiceImpl implements ArticleService {
             throw new CustomException(Error.ARTICLE_NOT_FOUND);
         }
 
-        return convertDto(article.get());
+        return convertDtoWithUser(article.get(),userAuth);
     }
 
     //하나만 세이브되지 않도록 원자성 보장.
@@ -79,7 +79,6 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     private ArticleResponse convertDtoWithUser(Article article, UserAuth userAuth) {
-
         return ArticleResponse.builder().
                 slug(article.getSlug()).
                 title(article.getTitle()).
@@ -90,27 +89,7 @@ public class ArticleServiceImpl implements ArticleService {
                 favoritesCount(getFavoritesCount(article.getId())).
                 createdAt(article.getCreatedDate()).
                 updatedAt(article.getModifiedDate()).
-                author(profileService.getProfile(userAuth, userAuth.getUsername())).build();
-    }
-
-    private ArticleResponse convertDto(Article article) {
-
-        return ArticleResponse.builder().
-                slug(article.getSlug()).
-                title(article.getTitle()).
-                description(article.getDescription()).
-                body(article.getBody()).
-                tagList(article.getTagList().stream().map(Tag::getTagName).collect(Collectors.toList())).
-                favorited(false).
-                favoritesCount(getFavoritesCount(article.getId())).
-                createdAt(article.getCreatedDate()).
-                updatedAt(article.getModifiedDate()).
-                author(
-                        ProfileResponse.builder().bio(article.getAuthor().getBio())
-                                .image(article.getAuthor().getImage())
-                                .username(article.getAuthor().getUsername())
-                                .following(false).build()
-                ).build();
+                author(profileService.getProfile(userAuth, article.getAuthor().getUsername())).build();
     }
 
     private Boolean getFavoritesStatus(UserAuth userAuth, Article article) {
