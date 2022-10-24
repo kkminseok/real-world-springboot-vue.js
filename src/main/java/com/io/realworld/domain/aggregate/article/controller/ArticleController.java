@@ -28,4 +28,9 @@ public class ArticleController {
     public ArticleResponse createArticle(@AuthenticationPrincipal UserAuth userAuth, @Valid @RequestBody Articledto articledto) {
         return articleService.createArticle(userAuth, articledto);
     }
+
+    @DeleteMapping("/{slug}")
+    public void deleteArticle(@AuthenticationPrincipal UserAuth userAuth, @PathVariable("slug") String slug) {
+        articleService.deleteArticle(userAuth, slug);
+    }
 }

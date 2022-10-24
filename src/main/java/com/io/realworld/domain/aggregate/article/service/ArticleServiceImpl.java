@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -37,7 +38,7 @@ public class ArticleServiceImpl implements ArticleService {
 
     private final FavoriteRepository favoriteRepository;
 
-    // TODO token을 받을수도 있음.
+    // token을 받을수도 안 받을수도 있음.
     @Override
     public ArticleResponse getArticle(UserAuth userAuth, String slug) {
         Optional<Article> article = articleRepository.findAll().stream().filter(findArticle -> findArticle.getSlug().equals(slug)).findAny();
@@ -61,6 +62,16 @@ public class ArticleServiceImpl implements ArticleService {
         tagService.save(articleEntity);
 
         return convertDtoWithUser(articleEntity, userAuth);
+    }
+
+    public void deleteArticle(UserAuth userAuth,String slug){
+        Stream<Article> articles = articleRepository.findAll().stream().filter(findArticle -> findArticle.getSlug().equals(slug));
+        for(Article article : articles.toList()){
+            if(article.getAuthor().getUsername().equals(userAuth.getUsername())){
+                System.out.println(article.getId());
+                articleRepository.delete(article);
+            }
+        }
     }
 
     private String initSlug(String title) {

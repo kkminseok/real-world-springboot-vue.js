@@ -38,14 +38,14 @@ public class Article extends DateEntity {
     @Column(nullable = false)
     private String body;
 
-    @OneToMany(mappedBy = "article", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "article", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Tag> tagList;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private User author;
 
-    @OneToMany(mappedBy = "article", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "article", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<Favorite> favorites;
 
 

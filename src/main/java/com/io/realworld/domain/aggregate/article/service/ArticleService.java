@@ -10,4 +10,6 @@ public interface ArticleService {
 
     ArticleResponse createArticle(UserAuth userAuth, Articledto article);
 
+    void deleteArticle(UserAuth userAuth,String slug);
+
 }
