@@ -62,15 +62,18 @@ class ArticleRepositoryTest {
     void createArticle() {
         Optional<Article> savedArticle = articleRepository.findById(article.getId());
 
+        Article article2 = Article.builder().author(author).title("title").body("body").description("description").slug("slug").build();
+        articleRepository.save(article2);
+
         assertThat(article.getBody()).isEqualTo(savedArticle.get().getBody());
         assertThat(article.getDescription()).isEqualTo(savedArticle.get().getDescription());
         assertThat(article.getId()).isEqualTo(savedArticle.get().getId());
         assertThat(article.getTitle()).isEqualTo(savedArticle.get().getTitle());
         assertThat(article.getSlug()).isEqualTo(savedArticle.get().getSlug());
         assertThat(article.getTagList()).isEmpty();
-        assertThat(article.getCreatedDate()).isAfter(beforeCreated);
+        assertThat(article.getCreatedDate()).isBefore(article2.getCreatedDate());
         assertThat(article.getFavorites()).isEmpty();
-        assertThat(article.getModifiedDate()).isAfter(beforeCreated);
+        assertThat(article.getModifiedDate()).isBefore(article2.getModifiedDate());
 
     }
 

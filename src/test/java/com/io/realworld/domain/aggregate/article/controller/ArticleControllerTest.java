@@ -59,7 +59,7 @@ class ArticleControllerTest {
         String title = "create title";
         slug = title.toLowerCase().replace(' ','-');
         articleResponse = ArticleResponse.builder()
-                .author(ProfileResponse.builder().bio("bio")
+                .author(ArticleResponse.Author.builder().bio("bio")
                         .following(false)
                         .username("madeArticle")
                         .image("image")
