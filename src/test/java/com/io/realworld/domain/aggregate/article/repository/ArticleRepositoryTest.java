@@ -1,6 +1,8 @@
 package com.io.realworld.domain.aggregate.article.repository;
 
 import com.io.realworld.domain.aggregate.article.entity.Article;
+import com.io.realworld.domain.aggregate.profile.entity.Follow;
+import com.io.realworld.domain.aggregate.profile.repository.ProfileRepository;
 import com.io.realworld.domain.aggregate.user.entity.User;
 import com.io.realworld.domain.aggregate.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,10 +26,11 @@ class ArticleRepositoryTest {
 
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    ProfileRepository profileRepository;
 
     private User author;
     private Article article;
-
     private LocalDateTime beforeCreated;
 
     @BeforeEach
@@ -68,6 +71,29 @@ class ArticleRepositoryTest {
         assertThat(article.getCreatedDate()).isAfter(beforeCreated);
         assertThat(article.getFavorites()).isEmpty();
         assertThat(article.getModifiedDate()).isAfter(beforeCreated);
+
+    }
+
+    @Test
+    void getArticle_not_following(){
+
+    }
+
+    @Test
+    void getArticle_following(){
+        User reader = User.builder()
+                .bio("bio")
+                .email("email@google.com")
+                .image("image")
+                .password("password")
+                .username("followee").build();
+
+        userRepository.save(reader);
+        Follow follow = Follow.builder().followee(reader).follower(author).build();
+        profileRepository.save(follow);
+
+        Optional<Article> savedArticle = articleRepository.findById(article.getId());
+        System.out.println(savedArticle.get().getAuthor());
 
     }
 

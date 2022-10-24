@@ -40,12 +40,10 @@ public class ArticleServiceImpl implements ArticleService {
     // TODO token을 받을수도 있음.
     @Override
     public ArticleResponse getArticle(UserAuth userAuth, String slug) {
-        // TODO 없는경우 error 리턴
         Optional<Article> article = articleRepository.findAll().stream().filter(findArticle -> findArticle.getSlug().equals(slug)).findAny();
         if (article.isEmpty()) {
             throw new CustomException(Error.ARTICLE_NOT_FOUND);
         }
-
         return convertDtoWithUser(article.get(),userAuth);
     }
 
@@ -79,6 +77,9 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     private ArticleResponse convertDtoWithUser(Article article, UserAuth userAuth) {
+        ProfileResponse profile = profileService.getProfile(userAuth, article.getAuthor().getUsername());
+
+
         return ArticleResponse.builder().
                 slug(article.getSlug()).
                 title(article.getTitle()).
@@ -89,7 +90,11 @@ public class ArticleServiceImpl implements ArticleService {
                 favoritesCount(getFavoritesCount(article.getId())).
                 createdAt(article.getCreatedDate()).
                 updatedAt(article.getModifiedDate()).
-                author(profileService.getProfile(userAuth, article.getAuthor().getUsername())).build();
+                author(ArticleResponse.Author.builder().username(profile.getUsername())
+                        .image(profile.getImage())
+                        .following(profile.getFollowing())
+                        .bio(profile.getBio()).build()
+                ).build();
     }
 
     private Boolean getFavoritesStatus(UserAuth userAuth, Article article) {

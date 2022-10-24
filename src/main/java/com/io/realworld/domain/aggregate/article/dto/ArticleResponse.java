@@ -26,7 +26,16 @@ public class ArticleResponse {
     private Boolean favorited;
     private Long favoritesCount;
 
-    private ProfileResponse author;
+    private Author author;
+
+    @Builder
+    @Getter
+    public static class Author{
+        private String username;
+        private String bio;
+        private String image;
+        private Boolean following;
+    }
 
 
 
