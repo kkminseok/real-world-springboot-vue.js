@@ -5,6 +5,7 @@ import com.io.realworld.domain.aggregate.profile.entity.Follow;
 import com.io.realworld.domain.aggregate.profile.repository.ProfileRepository;
 import com.io.realworld.domain.aggregate.user.entity.User;
 import com.io.realworld.domain.aggregate.user.repository.UserRepository;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 @EnableJpaAuditing
@@ -78,26 +80,9 @@ class ArticleRepositoryTest {
     }
 
     @Test
-    void getArticle_not_following(){
-
-    }
-
-    @Test
-    void getArticle_following(){
-        User reader = User.builder()
-                .bio("bio")
-                .email("email@google.com")
-                .image("image")
-                .password("password")
-                .username("followee").build();
-
-        userRepository.save(reader);
-        Follow follow = Follow.builder().followee(reader).follower(author).build();
-        profileRepository.save(follow);
-
+    void getArticle(){
         Optional<Article> savedArticle = articleRepository.findById(article.getId());
-        System.out.println(savedArticle.get().getAuthor());
-
+        assertTrue(savedArticle.isPresent());
     }
 
 
