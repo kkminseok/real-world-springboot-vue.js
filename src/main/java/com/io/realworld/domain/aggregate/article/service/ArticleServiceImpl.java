@@ -89,7 +89,6 @@ public class ArticleServiceImpl implements ArticleService {
     private ArticleResponse convertDtoWithUser(Article article, UserAuth userAuth) {
         ProfileResponse profile = profileService.getProfile(userAuth, article.getAuthor().getUsername());
 
-
         return ArticleResponse.builder().
                 slug(article.getSlug()).
                 title(article.getTitle()).

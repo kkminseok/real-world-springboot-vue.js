@@ -25,10 +25,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -100,7 +101,7 @@ class ArticleControllerTest {
     @DisplayName("게시글 조회 컨트롤러 테스트")
     void getArticle() throws Exception{
 
-        when(articleService.getArticle(any(UserAuth.class),any(String.class))).thenReturn(articleResponse);
+        when(articleService.getArticle(any(UserAuth.class),eq(slug))).thenReturn(articleResponse);
 
         mockMvc.perform(get("/api/articles/" + slug)
                 ).andExpect(status().isOk())
@@ -108,6 +109,17 @@ class ArticleControllerTest {
                 .andExpect(jsonPath("$.article.title",Matchers.equalTo(articleResponse.getTitle())))
                 .andExpect(jsonPath("$.article.description", Matchers.equalTo(articleResponse.getDescription())))
                 .andExpect(jsonPath("$.article.slug", Matchers.equalTo(slug)));
+    }
+
+    @WithAuthUser(email = "user@email.com", username = "kms")
+    @Test
+    @DisplayName("게시글 삭제 컨트롤러 테스트")
+    void deleteArticle() throws Exception{
+
+        doNothing().when(articleService).deleteArticle(any(UserAuth.class),eq(slug));
+
+        mockMvc.perform(delete("/api/articles/" + slug)
+                ).andExpect(status().isOk());
     }
 
 }
