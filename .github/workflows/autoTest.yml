@@ -5,7 +5,7 @@ on:
     branches: [ "master" ]
 
 jobs:
-  realworld_test:
+  real-world:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -15,22 +15,16 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '18'
+          cache: gradle
 
-      - name: Gradle Caching
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
 
       - name: Grant execute permission gradlew
         run: chmod +x gradlew
-        
-      - name: Build
-        run: ./gradlew build -x test
+
+      - name: gradle build
+      - uses: gradle/gradle-build-action@v2
+        with:
+          arguments: build
         
       - name: Test
         run: ./gradlew test
