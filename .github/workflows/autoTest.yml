@@ -22,7 +22,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: gradle build
-      - uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v2
         with:
           arguments: build
         
