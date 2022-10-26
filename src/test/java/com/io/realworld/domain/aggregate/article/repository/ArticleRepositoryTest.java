@@ -7,6 +7,7 @@ import com.io.realworld.domain.aggregate.user.entity.User;
 import com.io.realworld.domain.aggregate.user.repository.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -61,6 +62,7 @@ class ArticleRepositoryTest {
     }
 
     @Test
+    @DisplayName("rp: 게시글 만들기")
     void createArticle() {
         Optional<Article> savedArticle = articleRepository.findById(article.getId());
 
@@ -80,10 +82,18 @@ class ArticleRepositoryTest {
     }
 
     @Test
+    @DisplayName("rp: 게시글 조회")
     void getArticle(){
         Optional<Article> savedArticle = articleRepository.findById(article.getId());
         assertTrue(savedArticle.isPresent());
     }
 
+    @Test
+    @DisplayName("rp: 게시글 삭제")
+    void deleteArticleSingle(){
+        articleRepository.delete(article);
+        List<Article> savedArticle = articleRepository.findAll();
+        assertTrue(savedArticle.isEmpty());
+    }
 
 }
