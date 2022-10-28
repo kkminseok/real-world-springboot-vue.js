@@ -1,5 +1,6 @@
 package com.io.realworld.domain.aggregate.article.controller;
 
+import com.io.realworld.domain.aggregate.article.dto.ArticleUpdate;
 import com.io.realworld.domain.aggregate.article.dto.Articledto;
 import com.io.realworld.domain.aggregate.article.dto.ArticleResponse;
 import com.io.realworld.domain.aggregate.article.service.ArticleService;
@@ -27,6 +28,11 @@ public class ArticleController {
     @PostMapping
     public ArticleResponse createArticle(@AuthenticationPrincipal UserAuth userAuth, @Valid @RequestBody Articledto articledto) {
         return articleService.createArticle(userAuth, articledto);
+    }
+
+    @PutMapping("/{slug}")
+    public ArticleResponse updateArticle(@AuthenticationPrincipal UserAuth userAuth, @PathVariable("slug") String slug, @Valid @RequestBody ArticleUpdate articleUpdate) {
+        return articleService.updateArticle(userAuth, slug, articleUpdate);
     }
 
     @DeleteMapping("/{slug}")

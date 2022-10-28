@@ -1,5 +1,6 @@
 package com.io.realworld.domain.aggregate.article.service;
 
+import com.io.realworld.domain.aggregate.article.dto.ArticleUpdate;
 import com.io.realworld.domain.aggregate.article.dto.Articledto;
 import com.io.realworld.domain.aggregate.article.dto.ArticleResponse;
 import com.io.realworld.domain.aggregate.article.entity.Article;
@@ -45,7 +46,7 @@ public class ArticleServiceImpl implements ArticleService {
         if (article.isEmpty()) {
             throw new CustomException(Error.ARTICLE_NOT_FOUND);
         }
-        return convertDtoWithUser(article.get(),userAuth);
+        return convertDtoWithUser(article.get(), userAuth);
     }
 
     //하나만 세이브되지 않도록 원자성 보장.
@@ -64,10 +65,30 @@ public class ArticleServiceImpl implements ArticleService {
         return convertDtoWithUser(articleEntity, userAuth);
     }
 
-    public void deleteArticle(UserAuth userAuth,String slug){
+
+    @Transactional
+    @Override
+    public ArticleResponse updateArticle(UserAuth userAuth, String slug, ArticleUpdate articleUpdate) {
+        Optional<Article> article = articleRepository.findAll().stream().filter(findArticle ->
+            findArticle.getSlug().equals(slug) && findArticle.getAuthor().getUsername().equals(userAuth.getUsername())
+        ).findAny();
+        if (article.isEmpty()) { throw new CustomException(Error.ARTICLE_NOT_FOUND); }
+
+        if (!articleUpdate.getTitle().isEmpty()) {
+            article.get().changeTitle(articleUpdate.getTitle());
+            article.get().changeSlug(initSlug(articleUpdate.getTitle()));
+        }
+        if(!articleUpdate.getDescription().isEmpty()){ article.get().changeDescription(articleUpdate.getDescription()); }
+        if(!articleUpdate.getBody().isEmpty()){ article.get().changeBody(articleUpdate.getBody()); }
+
+        return convertDtoWithUser(article.get(),userAuth);
+
+    }
+
+    public void deleteArticle(UserAuth userAuth, String slug) {
         Stream<Article> articles = articleRepository.findAll().stream().filter(findArticle -> findArticle.getSlug().equals(slug));
-        for(Article article : articles.toList()){
-            if(article.getAuthor().getUsername().equals(userAuth.getUsername())){
+        for (Article article : articles.toList()) {
+            if (article.getAuthor().getUsername().equals(userAuth.getUsername())) {
                 articleRepository.delete(article);
             }
         }

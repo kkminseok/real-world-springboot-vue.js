@@ -56,4 +56,9 @@ public class Article extends DateEntity {
         this.tagList.addAll(tags);
     }
 
+    public void changeTitle(String title){this.title = title;}
+    public void changeSlug(String slug){this.slug = slug;}
+    public void changeBody(String body){this.body = body;}
+    public void changeDescription(String description){this.description = description;}
+
 }
