@@ -90,10 +90,11 @@ class ArticleRepositoryTest {
 
     @Test
     @DisplayName("rp: 게시글 삭제")
-    void deleteArticleSingle(){
+    void deleteArticle(){
         articleRepository.delete(article);
         List<Article> savedArticle = articleRepository.findAll();
         assertTrue(savedArticle.isEmpty());
     }
+
 
 }
