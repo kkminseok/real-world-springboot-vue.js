@@ -1,5 +1,6 @@
 package com.io.realworld.domain.aggregate.article.repository;
 
+import com.io.realworld.domain.aggregate.article.dto.ArticleUpdate;
 import com.io.realworld.domain.aggregate.article.entity.Article;
 import com.io.realworld.domain.aggregate.profile.entity.Follow;
 import com.io.realworld.domain.aggregate.profile.repository.ProfileRepository;
@@ -48,13 +49,14 @@ class ArticleRepositoryTest {
         userRepository.save(author);
 
         String title = "create title";
+        String slug = initSlug(title);
         beforeCreated = LocalDateTime.now();
         article = Article.builder()
                 .author(author)
                 .body("create body")
                 .description("create description")
                 .title(title)
-                .slug(title.toLowerCase().replace(' ', '-'))
+                .slug(slug)
                 .favorites(List.of())
                 .tagList(List.of()).build();
 
@@ -89,11 +91,34 @@ class ArticleRepositoryTest {
     }
 
     @Test
+    @DisplayName("rp: 게시글 업데이트")
+    void updateArticle(){
+        String title = "update title";
+        String body = "update body";
+        String description = "update description";
+        String slug = initSlug(title);
+        article.changeTitle(title);
+        article.changeBody(body);
+        article.changeDescription(description);
+        article.changeSlug(slug);
+        Optional<Article> savedArticle = articleRepository.findById(article.getId());
+        assertThat(savedArticle.get().getTitle()).isEqualTo(title);
+        assertThat(savedArticle.get().getBody()).isEqualTo(body);
+        assertThat(savedArticle.get().getDescription()).isEqualTo(description);
+        assertThat(savedArticle.get().getSlug()).isEqualTo(slug);
+
+    }
+
+    @Test
     @DisplayName("rp: 게시글 삭제")
     void deleteArticle(){
         articleRepository.delete(article);
         List<Article> savedArticle = articleRepository.findAll();
         assertTrue(savedArticle.isEmpty());
+    }
+
+    private String initSlug(String title){
+        return title.toLowerCase().replace(' ','-');
     }
 
 
