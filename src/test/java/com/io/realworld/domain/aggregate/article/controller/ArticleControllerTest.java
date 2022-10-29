@@ -3,10 +3,12 @@ package com.io.realworld.domain.aggregate.article.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.io.realworld.config.WithAuthUser;
 import com.io.realworld.domain.aggregate.article.dto.ArticleResponse;
+import com.io.realworld.domain.aggregate.article.dto.ArticleUpdate;
 import com.io.realworld.domain.aggregate.article.dto.Articledto;
 import com.io.realworld.domain.aggregate.article.service.ArticleService;
 import com.io.realworld.domain.aggregate.profile.dto.ProfileResponse;
 import com.io.realworld.domain.aggregate.user.dto.UserAuth;
+import com.io.realworld.domain.aggregate.user.dto.UserUpdate;
 import com.io.realworld.domain.service.JwtService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -110,6 +112,132 @@ class ArticleControllerTest {
                 .andExpect(jsonPath("$.article.description", Matchers.equalTo(articleResponse.getDescription())))
                 .andExpect(jsonPath("$.article.slug", Matchers.equalTo(slug)));
     }
+
+    @WithAuthUser
+    @Test
+    @DisplayName("게시글 업데이트 title만 컨트롤러 테스트")
+    void updateTitleArticle() throws Exception{
+        ArticleUpdate articleUpdate = ArticleUpdate.builder()
+                .title("update title")
+                .build();
+
+        ArticleResponse titleUpdateArticle = ArticleResponse.builder()
+                        .title(articleUpdate.getTitle())
+                        .build();
+
+
+        when(articleService.updateArticle(any(UserAuth.class), eq(slug), any(ArticleUpdate.class))).thenReturn(titleUpdateArticle);
+
+        mockMvc.perform(put("/api/articles/" + slug)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(articleUpdate))
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.article.title", Matchers.equalTo(articleUpdate.getTitle())));
+    }
+
+    @WithAuthUser
+    @Test
+    @DisplayName("게시글 업데이트 body만 컨트롤러 테스트")
+    void updateBodyArticle() throws Exception{
+        ArticleUpdate articleUpdate = ArticleUpdate.builder()
+                .body("update body")
+                .build();
+
+        ArticleResponse titleUpdateArticle = ArticleResponse.builder()
+                .body(articleUpdate.getBody())
+                .build();
+
+
+        when(articleService.updateArticle(any(UserAuth.class), eq(slug), any(ArticleUpdate.class))).thenReturn(titleUpdateArticle);
+
+        mockMvc.perform(put("/api/articles/" + slug)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(articleUpdate))
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.article.body", Matchers.equalTo(articleUpdate.getBody())));
+    }
+
+    @WithAuthUser
+    @Test
+    @DisplayName("게시글 업데이트 description 컨트롤러 테스트")
+    void updateDescriptionArticle() throws Exception{
+        ArticleUpdate articleUpdate = ArticleUpdate.builder()
+                .description("update description")
+                .build();
+
+        ArticleResponse titleUpdateArticle = ArticleResponse.builder()
+                .description(articleUpdate.getDescription())
+                .build();
+
+
+        when(articleService.updateArticle(any(UserAuth.class), eq(slug), any(ArticleUpdate.class))).thenReturn(titleUpdateArticle);
+
+        mockMvc.perform(put("/api/articles/" + slug)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(articleUpdate))
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.article.description", Matchers.equalTo(articleUpdate.getDescription())));
+    }
+
+    @WithAuthUser
+    @Test
+    @DisplayName("게시글 업데이트 title, body만 컨트롤러 테스트")
+    void updateTitleAndBodyArticle() throws Exception{
+        ArticleUpdate articleUpdate = ArticleUpdate.builder()
+                .title("update title")
+                .body("update body")
+                .build();
+
+        ArticleResponse titleUpdateArticle = ArticleResponse.builder()
+                .title(articleUpdate.getTitle())
+                .body(articleUpdate.getBody())
+                .build();
+
+
+        when(articleService.updateArticle(any(UserAuth.class), eq(slug), any(ArticleUpdate.class))).thenReturn(titleUpdateArticle);
+
+        mockMvc.perform(put("/api/articles/" + slug)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(articleUpdate))
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.article.title", Matchers.equalTo(articleUpdate.getTitle())))
+                .andExpect(jsonPath("$.article.body", Matchers.equalTo(articleUpdate.getBody())));
+    }
+
+    @WithAuthUser
+    @Test
+    @DisplayName("게시글 업데이트 전부 컨트롤러 테스트")
+    void updateAllArticle() throws Exception{
+        ArticleUpdate articleUpdate = ArticleUpdate.builder()
+                .title("update title")
+                .body("update body")
+                .description("update description")
+                .build();
+
+        ArticleResponse titleUpdateArticle = ArticleResponse.builder()
+                .title(articleUpdate.getTitle())
+                .body(articleUpdate.getBody())
+                .description(articleUpdate.getDescription())
+                .build();
+
+
+        when(articleService.updateArticle(any(UserAuth.class), eq(slug), any(ArticleUpdate.class))).thenReturn(titleUpdateArticle);
+
+        mockMvc.perform(put("/api/articles/" + slug)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(articleUpdate))
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.article.title", Matchers.equalTo(articleUpdate.getTitle())))
+                .andExpect(jsonPath("$.article.body", Matchers.equalTo(articleUpdate.getBody())))
+                .andExpect(jsonPath("$.article.description", Matchers.equalTo(articleUpdate.getDescription())));
+    }
+
+
 
     @WithAuthUser(email = "user@email.com", username = "kms")
     @Test
