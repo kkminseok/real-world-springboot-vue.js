@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/articles")
@@ -23,12 +24,11 @@ public class ArticleController {
 
     @GetMapping()
     public List<ArticleResponse> getArticles(@AuthenticationPrincipal UserAuth userAuth,
-                                             @RequestParam String tag,
-                                             @RequestParam String author,
-                                             @RequestParam String favorited,
-                                             @RequestParam Integer limit,
-                                             @RequestParam Integer offset){
-        System.out.println("!!");
+                                             @RequestParam(required = false) String tag,
+                                             @RequestParam(required = false) String author,
+                                             @RequestParam(required = false) String favorited,
+                                             @RequestParam(required = false) Integer limit,
+                                             @RequestParam(required = false) Integer offset){
         return articleService.getArticles();
     }
 
