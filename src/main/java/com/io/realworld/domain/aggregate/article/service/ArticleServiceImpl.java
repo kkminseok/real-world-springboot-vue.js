@@ -74,12 +74,12 @@ public class ArticleServiceImpl implements ArticleService {
         ).findAny();
         if (article.isEmpty()) { throw new CustomException(Error.ARTICLE_NOT_FOUND); }
 
-        if (!articleUpdate.getTitle().isEmpty()) {
+        if (articleUpdate.getTitle() != null) {
             article.get().changeTitle(articleUpdate.getTitle());
             article.get().changeSlug(initSlug(articleUpdate.getTitle()));
         }
-        if(!articleUpdate.getDescription().isEmpty()){ article.get().changeDescription(articleUpdate.getDescription()); }
-        if(!articleUpdate.getBody().isEmpty()){ article.get().changeBody(articleUpdate.getBody()); }
+        if(articleUpdate.getDescription() != null){ article.get().changeDescription(articleUpdate.getDescription()); }
+        if(articleUpdate.getBody() != null){ article.get().changeBody(articleUpdate.getBody()); }
 
         return convertDtoWithUser(article.get(),userAuth);
 

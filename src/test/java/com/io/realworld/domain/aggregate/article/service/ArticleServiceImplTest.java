@@ -1,6 +1,7 @@
 package com.io.realworld.domain.aggregate.article.service;
 
 import com.io.realworld.domain.aggregate.article.dto.ArticleResponse;
+import com.io.realworld.domain.aggregate.article.dto.ArticleUpdate;
 import com.io.realworld.domain.aggregate.article.dto.Articledto;
 import com.io.realworld.domain.aggregate.article.entity.Article;
 import com.io.realworld.domain.aggregate.article.repository.ArticleRepository;
@@ -114,6 +115,91 @@ class ArticleServiceImplTest {
         assertThat(article.getAuthor().getFollowing()).isEqualTo(profileResponse.getFollowing());
         assertThat(article.getAuthor().getUsername()).isEqualTo(profileResponse.getUsername());
         assertThat(article.getAuthor().getImage()).isEqualTo(profileResponse.getImage());
+
+    }
+
+    @Test
+    @DisplayName("sv: 게시글 업데이트 실패 - 게시글이 없음")
+    void updateArticleFailNotFound(){
+        UserAuth userAuth = UserAuth.builder()
+                        .build();
+        String slug = "fail";
+        ArticleUpdate articleUpdate = ArticleUpdate.builder().build();
+        when(articleRepository.findAll()).thenReturn(List.of());
+        try{
+            articleService.updateArticle(userAuth,slug,articleUpdate);
+        }catch (CustomException e){
+            assertThat(e.getError().getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
+            assertThat(e.getError()).isEqualTo(Error.ARTICLE_NOT_FOUND);
+            assertThat(e.getError().getMessage()).isEqualTo(Error.ARTICLE_NOT_FOUND.getMessage());
+        }
+    }
+
+    @Test
+    @DisplayName("게시글 업데이트 성공 - 타이틀 변경 ")
+    void updateArticleTitle(){
+        UserAuth userAuth = UserAuth.builder()
+                .username("kms")
+                .build();
+        String title = "update title";
+        String slug = "slug";
+        User user = User.builder().id(1L).username("kms").build();
+        ProfileResponse profileResponse = ProfileResponse.builder().bio("bio").following(false).username("username").image("image").build();
+        List<Article> articles = List.of(Article.builder().title("title").slug(slug).author(user).tagList(List.of()).build());
+        ArticleUpdate articleUpdate = ArticleUpdate.builder().title(title).build();
+
+        when(articleRepository.findAll()).thenReturn(articles);
+        when(profileService.getProfile(eq(userAuth),any(String.class))).thenReturn(profileResponse);
+
+        ArticleResponse articleResponse = articleService.updateArticle(userAuth,slug,articleUpdate);
+
+        String updateSlug = title.toLowerCase().replace(' ','-');
+        assertThat(articleResponse.getTitle()).isEqualTo(title);
+        assertThat(articleResponse.getSlug()).isEqualTo(updateSlug);
+
+    }
+
+    @Test
+    @DisplayName("게시글 업데이트 성공 - 본문 변경")
+    void updateArticleBody(){
+        UserAuth userAuth = UserAuth.builder()
+                .username("kms")
+                .build();
+        String updateBody = "update body";
+        String slug = "slug";
+        User user = User.builder().id(1L).username("kms").build();
+        ProfileResponse profileResponse = ProfileResponse.builder().bio("bio").following(false).username("username").image("image").build();
+        List<Article> articles = List.of(Article.builder().slug(slug).body("body").author(user).tagList(List.of()).build());
+        ArticleUpdate articleUpdate = ArticleUpdate.builder().body(updateBody).build();
+
+        when(articleRepository.findAll()).thenReturn(articles);
+        when(profileService.getProfile(eq(userAuth),any(String.class))).thenReturn(profileResponse);
+
+        ArticleResponse articleResponse = articleService.updateArticle(userAuth,slug,articleUpdate);
+
+        assertThat(articleResponse.getBody()).isEqualTo(updateBody);
+
+    }
+
+    @Test
+    @DisplayName("게시글 업데이트 성공 - 설명 변경")
+    void updateArticleDescription(){
+        UserAuth userAuth = UserAuth.builder()
+                .username("kms")
+                .build();
+        String updateDescription = "update description";
+        String slug = "slug";
+        User user = User.builder().id(1L).username("kms").build();
+        ProfileResponse profileResponse = ProfileResponse.builder().bio("bio").following(false).username("username").image("image").build();
+        List<Article> articles = List.of(Article.builder().slug(slug).description("oo").author(user).tagList(List.of()).build());
+        ArticleUpdate articleUpdate = ArticleUpdate.builder().description(updateDescription).build();
+
+        when(articleRepository.findAll()).thenReturn(articles);
+        when(profileService.getProfile(eq(userAuth),any(String.class))).thenReturn(profileResponse);
+
+        ArticleResponse articleResponse = articleService.updateArticle(userAuth,slug,articleUpdate);
+
+        assertThat(articleResponse.getDescription()).isEqualTo(updateDescription);
 
     }
 
