@@ -5,8 +5,12 @@ import com.io.realworld.domain.aggregate.article.dto.Articledto;
 import com.io.realworld.domain.aggregate.article.dto.ArticleResponse;
 import com.io.realworld.domain.aggregate.user.dto.UserAuth;
 
+import java.util.List;
+
 
 public interface ArticleService {
+    List<ArticleResponse> getArticles();
+
     ArticleResponse getArticle(UserAuth userAuth, String slug);
 
     ArticleResponse createArticle(UserAuth userAuth, Articledto article);

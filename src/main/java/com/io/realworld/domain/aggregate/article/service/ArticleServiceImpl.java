@@ -39,6 +39,11 @@ public class ArticleServiceImpl implements ArticleService {
 
     private final FavoriteRepository favoriteRepository;
 
+    @Override
+    public  List<ArticleResponse> getArticles(){
+        return List.of();
+    }
+
     // token을 받을수도 안 받을수도 있음.
     @Override
     public ArticleResponse getArticle(UserAuth userAuth, String slug) {

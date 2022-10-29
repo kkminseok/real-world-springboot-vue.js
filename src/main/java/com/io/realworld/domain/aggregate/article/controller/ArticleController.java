@@ -9,6 +9,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/articles")
@@ -18,6 +19,17 @@ public class ArticleController {
 
     public ArticleController(ArticleService articleService) {
         this.articleService = articleService;
+    }
+
+    @GetMapping()
+    public List<ArticleResponse> getArticles(@AuthenticationPrincipal UserAuth userAuth,
+                                             @RequestParam String tag,
+                                             @RequestParam String author,
+                                             @RequestParam String favorited,
+                                             @RequestParam Integer limit,
+                                             @RequestParam Integer offset){
+        System.out.println("!!");
+        return articleService.getArticles();
     }
 
     @GetMapping("/{slug}")

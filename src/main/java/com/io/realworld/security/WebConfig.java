@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
@@ -32,7 +33,8 @@ public class WebConfig {
     @Order(0)
     public SecurityFilterChain resources(HttpSecurity http) throws Exception {
         http.csrf().disable()
-                .requestMatchers((matchers) -> matchers.antMatchers("/h2-console/**", "/api/articles/{slug}"))
+                .requestMatchers((matchers) -> {matchers.antMatchers("/h2-console/**");
+                matchers.antMatchers(HttpMethod.GET,"/api/articles/**");})
                 .authorizeHttpRequests((authorize) -> authorize.anyRequest().permitAll())
                 .requestCache().disable()
                 .securityContext().disable()
