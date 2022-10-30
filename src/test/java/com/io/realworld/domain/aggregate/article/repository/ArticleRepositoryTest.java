@@ -121,5 +121,7 @@ class ArticleRepositoryTest {
         return title.toLowerCase().replace(' ','-');
     }
 
+    //Todo 좋아요 3개이상이상일때
+
 
 }

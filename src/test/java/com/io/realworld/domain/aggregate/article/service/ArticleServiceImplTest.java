@@ -244,7 +244,7 @@ class ArticleServiceImplTest {
 
     }
 
-    //좋아요 실패 예외처리들.
+    
     @Test
     @DisplayName("sv: 좋아요 실패 - 게시글 없음")
     void favoritedArticleFailArticleEmpty(){
@@ -265,8 +265,50 @@ class ArticleServiceImplTest {
         }
     }
 
+    @Test
+    @DisplayName("sv: 좋아요 실패 - 유저 못 찾음")
+    void favoritedArticleFailUserNotFound(){
+        User user = User.builder().id(1L).username("kms").build();
+        String slug = "slug";
+        List<Article> articles = List.of(Article.builder().id(1L).slug(slug).author(user).tagList(List.of()).build());
+        UserAuth userAuth = UserAuth.builder().id(1L).username(user.getUsername()).build();
+
+        when(articleRepository.findAll()).thenReturn(articles);
+        when(userRepository.findById(eq(userAuth.getId()))).thenReturn(Optional.empty());
+
+        try{
+            articleService.favoriteArticle(userAuth,slug);
+        }catch (CustomException e){
+            assertThat(e.getError()).isEqualTo(Error.USER_NOT_FOUND);
+            assertThat(e.getError().getMessage()).isEqualTo(Error.USER_NOT_FOUND.getMessage());
+            assertThat(e.getError().getStatus()).isEqualTo(Error.ARTICLE_NOT_FOUND.getStatus());
+        }
+    }
+
+    @Test
+    @DisplayName("sv: 좋아요 실패 - 이미 좋아요 누름")
+    void favoritedArticleAlreadyFavorite(){
+        User user = User.builder().id(1L).username("kms").build();
+        String slug = "slug";
+        List<Article> articles = List.of(Article.builder().id(1L).slug(slug).author(user).tagList(List.of()).build());
+        UserAuth userAuth = UserAuth.builder().id(1L).username(user.getUsername()).build();
+
+        when(articleRepository.findAll()).thenReturn(articles);
+        when(userRepository.findById(eq(userAuth.getId()))).thenReturn(Optional.of(user));
+        when(favoriteRepository.findByArticleIdAndAuthorId(any(Long.class),any(Long.class))).thenReturn(Optional.ofNullable(Favorite.builder().build()));
+
+        try{
+            articleService.favoriteArticle(userAuth,slug);
+        }catch (CustomException e){
+            assertThat(e.getError()).isEqualTo(Error.ALREADY_FAVORITE_ARTICLE);
+            assertThat(e.getError().getMessage()).isEqualTo(Error.ALREADY_FAVORITE_ARTICLE.getMessage());
+            assertThat(e.getError().getStatus()).isEqualTo(Error.ALREADY_FAVORITE_ARTICLE.getStatus());
+        }
+
+    }
 
 
-    //좋아요 멀티인 경우 - 좋아요가 3개일때
+
+
 
 }
