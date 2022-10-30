@@ -10,6 +10,7 @@ import com.io.realworld.domain.aggregate.profile.dto.ProfileResponse;
 import com.io.realworld.domain.aggregate.user.dto.UserAuth;
 import com.io.realworld.domain.aggregate.user.dto.UserUpdate;
 import com.io.realworld.domain.service.JwtService;
+import lombok.With;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -248,6 +249,33 @@ class ArticleControllerTest {
 
         mockMvc.perform(delete("/api/articles/" + slug)
                 ).andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("게시글 좋아요 컨트롤러 테스트 - 비회원")
+    void favoritedArticleNonMember() throws Exception{
+        when(articleService.favoriteArticle(eq(null),eq(slug))).thenReturn(articleResponse);
+
+        mockMvc.perform(post("/api/articles/" + slug + "/favorite")
+                ).andExpect(status().isOk())
+                .andExpect(jsonPath("$.article.body", Matchers.equalTo(articleResponse.getBody())))
+                .andExpect(jsonPath("$.article.title",Matchers.equalTo(articleResponse.getTitle())))
+                .andExpect(jsonPath("$.article.description", Matchers.equalTo(articleResponse.getDescription())))
+                .andExpect(jsonPath("$.article.slug", Matchers.equalTo(slug)));
+    }
+
+    @WithAuthUser
+    @Test
+    @DisplayName("게시글 좋아요 컨트롤러 테스트 - 회원")
+    void favoritedArticleMember() throws Exception{
+        when(articleService.favoriteArticle(any(UserAuth.class),eq(slug))).thenReturn(articleResponse);
+
+        mockMvc.perform(post("/api/articles/" + slug + "/favorite")
+                ).andExpect(status().isOk())
+                .andExpect(jsonPath("$.article.body", Matchers.equalTo(articleResponse.getBody())))
+                .andExpect(jsonPath("$.article.title",Matchers.equalTo(articleResponse.getTitle())))
+                .andExpect(jsonPath("$.article.description", Matchers.equalTo(articleResponse.getDescription())))
+                .andExpect(jsonPath("$.article.slug", Matchers.equalTo(slug)));
     }
 
 }
