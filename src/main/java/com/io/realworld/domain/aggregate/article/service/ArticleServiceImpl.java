@@ -1,5 +1,6 @@
 package com.io.realworld.domain.aggregate.article.service;
 
+import com.io.realworld.domain.aggregate.article.dto.ArticleParam;
 import com.io.realworld.domain.aggregate.article.dto.ArticleUpdate;
 import com.io.realworld.domain.aggregate.article.dto.Articledto;
 import com.io.realworld.domain.aggregate.article.dto.ArticleResponse;
@@ -18,9 +19,11 @@ import com.io.realworld.exception.CustomException;
 import com.io.realworld.exception.Error;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.print.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,7 +43,18 @@ public class ArticleServiceImpl implements ArticleService {
     private final FavoriteRepository favoriteRepository;
 
     @Override
-    public  List<ArticleResponse> getArticles(){
+    public  List<ArticleResponse> getArticles(ArticleParam articleParam){
+        Pageable pageable = null;
+        List<Article> articles = null;
+
+        if(articleParam.getOffset() != null){
+            pageable = (Pageable) PageRequest.of(articleParam.getOffset(),articleParam.getLimit());
+        }
+
+        if(articleParam.getTag() != null){
+            articles = articleRepository.findByTag(articleParam.getTag(),pageable);
+        }
+
         return List.of();
     }
 

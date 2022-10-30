@@ -1,5 +1,6 @@
 package com.io.realworld.domain.aggregate.article.service;
 
+import com.io.realworld.domain.aggregate.article.dto.ArticleParam;
 import com.io.realworld.domain.aggregate.article.dto.ArticleUpdate;
 import com.io.realworld.domain.aggregate.article.dto.Articledto;
 import com.io.realworld.domain.aggregate.article.dto.ArticleResponse;
@@ -9,7 +10,7 @@ import java.util.List;
 
 
 public interface ArticleService {
-    List<ArticleResponse> getArticles();
+    List<ArticleResponse> getArticles(ArticleParam articleParam);
 
     ArticleResponse getArticle(UserAuth userAuth, String slug);
 

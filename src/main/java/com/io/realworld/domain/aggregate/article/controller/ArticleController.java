@@ -1,5 +1,6 @@
 package com.io.realworld.domain.aggregate.article.controller;
 
+import com.io.realworld.domain.aggregate.article.dto.ArticleParam;
 import com.io.realworld.domain.aggregate.article.dto.ArticleUpdate;
 import com.io.realworld.domain.aggregate.article.dto.Articledto;
 import com.io.realworld.domain.aggregate.article.dto.ArticleResponse;
@@ -23,13 +24,8 @@ public class ArticleController {
     }
 
     @GetMapping()
-    public List<ArticleResponse> getArticles(@AuthenticationPrincipal UserAuth userAuth,
-                                             @RequestParam(required = false) String tag,
-                                             @RequestParam(required = false) String author,
-                                             @RequestParam(required = false) String favorited,
-                                             @RequestParam(required = false) Integer limit,
-                                             @RequestParam(required = false) Integer offset){
-        return articleService.getArticles();
+    public List<ArticleResponse> getArticles(@AuthenticationPrincipal UserAuth userAuth,@ModelAttribute ArticleParam articleParam){
+        return articleService.getArticles(articleParam);
     }
 
     @GetMapping("/{slug}")
