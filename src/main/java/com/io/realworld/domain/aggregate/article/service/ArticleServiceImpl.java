@@ -47,14 +47,6 @@ public class ArticleServiceImpl implements ArticleService {
         Pageable pageable = null;
         List<Article> articles = null;
 
-        if(articleParam.getOffset() != null){
-            pageable = (Pageable) PageRequest.of(articleParam.getOffset(),articleParam.getLimit());
-        }
-
-        if(articleParam.getTag() != null){
-            articles = articleRepository.findByTag(articleParam.getTag(),pageable);
-        }
-
         return List.of();
     }
 
@@ -111,6 +103,24 @@ public class ArticleServiceImpl implements ArticleService {
                 articleRepository.delete(article);
             }
         }
+    }
+
+    public ArticleResponse favoriteArticle(UserAuth userAuth, String slug){
+        Optional<Article> article = articleRepository.findAll().stream().filter(findArticle ->
+                findArticle.getSlug().equals(slug)).findAny();
+        Optional<User> user = userRepository.findById(userAuth.getId());
+        if(article.isEmpty()){
+            throw new CustomException(Error.ARTICLE_NOT_FOUND);
+        }
+        if(user.isEmpty()){
+            throw new CustomException(Error.USER_NOT_FOUND);
+        }
+
+        favoriteRepository.findByArticleIdAndAuthorId(article.get().getId(), userAuth.getId()).ifPresent(favoriteStatus -> {throw new CustomException(Error.ALREADY_FAVORITE_ARTICLE);});
+        Favorite favorite = Favorite.builder().article(article.get()).author(user.get()).build();
+        favoriteRepository.save(favorite);
+        return convertDtoWithUser(article.get(),userAuth);
+
     }
 
     private String initSlug(String title) {

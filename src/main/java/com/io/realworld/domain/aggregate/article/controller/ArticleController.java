@@ -47,4 +47,9 @@ public class ArticleController {
     public void deleteArticle(@AuthenticationPrincipal UserAuth userAuth, @PathVariable("slug") String slug) {
         articleService.deleteArticle(userAuth, slug);
     }
+
+    @PostMapping("/{slug}/favorite")
+    public ArticleResponse favoriteArticle(@AuthenticationPrincipal UserAuth userAuth, @PathVariable("slug") String slug){
+        return articleService.favoriteArticle(userAuth, slug);
+    }
 }

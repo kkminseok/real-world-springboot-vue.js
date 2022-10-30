@@ -23,8 +23,12 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public ProfileResponse getProfile(UserAuth userAuth, String username) {
         Optional<User> wantFindUser = Optional.ofNullable(userRepository.findByUsername(username).orElseThrow(() -> new CustomException(Error.USER_NOT_FOUND)));
-        Boolean followStatus = profileRepository.findByFolloweeIdAndFollowerId(userAuth.getId(), wantFindUser.get().getId()).isPresent();
-
+        Boolean followStatus = null;
+        if(userAuth == null){
+            followStatus = false;
+        }else {
+            followStatus = profileRepository.findByFolloweeIdAndFollowerId(userAuth.getId(), wantFindUser.get().getId()).isPresent();
+        }
         return convertProfile(followStatus, wantFindUser);
     }
 

@@ -11,7 +11,8 @@ public enum Error {
     USER_NOT_FOUND("user not found check your info",HttpStatus.NOT_FOUND),
     ALREADY_FOLLOW("already follow",HttpStatus.UNPROCESSABLE_ENTITY),
     ALREADY_UNFOLLOW("already unfollow",HttpStatus.UNPROCESSABLE_ENTITY),
-    ARTICLE_NOT_FOUND("article not found check your slug", HttpStatus.NOT_FOUND);
+    ARTICLE_NOT_FOUND("article not found check your slug", HttpStatus.NOT_FOUND),
+    ALREADY_FAVORITE_ARTICLE("already favorite Aritlce", HttpStatus.UNPROCESSABLE_ENTITY);
 
 
     private final String message;
