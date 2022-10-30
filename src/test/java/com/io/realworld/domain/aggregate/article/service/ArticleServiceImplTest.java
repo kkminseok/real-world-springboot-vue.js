@@ -4,6 +4,7 @@ import com.io.realworld.domain.aggregate.article.dto.ArticleResponse;
 import com.io.realworld.domain.aggregate.article.dto.ArticleUpdate;
 import com.io.realworld.domain.aggregate.article.dto.Articledto;
 import com.io.realworld.domain.aggregate.article.entity.Article;
+import com.io.realworld.domain.aggregate.article.entity.Favorite;
 import com.io.realworld.domain.aggregate.article.repository.ArticleRepository;
 import com.io.realworld.domain.aggregate.article.repository.FavoriteRepository;
 import com.io.realworld.domain.aggregate.profile.dto.ProfileResponse;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -206,13 +208,65 @@ class ArticleServiceImplTest {
     @Test
     @DisplayName("sv: 게시글 삭제")
     void deleteArticle(){
-        User user = User.builder().id(1L).username("kms").build();
-        List<Article> articles = List.of(Article.builder().slug("slug").author(user).tagList(List.of()).build());
-        UserAuth userAuth = UserAuth.builder().id(1L).username("kms").build();
         String slug = "slug";
+        User user = User.builder().id(1L).username("kms").build();
+        List<Article> articles = List.of(Article.builder().slug(slug).author(user).tagList(List.of()).build());
+        UserAuth userAuth = UserAuth.builder().id(1L).username(user.getUsername()).build();
+
         when(articleRepository.findAll()).thenReturn(articles);
         doNothing().when(articleRepository).delete(any(Article.class));
 
         articleService.deleteArticle(userAuth,slug);
     }
+
+    @Test
+    @DisplayName("sv: 좋아요 성공")
+    void favoritedArticle(){
+        User user = User.builder().id(1L).username("kms").build();
+        String slug = "slug";
+        List<Article> articles = List.of(Article.builder().id(1L).slug(slug).author(user).tagList(List.of()).build());
+        UserAuth userAuth = UserAuth.builder().id(1L).username(user.getUsername()).build();
+        ProfileResponse profileResponse = ProfileResponse.builder().bio("bio").following(false).username("username").image("image").build();
+
+        when(articleRepository.findAll()).thenReturn(articles);
+        when(userRepository.findById(eq(userAuth.getId()))).thenReturn(Optional.of(user));
+        when(profileService.getProfile(eq(userAuth),any(String.class))).thenReturn(profileResponse);
+        //첫번째는 없어야하고 두 번째때는 save이후이므로 있어야함.
+        when(favoriteRepository.findByArticleIdAndAuthorId(any(Long.class), eq(user.getId())))
+                .thenReturn(Optional.empty())
+                .thenReturn(Optional.ofNullable(Favorite.builder().build()));
+        when(favoriteRepository.countByArticleId(any(Long.class)))
+                .thenReturn(1L);
+
+        ArticleResponse articleResponse = articleService.favoriteArticle(userAuth,slug);
+        assertTrue(articleResponse.getFavorited());
+        assertThat(articleResponse.getFavoritesCount()).isEqualTo(1L);
+
+    }
+
+    //좋아요 실패 예외처리들.
+    @Test
+    @DisplayName("sv: 좋아요 실패 - 게시글 없음")
+    void favoritedArticleFailArticleEmpty(){
+        User user = User.builder().id(1L).username("kms").build();
+        String slug = "slug";
+        List<Article> articles = List.of(Article.builder().id(1L).slug("1").author(user).tagList(List.of()).build());
+        UserAuth userAuth = UserAuth.builder().id(1L).username(user.getUsername()).build();
+
+        when(articleRepository.findAll()).thenReturn(articles);
+        when(userRepository.findById(eq(userAuth.getId()))).thenReturn(Optional.of(user));
+
+        try{
+            articleService.favoriteArticle(userAuth,slug);
+        }catch (CustomException e){
+            assertThat(e.getError()).isEqualTo(Error.ARTICLE_NOT_FOUND);
+            assertThat(e.getError().getMessage()).isEqualTo(Error.ARTICLE_NOT_FOUND.getMessage());
+            assertThat(e.getError().getStatus()).isEqualTo(Error.ARTICLE_NOT_FOUND.getStatus());
+        }
+    }
+
+
+
+    //좋아요 멀티인 경우 - 좋아요가 3개일때
+
 }
