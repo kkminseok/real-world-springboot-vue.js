@@ -18,7 +18,6 @@ public class TagController {
         this.tagService = tagService;
     }
 
-    //Todo Response tags: {} ~
     @GetMapping
     public TagResponse getTags(){
         return TagResponse.builder().tags(tagService.getTags()).build();
