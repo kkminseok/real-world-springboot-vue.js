@@ -1,12 +1,10 @@
 package com.io.realworld.domain.aggregate.article.repository;
 
-import com.io.realworld.domain.aggregate.article.dto.ArticleUpdate;
 import com.io.realworld.domain.aggregate.article.entity.Article;
-import com.io.realworld.domain.aggregate.profile.entity.Follow;
+import com.io.realworld.domain.aggregate.article.entity.Favorite;
 import com.io.realworld.domain.aggregate.profile.repository.ProfileRepository;
 import com.io.realworld.domain.aggregate.user.entity.User;
 import com.io.realworld.domain.aggregate.user.repository.UserRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,26 +31,29 @@ class ArticleRepositoryTest {
     @Autowired
     ProfileRepository profileRepository;
 
-    private User author;
+    @Autowired
+    FavoriteRepository favoriteRepository;
+
+    private User user;
     private Article article;
     private LocalDateTime beforeCreated;
 
     @BeforeEach
     void setup(){
-        author = User.builder()
+        user = User.builder()
                 .bio("bio")
                 .email("email")
                 .image("image")
                 .password("password")
                 .username("username").build();
 
-        userRepository.save(author);
+        userRepository.save(user);
 
         String title = "create title";
         String slug = initSlug(title);
         beforeCreated = LocalDateTime.now();
         article = Article.builder()
-                .author(author)
+                .author(user)
                 .body("create body")
                 .description("create description")
                 .title(title)
@@ -68,7 +69,7 @@ class ArticleRepositoryTest {
     void createArticle() {
         Optional<Article> savedArticle = articleRepository.findById(article.getId());
 
-        Article article2 = Article.builder().author(author).title("title").body("body").description("description").slug("slug").build();
+        Article article2 = Article.builder().author(user).title("title").body("body").description("description").slug("slug").build();
         articleRepository.save(article2);
 
         assertThat(article.getBody()).isEqualTo(savedArticle.get().getBody());
@@ -117,11 +118,52 @@ class ArticleRepositoryTest {
         assertTrue(savedArticle.isEmpty());
     }
 
+    @Test
+    @DisplayName("rp: 좋아요 성공")
+    void favoriteArticle(){
+
+        Favorite favorite = Favorite.builder().article(article).user(user).build();
+        favoriteRepository.save(favorite);
+
+        Optional<Favorite> favoriteStatus = favoriteRepository.findByArticleIdAndUserId(article.getId(), user.getId());
+
+        assertTrue(!favoriteStatus.isEmpty());
+        assertThat(favoriteRepository.countByArticleId(article.getId())).isEqualTo(1L);
+
+    }
+
+    @Test
+    @DisplayName("rp: 좋아요 3개이상")
+    void favoriteArticleMulti(){
+        User user2 = User.builder().email("email2@gmail.com").username("username2").password("pa").build();
+        User user3 = User.builder().email("email3@gmail.com").username("username3").password("pa").build();
+        userRepository.save(user2);
+        userRepository.save(user3);
+
+        Favorite favorite = Favorite.builder().article(article).user(user).build();
+        Favorite favorite2 = Favorite.builder().article(article).user(user2).build();
+        Favorite favorite3 = Favorite.builder().article(article).user(user3).build();
+
+        assertTrue(favoriteRepository.findByArticleIdAndUserId(article.getId(), user.getId()).isEmpty());
+        assertTrue(favoriteRepository.findByArticleIdAndUserId(article.getId(), user2.getId()).isEmpty());
+        assertTrue(favoriteRepository.findByArticleIdAndUserId(article.getId(), user3.getId()).isEmpty());
+
+        favoriteRepository.save(favorite);
+        favoriteRepository.save(favorite2);
+        favoriteRepository.save(favorite3);
+
+
+        assertTrue(!favoriteRepository.findByArticleIdAndUserId(article.getId(), user.getId()).isEmpty());
+        assertTrue(!favoriteRepository.findByArticleIdAndUserId(article.getId(), user2.getId()).isEmpty());
+        assertTrue(!favoriteRepository.findByArticleIdAndUserId(article.getId(), user3.getId()).isEmpty());
+
+        assertThat(favoriteRepository.countByArticleId(article.getId())).isEqualTo(3L);
+
+    }
+
     private String initSlug(String title){
         return title.toLowerCase().replace(' ','-');
     }
-
-    //Todo 좋아요 3개이상이상일때
 
 
 }

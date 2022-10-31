@@ -19,7 +19,6 @@ import com.io.realworld.exception.CustomException;
 import com.io.realworld.exception.Error;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -116,8 +115,8 @@ public class ArticleServiceImpl implements ArticleService {
             throw new CustomException(Error.USER_NOT_FOUND);
         }
 
-        favoriteRepository.findByArticleIdAndAuthorId(article.get().getId(), userAuth.getId()).ifPresent(favoriteStatus -> {throw new CustomException(Error.ALREADY_FAVORITE_ARTICLE);});
-        Favorite favorite = Favorite.builder().article(article.get()).author(user.get()).build();
+        favoriteRepository.findByArticleIdAndUserId(article.get().getId(), userAuth.getId()).ifPresent(favoriteStatus -> {throw new CustomException(Error.ALREADY_FAVORITE_ARTICLE);});
+        Favorite favorite = Favorite.builder().article(article.get()).user(user.get()).build();
         favoriteRepository.save(favorite);
         return convertDtoWithUser(article.get(),userAuth);
 
@@ -157,7 +156,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     private Boolean getFavoritesStatus(UserAuth userAuth, Article article) {
-        Optional<Favorite> favoriteStatus = favoriteRepository.findByArticleIdAndAuthorId(article.getId(), userAuth.getId());
+        Optional<Favorite> favoriteStatus = favoriteRepository.findByArticleIdAndUserId(article.getId(), userAuth.getId());
         return favoriteStatus.isEmpty() ? false : true;
     }
 

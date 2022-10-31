@@ -15,7 +15,6 @@ import com.io.realworld.domain.aggregate.user.entity.User;
 import com.io.realworld.domain.aggregate.user.repository.UserRepository;
 import com.io.realworld.exception.CustomException;
 import com.io.realworld.exception.Error;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -232,7 +231,7 @@ class ArticleServiceImplTest {
         when(userRepository.findById(eq(userAuth.getId()))).thenReturn(Optional.of(user));
         when(profileService.getProfile(eq(userAuth),any(String.class))).thenReturn(profileResponse);
         //첫번째는 없어야하고 두 번째때는 save이후이므로 있어야함.
-        when(favoriteRepository.findByArticleIdAndAuthorId(any(Long.class), eq(user.getId())))
+        when(favoriteRepository.findByArticleIdAndUserId(any(Long.class), eq(user.getId())))
                 .thenReturn(Optional.empty())
                 .thenReturn(Optional.ofNullable(Favorite.builder().build()));
         when(favoriteRepository.countByArticleId(any(Long.class)))
@@ -295,7 +294,7 @@ class ArticleServiceImplTest {
 
         when(articleRepository.findAll()).thenReturn(articles);
         when(userRepository.findById(eq(userAuth.getId()))).thenReturn(Optional.of(user));
-        when(favoriteRepository.findByArticleIdAndAuthorId(any(Long.class),any(Long.class))).thenReturn(Optional.ofNullable(Favorite.builder().build()));
+        when(favoriteRepository.findByArticleIdAndUserId(any(Long.class),any(Long.class))).thenReturn(Optional.ofNullable(Favorite.builder().build()));
 
         try{
             articleService.favoriteArticle(userAuth,slug);
