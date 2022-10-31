@@ -161,6 +161,24 @@ class ArticleRepositoryTest {
 
     }
 
+    @Test
+    @DisplayName("rp: 안좋아요 성공")
+    void unFavoriteArticle(){
+
+        Favorite favorite = Favorite.builder().article(article).user(user).build();
+        favoriteRepository.save(favorite);
+
+        Optional<Favorite> favoriteStatus = favoriteRepository.findByArticleIdAndUserId(article.getId(), user.getId());
+
+        assertTrue(!favoriteStatus.isEmpty());
+        assertThat(favoriteRepository.countByArticleId(article.getId())).isEqualTo(1L);
+
+        favoriteRepository.delete(favoriteStatus.get());
+
+        assertThat(favoriteRepository.countByArticleId(article.getId())).isEqualTo(0L);
+
+    }
+
     private String initSlug(String title){
         return title.toLowerCase().replace(' ','-');
     }

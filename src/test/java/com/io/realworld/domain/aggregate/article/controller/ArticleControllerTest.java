@@ -254,10 +254,24 @@ class ArticleControllerTest {
     @WithAuthUser
     @Test
     @DisplayName("게시글 좋아요 컨트롤러 테스트")
-    void favoritedArticle() throws Exception{
+    void favoriteArticle() throws Exception{
         when(articleService.favoriteArticle(any(UserAuth.class),eq(slug))).thenReturn(articleResponse);
 
         mockMvc.perform(post("/api/articles/" + slug + "/favorite")
+                ).andExpect(status().isOk())
+                .andExpect(jsonPath("$.article.body", Matchers.equalTo(articleResponse.getBody())))
+                .andExpect(jsonPath("$.article.title",Matchers.equalTo(articleResponse.getTitle())))
+                .andExpect(jsonPath("$.article.description", Matchers.equalTo(articleResponse.getDescription())))
+                .andExpect(jsonPath("$.article.slug", Matchers.equalTo(slug)));
+    }
+
+    @WithAuthUser
+    @Test
+    @DisplayName("게시글 안좋아요 컨트롤러 테스트")
+    void unFavoriteArticle() throws Exception{
+        when(articleService.unFavoriteArticle(any(UserAuth.class),eq(slug))).thenReturn(articleResponse);
+
+        mockMvc.perform(delete("/api/articles/" + slug + "/favorite")
                 ).andExpect(status().isOk())
                 .andExpect(jsonPath("$.article.body", Matchers.equalTo(articleResponse.getBody())))
                 .andExpect(jsonPath("$.article.title",Matchers.equalTo(articleResponse.getTitle())))

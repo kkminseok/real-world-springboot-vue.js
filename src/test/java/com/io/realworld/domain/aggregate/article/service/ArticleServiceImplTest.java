@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -220,7 +221,7 @@ class ArticleServiceImplTest {
 
     @Test
     @DisplayName("sv: 좋아요 성공")
-    void favoritedArticle(){
+    void favoriteArticle(){
         User user = User.builder().id(1L).username("kms").build();
         String slug = "slug";
         List<Article> articles = List.of(Article.builder().id(1L).slug(slug).author(user).tagList(List.of()).build());
@@ -246,7 +247,7 @@ class ArticleServiceImplTest {
     
     @Test
     @DisplayName("sv: 좋아요 실패 - 게시글 없음")
-    void favoritedArticleFailArticleEmpty(){
+    void favoriteArticleFailArticleEmpty(){
         User user = User.builder().id(1L).username("kms").build();
         String slug = "slug";
         List<Article> articles = List.of(Article.builder().id(1L).slug("1").author(user).tagList(List.of()).build());
@@ -266,7 +267,7 @@ class ArticleServiceImplTest {
 
     @Test
     @DisplayName("sv: 좋아요 실패 - 유저 못 찾음")
-    void favoritedArticleFailUserNotFound(){
+    void favoriteArticleFailUserNotFound(){
         User user = User.builder().id(1L).username("kms").build();
         String slug = "slug";
         List<Article> articles = List.of(Article.builder().id(1L).slug(slug).author(user).tagList(List.of()).build());
@@ -286,7 +287,7 @@ class ArticleServiceImplTest {
 
     @Test
     @DisplayName("sv: 좋아요 실패 - 이미 좋아요 누름")
-    void favoritedArticleAlreadyFavorite(){
+    void favoriteArticleAlreadyFavorite(){
         User user = User.builder().id(1L).username("kms").build();
         String slug = "slug";
         List<Article> articles = List.of(Article.builder().id(1L).slug(slug).author(user).tagList(List.of()).build());
@@ -302,6 +303,96 @@ class ArticleServiceImplTest {
             assertThat(e.getError()).isEqualTo(Error.ALREADY_FAVORITE_ARTICLE);
             assertThat(e.getError().getMessage()).isEqualTo(Error.ALREADY_FAVORITE_ARTICLE.getMessage());
             assertThat(e.getError().getStatus()).isEqualTo(Error.ALREADY_FAVORITE_ARTICLE.getStatus());
+        }
+
+    }
+
+    @Test
+    @DisplayName("sv: 안좋아요 성공")
+    void unFavoriteArticle(){
+        User user = User.builder().id(1L).username("kms").build();
+        String slug = "slug";
+        List<Article> articles = List.of(Article.builder().id(1L).slug(slug).author(user).tagList(List.of()).build());
+        UserAuth userAuth = UserAuth.builder().id(1L).username(user.getUsername()).build();
+        ProfileResponse profileResponse = ProfileResponse.builder().bio("bio").following(false).username("username").image("image").build();
+
+        when(articleRepository.findAll()).thenReturn(articles);
+        when(userRepository.findById(eq(userAuth.getId()))).thenReturn(Optional.of(user));
+        when(profileService.getProfile(eq(userAuth),any(String.class))).thenReturn(profileResponse);
+
+        //처음에는 있어야하고, 두 번째는 삭제이후이므로 객체가 비어있어야함.
+        when(favoriteRepository.findByArticleIdAndUserId(any(Long.class), eq(user.getId())))
+                .thenReturn(Optional.ofNullable(Favorite.builder().build()))
+                .thenReturn(Optional.empty());
+        when(favoriteRepository.countByArticleId(any(Long.class)))
+                .thenReturn(0L);
+
+        ArticleResponse articleResponse = articleService.unFavoriteArticle(userAuth,slug);
+        assertFalse(articleResponse.getFavorited());
+        assertThat(articleResponse.getFavoritesCount()).isEqualTo(0L);
+
+    }
+
+    @Test
+    @DisplayName("sv: 안좋아요 실패 - 게시글 없음")
+    void unFavoriteArticleFailArticleEmpty(){
+        User user = User.builder().id(1L).username("kms").build();
+        String slug = "slug";
+        List<Article> articles = List.of(Article.builder().id(1L).slug("1").author(user).tagList(List.of()).build());
+        UserAuth userAuth = UserAuth.builder().id(1L).username(user.getUsername()).build();
+
+        when(articleRepository.findAll()).thenReturn(articles);
+        when(userRepository.findById(eq(userAuth.getId()))).thenReturn(Optional.of(user));
+
+        try{
+            articleService.unFavoriteArticle(userAuth,slug);
+        }catch (CustomException e){
+            assertThat(e.getError()).isEqualTo(Error.ARTICLE_NOT_FOUND);
+            assertThat(e.getError().getMessage()).isEqualTo(Error.ARTICLE_NOT_FOUND.getMessage());
+            assertThat(e.getError().getStatus()).isEqualTo(Error.ARTICLE_NOT_FOUND.getStatus());
+        }
+    }
+
+    @Test
+    @DisplayName("sv: 안좋아요 실패 - 유저 못 찾음")
+    void unFavoriteArticleFailUserNotFound(){
+        User user = User.builder().id(1L).username("kms").build();
+        String slug = "slug";
+        List<Article> articles = List.of(Article.builder().id(1L).slug(slug).author(user).tagList(List.of()).build());
+        UserAuth userAuth = UserAuth.builder().id(1L).username(user.getUsername()).build();
+
+        when(articleRepository.findAll()).thenReturn(articles);
+        when(userRepository.findById(eq(userAuth.getId()))).thenReturn(Optional.empty());
+
+        try{
+            articleService.unFavoriteArticle(userAuth,slug);
+        }catch (CustomException e){
+            assertThat(e.getError()).isEqualTo(Error.USER_NOT_FOUND);
+            assertThat(e.getError().getMessage()).isEqualTo(Error.USER_NOT_FOUND.getMessage());
+            assertThat(e.getError().getStatus()).isEqualTo(Error.ARTICLE_NOT_FOUND.getStatus());
+        }
+    }
+
+    @Test
+    @DisplayName("sv: 안좋아요 실패 - 이미 안좋아요 누름")
+    void unFavoriteArticleAlreadyFavorite(){
+        User user = User.builder().id(1L).username("kms").build();
+        String slug = "slug";
+        List<Article> articles = List.of(Article.builder().id(1L).slug(slug).author(user).tagList(List.of()).build());
+        UserAuth userAuth = UserAuth.builder().id(1L).username(user.getUsername()).build();
+        ProfileResponse profileResponse = ProfileResponse.builder().bio("bio").following(false).username("username").image("image").build();
+
+        when(articleRepository.findAll()).thenReturn(articles);
+        when(userRepository.findById(eq(userAuth.getId()))).thenReturn(Optional.of(user));
+        when(favoriteRepository.findByArticleIdAndUserId(any(Long.class),any(Long.class))).thenReturn(Optional.ofNullable(Favorite.builder().build()));
+        when(profileService.getProfile(eq(userAuth),any(String.class))).thenReturn(profileResponse);
+
+        try{
+            articleService.unFavoriteArticle(userAuth,slug);
+        }catch (CustomException e){
+            assertThat(e.getError()).isEqualTo(Error.ALREADY_UN_FAVORITE_ARTICLE);
+            assertThat(e.getError().getMessage()).isEqualTo(Error.ALREADY_UN_FAVORITE_ARTICLE.getMessage());
+            assertThat(e.getError().getStatus()).isEqualTo(Error.ALREADY_UN_FAVORITE_ARTICLE.getStatus());
         }
 
     }
