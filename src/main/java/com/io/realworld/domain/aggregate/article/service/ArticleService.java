@@ -21,4 +21,6 @@ public interface ArticleService {
     void deleteArticle(UserAuth userAuth, String slug);
 
     ArticleResponse favoriteArticle(UserAuth userAuth, String slug);
+
+    ArticleResponse unFavoriteArticle(UserAuth userAuth, String slug);
 }

@@ -122,6 +122,25 @@ public class ArticleServiceImpl implements ArticleService {
 
     }
 
+    @Override
+    public ArticleResponse unFavoriteArticle(UserAuth userAuth, String slug) {
+        Optional<Article> article = articleRepository.findAll().stream().filter(findArticle ->
+                findArticle.getSlug().equals(slug)).findAny();
+        Optional<User> user = userRepository.findById(userAuth.getId());
+        if(article.isEmpty()){
+            throw new CustomException(Error.ARTICLE_NOT_FOUND);
+        }
+        if(user.isEmpty()){
+            throw new CustomException(Error.USER_NOT_FOUND);
+        }
+
+        Favorite favorite = favoriteRepository.findByArticleIdAndUserId(article.get().getId(), userAuth.getId()).orElseThrow(() -> {
+            throw new CustomException(Error.ALREADY_UN_FAVORITE_ARTICLE);
+        });
+        favoriteRepository.delete(favorite);
+        return convertDtoWithUser(article.get(),userAuth);
+    }
+
     private String initSlug(String title) {
         return title.toLowerCase().replace(' ', '-');
     }

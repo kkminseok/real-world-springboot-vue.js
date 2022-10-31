@@ -52,4 +52,9 @@ public class ArticleController {
     public ArticleResponse favoriteArticle(@AuthenticationPrincipal UserAuth userAuth, @PathVariable("slug") String slug){
         return articleService.favoriteArticle(userAuth, slug);
     }
+
+    @DeleteMapping("/{slug}/favorite")
+    public ArticleResponse unFavoriteArticle(@AuthenticationPrincipal UserAuth userAuth, @PathVariable("slug") String slug){
+        return articleService.unFavoriteArticle(userAuth, slug);
+    }
 }
