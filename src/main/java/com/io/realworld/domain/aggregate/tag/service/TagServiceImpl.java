@@ -26,4 +26,9 @@ public class TagServiceImpl implements TagService {
             tagRepository.save(tag);
         }
     }
+
+    @Override
+    public List<String> getTags() {
+        return tagRepository.findAll().stream().map(Tag::getTagName).distinct().collect(Collectors.toList());
+    }
 }
