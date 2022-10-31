@@ -20,7 +20,7 @@ public class TagController {
 
     //Todo Response tags: {} ~
     @GetMapping
-    public List<String> getTags(){
-        return tagService.getTags();
+    public TagResponse getTags(){
+        return TagResponse.builder().tags(tagService.getTags()).build();
     }
 }
