@@ -19,10 +19,11 @@ import com.io.realworld.exception.CustomException;
 import com.io.realworld.exception.Error;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.print.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -45,6 +46,15 @@ public class ArticleServiceImpl implements ArticleService {
     public  List<ArticleResponse> getArticles(ArticleParam articleParam){
         Pageable pageable = null;
         List<Article> articles = null;
+
+        if(articleParam.getOffset() != null){
+            pageable = PageRequest.of(articleParam.getOffset(), articleParam.getLimit());
+        }
+
+        if(articleParam.getTag() != null){
+            articles = articleRepository.findByTag(articleParam.getTag(),pageable);
+        }
+
 
         return List.of();
     }
