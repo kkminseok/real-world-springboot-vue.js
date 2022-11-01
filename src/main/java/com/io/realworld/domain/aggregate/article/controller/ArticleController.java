@@ -1,30 +1,29 @@
 package com.io.realworld.domain.aggregate.article.controller;
 
-import com.io.realworld.domain.aggregate.article.dto.ArticleParam;
-import com.io.realworld.domain.aggregate.article.dto.ArticleUpdate;
-import com.io.realworld.domain.aggregate.article.dto.Articledto;
-import com.io.realworld.domain.aggregate.article.dto.ArticleResponse;
+import com.io.realworld.domain.aggregate.article.dto.*;
 import com.io.realworld.domain.aggregate.article.service.ArticleService;
+import com.io.realworld.domain.aggregate.article.service.CommentService;
 import com.io.realworld.domain.aggregate.user.dto.UserAuth;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/articles")
 public class ArticleController {
 
     private final ArticleService articleService;
+    private final CommentService commentService;
 
-    public ArticleController(ArticleService articleService) {
+    public ArticleController(ArticleService articleService, CommentService commentService) {
         this.articleService = articleService;
+        this.commentService = commentService;
     }
 
     @GetMapping()
-    public List<ArticleResponse> getArticles(@AuthenticationPrincipal UserAuth userAuth,@ModelAttribute ArticleParam articleParam){
+    public List<ArticleResponse> getArticles(@AuthenticationPrincipal UserAuth userAuth, @ModelAttribute ArticleParam articleParam) {
         return articleService.getArticles(articleParam);
     }
 
@@ -49,12 +48,17 @@ public class ArticleController {
     }
 
     @PostMapping("/{slug}/favorite")
-    public ArticleResponse favoriteArticle(@AuthenticationPrincipal UserAuth userAuth, @PathVariable("slug") String slug){
+    public ArticleResponse favoriteArticle(@AuthenticationPrincipal UserAuth userAuth, @PathVariable("slug") String slug) {
         return articleService.favoriteArticle(userAuth, slug);
     }
 
     @DeleteMapping("/{slug}/favorite")
-    public ArticleResponse unFavoriteArticle(@AuthenticationPrincipal UserAuth userAuth, @PathVariable("slug") String slug){
+    public ArticleResponse unFavoriteArticle(@AuthenticationPrincipal UserAuth userAuth, @PathVariable("slug") String slug) {
         return articleService.unFavoriteArticle(userAuth, slug);
+    }
+
+    @PostMapping("/{slug}/comments")
+    public CommentResponse createComment(@AuthenticationPrincipal UserAuth userAuth, @PathVariable("slug") String slug, @Valid @RequestBody Commentdto commentdto) {
+        return commentService.addComment(userAuth, slug, commentdto);
     }
 }

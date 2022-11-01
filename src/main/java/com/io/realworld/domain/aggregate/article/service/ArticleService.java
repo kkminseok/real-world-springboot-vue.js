@@ -23,4 +23,6 @@ public interface ArticleService {
     ArticleResponse favoriteArticle(UserAuth userAuth, String slug);
 
     ArticleResponse unFavoriteArticle(UserAuth userAuth, String slug);
+
+
 }
