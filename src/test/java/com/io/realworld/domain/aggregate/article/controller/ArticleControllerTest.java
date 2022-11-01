@@ -2,9 +2,7 @@ package com.io.realworld.domain.aggregate.article.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.io.realworld.config.WithAuthUser;
-import com.io.realworld.domain.aggregate.article.dto.ArticleResponse;
-import com.io.realworld.domain.aggregate.article.dto.ArticleUpdate;
-import com.io.realworld.domain.aggregate.article.dto.Articledto;
+import com.io.realworld.domain.aggregate.article.dto.*;
 import com.io.realworld.domain.aggregate.article.service.ArticleService;
 import com.io.realworld.domain.aggregate.article.service.CommentService;
 import com.io.realworld.domain.aggregate.profile.dto.ProfileResponse;
@@ -281,6 +279,23 @@ class ArticleControllerTest {
                 .andExpect(jsonPath("$.article.title",Matchers.equalTo(articleResponse.getTitle())))
                 .andExpect(jsonPath("$.article.description", Matchers.equalTo(articleResponse.getDescription())))
                 .andExpect(jsonPath("$.article.slug", Matchers.equalTo(slug)));
+    }
+
+    @WithAuthUser
+    @Test
+    @DisplayName("댓글 달기 컨트롤러 테스트")
+    void createComment() throws Exception{
+        String body = "comment body";
+        CommentResponse commentResponse = CommentResponse.builder().body(body).build();
+        Commentdto commentdto = Commentdto.builder().body(body).build();
+
+        when(commentService.addComment(any(UserAuth.class),eq(slug),any(Commentdto.class))).thenReturn(commentResponse);
+
+        mockMvc.perform(post("/api/articles/" + slug + "/comments")
+                        .content(objectMapper.writeValueAsString(commentdto))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.comment.body",Matchers.equalTo(commentdto.getBody())));
     }
 
 }
