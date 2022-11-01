@@ -6,6 +6,7 @@ import com.io.realworld.domain.aggregate.article.dto.ArticleResponse;
 import com.io.realworld.domain.aggregate.article.dto.ArticleUpdate;
 import com.io.realworld.domain.aggregate.article.dto.Articledto;
 import com.io.realworld.domain.aggregate.article.service.ArticleService;
+import com.io.realworld.domain.aggregate.article.service.CommentService;
 import com.io.realworld.domain.aggregate.profile.dto.ProfileResponse;
 import com.io.realworld.domain.aggregate.user.dto.UserAuth;
 import com.io.realworld.domain.aggregate.user.dto.UserUpdate;
@@ -48,6 +49,9 @@ class ArticleControllerTest {
 
     @MockBean
     ArticleService articleService;
+
+    @MockBean
+    CommentService commentService;
 
     @MockBean
     JwtService jwtService;
