@@ -29,4 +29,8 @@ public class Comment extends DateEntity {
     @JoinColumn(nullable = false)
     private User author;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    private Article article;
+
 }

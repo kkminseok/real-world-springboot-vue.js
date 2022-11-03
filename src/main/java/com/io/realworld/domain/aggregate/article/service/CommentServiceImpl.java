@@ -34,7 +34,7 @@ public class CommentServiceImpl implements CommentService {
         if (article.isEmpty()) {
             throw new CustomException(Error.ARTICLE_NOT_FOUND);
         }
-        Comment comment = commentRepository.save(Comment.builder().body(commentdto.getBody()).author(user.get()).build());
+        Comment comment = commentRepository.save(Comment.builder().body(commentdto.getBody()).article(article.get()).author(user.get()).build());
 
         return convertComment(userAuth, article.get(), comment);
     }

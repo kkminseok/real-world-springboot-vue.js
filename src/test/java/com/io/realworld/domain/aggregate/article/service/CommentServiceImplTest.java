@@ -70,6 +70,7 @@ class CommentServiceImplTest {
         Comment comment = Comment.builder().id(1L).body("body").build();
         UserAuth userAuth = UserAuth.builder().username("kms").id(1L).build();
 
+
         when(articleRepository.findAll()).thenReturn(articles);
         when(userRepository.findById(eq(userAuth.getId()))).thenReturn(Optional.of(user));
         when(profileService.getProfile(eq(userAuth),any(String.class))).thenReturn(profileResponse);
