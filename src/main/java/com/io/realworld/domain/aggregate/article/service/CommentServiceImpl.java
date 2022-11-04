@@ -39,6 +39,20 @@ public class CommentServiceImpl implements CommentService {
         return convertComment(userAuth, article.get(), comment);
     }
 
+    @Override
+    public void deleteComment(UserAuth userAuth, String slug, Long id) {
+        Optional<User> user = userRepository.findById(userAuth.getId());
+        Optional<Article> article = articleRepository.findAll().stream().filter(findArticle -> findArticle.getSlug().equals(slug)).findAny();
+        if (article.isEmpty()) {
+            throw new CustomException(Error.ARTICLE_NOT_FOUND);
+        }
+        Optional<Comment> comment = commentRepository.findAll().stream().filter(findComment -> findComment.getId().equals(id)).findAny();
+        if (comment.isEmpty()) {
+            throw new CustomException(Error.Comment_NOT_FOUND);
+        }
+        commentRepository.delete(comment.get());
+    }
+
     private CommentResponse convertComment(UserAuth userAuth, Article article, Comment comment) {
 
         ProfileResponse profile = profileService.getProfile(userAuth, article.getAuthor().getUsername());

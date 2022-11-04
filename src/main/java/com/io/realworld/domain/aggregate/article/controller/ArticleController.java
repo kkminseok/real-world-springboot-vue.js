@@ -61,4 +61,9 @@ public class ArticleController {
     public CommentResponse createComment(@AuthenticationPrincipal UserAuth userAuth, @PathVariable("slug") String slug, @Valid @RequestBody Commentdto commentdto) {
         return commentService.addComment(userAuth, slug, commentdto);
     }
+
+    @DeleteMapping("/{slug}/comments/{id}")
+    public void deleteComment(@AuthenticationPrincipal UserAuth userAuth, @PathVariable("slug") String slug, @PathVariable("id") Long id) {
+        commentService.deleteComment(userAuth, slug, id);
+    }
 }

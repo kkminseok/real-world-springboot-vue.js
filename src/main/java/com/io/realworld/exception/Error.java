@@ -13,7 +13,8 @@ public enum Error {
     ALREADY_UNFOLLOW("already unfollow",HttpStatus.UNPROCESSABLE_ENTITY),
     ARTICLE_NOT_FOUND("article not found check your slug", HttpStatus.NOT_FOUND),
     ALREADY_FAVORITE_ARTICLE("already favorite Article", HttpStatus.UNPROCESSABLE_ENTITY),
-    ALREADY_UN_FAVORITE_ARTICLE("already unfavorite Article", HttpStatus.UNPROCESSABLE_ENTITY);
+    ALREADY_UN_FAVORITE_ARTICLE("already unfavorite Article", HttpStatus.UNPROCESSABLE_ENTITY),
+    Comment_NOT_FOUND("comment not found check your comment id", HttpStatus.NOT_FOUND);
 
 
     private final String message;

@@ -6,5 +6,7 @@ import com.io.realworld.domain.aggregate.user.dto.UserAuth;
 
 public interface CommentService {
 
-    CommentResponse addComment(UserAuth userAuth,String slug, Commentdto commentdto);
+    CommentResponse addComment(UserAuth userAuth, String slug, Commentdto commentdto);
+
+    void deleteComment(UserAuth userAuth, String slug, Long id);
 }
