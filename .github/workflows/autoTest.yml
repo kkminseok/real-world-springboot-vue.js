@@ -17,7 +17,6 @@ jobs:
           java-version: '18'
           cache: gradle
 
-
       - name: Grant execute permission gradlew
         run: chmod +x gradlew
 
