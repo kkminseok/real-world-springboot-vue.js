@@ -11,6 +11,8 @@ import com.io.realworld.domain.aggregate.profile.service.ProfileServiceImpl;
 import com.io.realworld.domain.aggregate.user.dto.UserAuth;
 import com.io.realworld.domain.aggregate.user.entity.User;
 import com.io.realworld.domain.aggregate.user.repository.UserRepository;
+import com.io.realworld.exception.CustomException;
+import com.io.realworld.exception.Error;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -52,7 +54,7 @@ class CommentServiceImplTest {
     private ProfileResponse profileResponse;
 
     @BeforeEach
-    void setup(){
+    void setup() {
         user = User.builder().id(1L).username("kms").build();
         String slug = "slug";
         articles = List.of(Article.builder().id(1L).slug(slug).author(user).tagList(List.of()).build());
@@ -73,7 +75,7 @@ class CommentServiceImplTest {
 
         when(articleRepository.findAll()).thenReturn(articles);
         when(userRepository.findById(eq(userAuth.getId()))).thenReturn(Optional.of(user));
-        when(profileService.getProfile(eq(userAuth),any(String.class))).thenReturn(profileResponse);
+        when(profileService.getProfile(eq(userAuth), any(String.class))).thenReturn(profileResponse);
         when(commentRepository.save(any(Comment.class))).thenReturn(comment);
 
 
@@ -83,6 +85,76 @@ class CommentServiceImplTest {
         assertThat(commentResponse.getId()).isEqualTo(1L);
         assertThat(commentResponse.getAuthor().getUsername()).isEqualTo(profileResponse.getUsername());
         assertThat(commentResponse.getAuthor().getImage()).isEqualTo(profileResponse.getImage());
+    }
 
+    @Test
+    @DisplayName("댓글 추가 실패 테스트 - 게시글 없음")
+    void addCommentFailArticleNotFound() {
+        String slug = "slug";
+        Commentdto commentdto = Commentdto.builder().body("body").build();
+        UserAuth userAuth = UserAuth.builder().username("kms").id(1L).build();
+
+
+        when(articleRepository.findAll()).thenReturn(List.of());
+        when(userRepository.findById(eq(userAuth.getId()))).thenReturn(Optional.of(user));
+
+        try {
+            commentService.addComment(userAuth, slug, commentdto);
+        } catch (CustomException e) {
+            assertThat(e.getError()).isEqualTo(Error.ARTICLE_NOT_FOUND);
+            assertThat(e.getError().getMessage()).isEqualTo(Error.ARTICLE_NOT_FOUND.getMessage());
+            assertThat(e.getError().getStatus()).isEqualTo(Error.ARTICLE_NOT_FOUND.getStatus());
+        }
+    }
+
+
+    @Test
+    @DisplayName("댓글 삭제 테스트")
+    void deleteComment() {
+        String slug = "slug";
+        UserAuth userAuth = UserAuth.builder().username("kms").id(1L).build();
+
+        when(articleRepository.findAll()).thenReturn(articles);
+        when(userRepository.findById(eq(userAuth.getId()))).thenReturn(Optional.of(user));
+        when(commentRepository.findAll()).thenReturn(List.of(Comment.builder().id(1L).build()));
+
+        commentService.deleteComment(userAuth, slug, 1L);
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 테스트 - 게시글 없음.")
+    void deleteCommentFailNotFoundArticle(){
+        String slug = "slug";
+        UserAuth userAuth = UserAuth.builder().username("kms").id(1L).build();
+
+        when(articleRepository.findAll()).thenReturn(List.of());
+        when(userRepository.findById(eq(userAuth.getId()))).thenReturn(Optional.of(user));
+
+        try {
+            commentService.deleteComment(userAuth, slug, 1L);
+        } catch (CustomException e) {
+            assertThat(e.getError()).isEqualTo(Error.ARTICLE_NOT_FOUND);
+            assertThat(e.getError().getMessage()).isEqualTo(Error.ARTICLE_NOT_FOUND.getMessage());
+            assertThat(e.getError().getStatus()).isEqualTo(Error.ARTICLE_NOT_FOUND.getStatus());
+        }
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 테스트 - 댓글 못찾음")
+    void deleteCommentFailNotFoundComment(){
+        String slug = "slug";
+        UserAuth userAuth = UserAuth.builder().username("kms").id(1L).build();
+
+        when(articleRepository.findAll()).thenReturn(articles);
+        when(userRepository.findById(eq(userAuth.getId()))).thenReturn(Optional.of(user));
+        when(commentRepository.findAll()).thenReturn(List.of());
+
+        try {
+            commentService.deleteComment(userAuth, slug, 1L);
+        } catch (CustomException e) {
+            assertThat(e.getError()).isEqualTo(Error.Comment_NOT_FOUND);
+            assertThat(e.getError().getMessage()).isEqualTo(Error.Comment_NOT_FOUND.getMessage());
+            assertThat(e.getError().getStatus()).isEqualTo(Error.Comment_NOT_FOUND.getStatus());
+        }
     }
 }

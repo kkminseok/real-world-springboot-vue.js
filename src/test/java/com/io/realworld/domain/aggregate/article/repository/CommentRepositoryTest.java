@@ -15,8 +15,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.shouldHaveThrown;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -85,7 +87,18 @@ class CommentRepositoryTest {
         assertThat(savedComment.getArticle().getBody()).isEqualTo(article.getBody());
         assertThat(savedComment.getArticle().getSlug()).isEqualTo(article.getSlug());
         assertThat(savedComment.getArticle().getDescription()).isEqualTo(article.getDescription());
+    }
 
+    @Test
+    @DisplayName("댓글 삭제 테스트")
+    void deleteComment(){
+        Comment comment = Comment.builder().author(user).body("body").article(article).build();
+
+        commentRepository.save(comment);
+
+        commentRepository.delete(comment);
+        Optional<Comment> savedComment = commentRepository.findById(comment.getId());
+        assertThat(savedComment).isEmpty();
     }
 
     private String initSlug(String title){

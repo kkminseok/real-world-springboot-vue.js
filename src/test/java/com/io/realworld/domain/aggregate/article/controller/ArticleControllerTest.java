@@ -298,4 +298,15 @@ class ArticleControllerTest {
                 .andExpect(jsonPath("$.comment.body",Matchers.equalTo(commentdto.getBody())));
     }
 
+    @WithAuthUser
+    @Test
+    @DisplayName("댓글 삭제 컨트롤러 테스트")
+    void deleteComment() throws Exception{
+        Long commentId = 1L;
+        doNothing().when(commentService).deleteComment(any(UserAuth.class), eq(slug), eq(commentId));
+
+        mockMvc.perform(delete("/api/articles/" + slug + "/comments/" + commentId))
+                .andExpect(status().isOk());
+    }
+
 }
