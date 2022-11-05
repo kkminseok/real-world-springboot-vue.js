@@ -157,18 +157,16 @@ class UserServiceImplTest {
     @DisplayName("유저 업데이트 성공 테스트")
     @Test
     void updateUserSuccess(){
-        UserUpdate userUpdate = UserUpdate.builder().username("fixuser").email("kms@gmail.com").build();
+        UserUpdate userUpdate = UserUpdate.builder().email("kms@gmail.com").build();
         UserAuth userAuth = UserAuth.builder().id(1L).build();
-        User responseUser = User.builder().username(userUpdate.getUsername()).email(userUpdate.getEmail()).build();
+        User responseUser = User.builder().email(userUpdate.getEmail()).build();
 
         when(userRepository.findById(eq(userAuth.getId()))).thenReturn(Optional.of(responseUser));
         when(userRepository.save(any(User.class))).thenReturn(responseUser);
         UserResponse userResponse = userService.updateUser(userUpdate, userAuth);
 
-        assertEquals(userUpdate.getUsername(), userResponse.getUsername());
         assertEquals(userUpdate.getEmail(), userResponse.getEmail());
         assertNotNull(userResponse.getEmail());
-        assertNotNull(userResponse.getUsername());
 
     }
 
@@ -179,17 +177,7 @@ class UserServiceImplTest {
 
         when(userRepository.findById(AdditionalMatchers.not(eq(repoUser.getId())))).thenThrow(new CustomException(Error.USER_NOT_FOUND));
         // case 2
-        if(userUpdate.getUsername() != null){
-                lenient().when(userRepository.findByUsername(eq(repoUser.getUsername()))).thenThrow(new CustomException(Error.DUPLICATE_USER));
-            try{
-                userService.updateUser(userUpdate,userAuth);
-            }catch(CustomException e){
-                assertThat(e.getError().equals(Error.DUPLICATE_USER));
-                assertThat(e.getError().getMessage().equals(Error.DUPLICATE_USER.getMessage()));
-            }
-        }
-        // case 3
-        else if(userUpdate.getEmail() != null){
+        if(userUpdate.getEmail() != null){
             lenient().when(userRepository.findByEmail(eq(repoUser.getEmail()))).thenThrow(new CustomException(Error.DUPLICATE_USER));
             try{
                 userService.updateUser(userUpdate,userAuth);
@@ -241,11 +229,11 @@ class UserServiceImplTest {
     }
     private static Stream<Arguments> invalidUpdateUsers(){
         return Stream.of(
-                Arguments.of(UserUpdate.builder().username("update").email("update@gmail.com").id(1L).password("password").build(),
+                Arguments.of(UserUpdate.builder().email("update@gmail.com").id(1L).build(),
                         UserAuth.builder().id(3L).build()),
-                Arguments.of(UserUpdate.builder().username("update").email("update@gmail.com").id(1L).password("password").build(),
+                Arguments.of(UserUpdate.builder().email("update@gmail.com").id(1L).build(),
                         UserAuth.builder().id(3L).build()),
-                Arguments.of(UserUpdate.builder().email("update@gmail.com").id(1L).password("password").build(),
+                Arguments.of(UserUpdate.builder().email("update@gmail.com").id(1L).build(),
                         UserAuth.builder().id(3L).build())
         );
     }

@@ -64,13 +64,6 @@ public class UserServiceImpl implements UserService {
     public UserResponse updateUser(UserUpdate userUpdate, UserAuth userAuth){
         User user = userRepository.findById(userAuth.getId()).orElseThrow(() -> new CustomException(Error.USER_NOT_FOUND));
 
-        if(userUpdate.getUsername() != null){
-            userRepository.findByUsername(userUpdate.getUsername())
-                    .filter(found -> !found.getId().equals(userRepository.findById(user.getId())))
-                    .ifPresent(found -> new CustomException(Error.DUPLICATE_USER));
-            user.changeUsername(userUpdate.getUsername());
-        }
-
         if(userUpdate.getEmail() != null){
             userRepository.findAllByEmail(userUpdate.getEmail())
                     .stream().filter(found -> !found.getId().equals(userRepository.findById(user.getId())))

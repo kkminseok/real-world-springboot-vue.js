@@ -78,13 +78,12 @@ class UserControllerTest {
                         .content(objectMapper.writeValueAsString(userUpdate))
                         .with(csrf())
                 ).andExpect(status().isOk())
-                .andExpect(jsonPath("$.user.email", Matchers.equalTo(userUpdate.getEmail())))
-                .andExpect(jsonPath("$.user.username", Matchers.equalTo(userUpdate.getUsername())));
+                .andExpect(jsonPath("$.user.email", Matchers.equalTo(userUpdate.getEmail())));
     }
 
     private static Stream<Arguments> updateUser(){
         return Stream.of(
-                Arguments.of(UserUpdate.builder().username("update name").email("update@gmail.com").password("update password").build()
+                Arguments.of(UserUpdate.builder().email("update@gmail.com").build()
                 ));
     }
 

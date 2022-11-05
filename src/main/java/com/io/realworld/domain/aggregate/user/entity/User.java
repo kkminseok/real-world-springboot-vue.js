@@ -80,7 +80,6 @@ public class User implements UserDetails {
     }
 
     public void update(UserUpdate userUpdate) {
-        this.password = userUpdate.getPassword();
         this.bio = userUpdate.getBio();
         this.image = userUpdate.getImage();
     }

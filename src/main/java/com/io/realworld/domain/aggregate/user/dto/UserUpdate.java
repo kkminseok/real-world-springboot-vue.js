@@ -20,8 +20,6 @@ public class UserUpdate {
     private Long id;
     @Email
     private String email;
-    private String username;
-    private String password;
     private String bio;
     private String image;
 }
