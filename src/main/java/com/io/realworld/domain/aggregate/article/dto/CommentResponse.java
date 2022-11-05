@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Builder
 @Getter
@@ -13,8 +14,8 @@ import java.time.LocalDateTime;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)
 public class CommentResponse {
     private Long id;
-    private LocalDateTime createAt;
-    private LocalDateTime updateAt;
+    private ZonedDateTime createAt;
+    private ZonedDateTime updateAt;
     private String body;
 
     private Author author;

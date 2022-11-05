@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,7 +42,7 @@ class CommentRepositoryTest {
 
     private User user;
     private Article article;
-    private LocalDateTime beforeCreated;
+    private ZonedDateTime beforeCreated;
 
     @BeforeEach
     void setup(){
@@ -56,7 +57,7 @@ class CommentRepositoryTest {
 
         String title = "create title";
         String slug = initSlug(title);
-        beforeCreated = LocalDateTime.now();
+        beforeCreated = ZonedDateTime.now();
         article = Article.builder()
                 .author(user)
                 .body("create body")
