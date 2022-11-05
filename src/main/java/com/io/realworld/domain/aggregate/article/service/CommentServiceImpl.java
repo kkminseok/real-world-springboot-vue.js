@@ -59,8 +59,8 @@ public class CommentServiceImpl implements CommentService {
 
         return CommentResponse.builder()
                 .id(comment.getId())
-                .createAt(comment.getCreatedDate())
-                .updateAt(comment.getModifiedDate())
+                .createdAt(comment.getCreatedDate())
+                .updatedAt(comment.getModifiedDate())
                 .body(comment.getBody())
                 .author(CommentResponse.Author.builder()
                         .username(profile.getUsername())

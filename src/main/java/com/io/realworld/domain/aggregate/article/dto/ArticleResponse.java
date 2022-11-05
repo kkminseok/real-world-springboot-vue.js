@@ -2,11 +2,9 @@ package com.io.realworld.domain.aggregate.article.dto;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.io.realworld.domain.aggregate.profile.dto.ProfileResponse;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
 

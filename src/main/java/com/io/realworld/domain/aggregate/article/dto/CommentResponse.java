@@ -14,8 +14,8 @@ import java.time.ZonedDateTime;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)
 public class CommentResponse {
     private Long id;
-    private ZonedDateTime createAt;
-    private ZonedDateTime updateAt;
+    private ZonedDateTime createdAt;
+    private ZonedDateTime updatedAt;
     private String body;
 
     private Author author;
