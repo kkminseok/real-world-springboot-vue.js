@@ -57,9 +57,14 @@ public class ArticleController {
         return articleService.unFavoriteArticle(userAuth, slug);
     }
 
+    @GetMapping("/{slug}/comments")
+    public CommentResponse.MultiComments getComments(@AuthenticationPrincipal UserAuth userAuth, @PathVariable("slug") String slug){
+        return CommentResponse.MultiComments.builder().comments(commentService.getComments(userAuth, slug)).build();
+    }
+
     @PostMapping("/{slug}/comments")
-    public CommentResponse createComment(@AuthenticationPrincipal UserAuth userAuth, @PathVariable("slug") String slug, @Valid @RequestBody Commentdto commentdto) {
-        return commentService.addComment(userAuth, slug, commentdto);
+    public CommentResponse.SingleComment createComment(@AuthenticationPrincipal UserAuth userAuth, @PathVariable("slug") String slug, @Valid @RequestBody Commentdto commentdto) {
+        return CommentResponse.SingleComment.builder().comment(commentService.addComment(userAuth, slug, commentdto)).build();
     }
 
     @DeleteMapping("/{slug}/comments/{id}")

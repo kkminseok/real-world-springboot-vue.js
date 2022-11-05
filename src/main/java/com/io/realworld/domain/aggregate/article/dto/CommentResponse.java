@@ -4,14 +4,13 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Builder
 @Getter
-@JsonTypeName("comment")
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)
 public class CommentResponse {
     private Long id;
     private ZonedDateTime createdAt;
@@ -27,5 +26,17 @@ public class CommentResponse {
         private String bio;
         private String image;
         private Boolean following;
+    }
+
+    @Builder
+    @Getter
+    public static class SingleComment{
+        CommentResponse comment;
+    }
+
+    @Builder
+    @Getter
+    public static class MultiComments{
+        List<CommentResponse> comments;
     }
 }

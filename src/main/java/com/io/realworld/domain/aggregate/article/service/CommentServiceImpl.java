@@ -16,7 +16,10 @@ import com.io.realworld.exception.Error;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +29,30 @@ public class CommentServiceImpl implements CommentService {
     private final ProfileService profileService;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
+
+    @Override
+    public List<CommentResponse> getComments(UserAuth userAuth, String slug){
+        Optional<Article> article = articleRepository.findAll().stream().filter(findArticle -> findArticle.getSlug().equals(slug)).findAny();
+        if (article.isEmpty()) {
+            throw new CustomException(Error.ARTICLE_NOT_FOUND);
+        }
+        List<Comment> comments = commentRepository.findAll().stream().filter(findComment -> findComment.getArticle().getId().equals(article.get().getId())).collect(Collectors.toList());
+        return comments.stream().map(comment-> {
+            ProfileResponse profile = profileService.getProfile(userAuth, comment.getAuthor().getUsername());
+            return CommentResponse.builder()
+                    .id(comment.getId())
+                    .createdAt(comment.getCreatedDate())
+                    .updatedAt(comment.getModifiedDate())
+                    .body(comment.getBody())
+                    .author(CommentResponse.Author.builder()
+                            .bio(profile.getBio())
+                            .image(profile.getImage())
+                            .following(profile.getFollowing())
+                            .username(profile.getUsername())
+                            .build()).build();
+        }).collect(Collectors.toList());
+
+    }
 
     @Override
     public CommentResponse addComment(UserAuth userAuth, String slug, Commentdto commentdto) {
