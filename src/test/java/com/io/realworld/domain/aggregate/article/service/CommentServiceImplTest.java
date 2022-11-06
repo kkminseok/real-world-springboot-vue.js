@@ -55,13 +55,56 @@ class CommentServiceImplTest {
 
     @BeforeEach
     void setup() {
-        user = User.builder().id(1L).username("kms").build();
+        user = User.builder().id(1L).username("kms").image("image").bio("bio").build();
         String slug = "slug";
         articles = List.of(Article.builder().id(1L).slug(slug).author(user).tagList(List.of()).build());
         userAuth = UserAuth.builder().id(1L).username(user.getUsername()).build();
-        profileResponse = ProfileResponse.builder().bio("bio").following(false).username("username").image("image").build();
+        profileResponse = ProfileResponse.builder().bio("bio").following(false).username("kms").image("image").build();
 
 
+    }
+
+    @Test
+    @DisplayName("댓글 가져오기 테스트")
+    void getComment(){
+        String slug = "slug";
+        UserAuth userAuth = UserAuth.builder().username("kms").id(1L).build();
+        List<Comment> commentList = List.of(
+                Comment.builder().id(1L).author(user)
+                        .body("body").article(Article.builder().id(1L).build()).build());
+
+
+        when(articleRepository.findAll()).thenReturn(articles);
+        when(commentRepository.findAll()).thenReturn(commentList);
+        when(profileService.getProfile(eq(userAuth), any(String.class))).thenReturn(profileResponse);
+
+        List<CommentResponse> commentResponses = commentService.getComments(userAuth,slug);
+        assertThat(commentResponses.size()).isEqualTo(1);
+        assertThat(commentResponses.get(0).getId()).isEqualTo(commentList.get(0).getId());
+        assertThat(commentResponses.get(0).getBody()).isEqualTo(commentList.get(0).getBody());
+        assertThat(commentResponses.get(0).getAuthor().getUsername()).isEqualTo(commentList.get(0).getAuthor().getUsername());
+        assertThat(commentResponses.get(0).getAuthor().getImage()).isEqualTo(commentList.get(0).getAuthor().getImage());
+        assertThat(commentResponses.get(0).getAuthor().getBio()).isEqualTo(commentList.get(0).getAuthor().getBio());
+
+    }
+
+    @Test
+    @DisplayName("댓글 가져오기 실패 테스트 - 게시글 없음")
+    void addCommentFailNotFoundArticle() {
+        String slug = "slug";
+        Commentdto commentdto = Commentdto.builder().body("body").build();
+        UserAuth userAuth = UserAuth.builder().username("kms").id(1L).build();
+
+        when(articleRepository.findAll()).thenReturn(List.of());
+        when(userRepository.findById(eq(userAuth.getId()))).thenReturn(Optional.of(user));
+
+        try{
+            commentService.addComment(userAuth, slug, commentdto);
+        }catch (CustomException e){
+            assertThat(e.getError()).isEqualTo(Error.ARTICLE_NOT_FOUND);
+            assertThat(e.getError().getStatus()).isEqualTo(Error.ARTICLE_NOT_FOUND.getStatus());
+            assertThat(e.getError().getMessage()).isEqualTo(Error.ARTICLE_NOT_FOUND.getMessage());
+        }
     }
 
     @Test
@@ -86,6 +129,7 @@ class CommentServiceImplTest {
         assertThat(commentResponse.getAuthor().getUsername()).isEqualTo(profileResponse.getUsername());
         assertThat(commentResponse.getAuthor().getImage()).isEqualTo(profileResponse.getImage());
     }
+
 
     @Test
     @DisplayName("댓글 추가 실패 테스트 - 게시글 없음")
