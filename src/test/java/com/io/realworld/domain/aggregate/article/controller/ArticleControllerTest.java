@@ -22,8 +22,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -279,6 +283,25 @@ class ArticleControllerTest {
                 .andExpect(jsonPath("$.article.title",Matchers.equalTo(articleResponse.getTitle())))
                 .andExpect(jsonPath("$.article.description", Matchers.equalTo(articleResponse.getDescription())))
                 .andExpect(jsonPath("$.article.slug", Matchers.equalTo(slug)));
+    }
+
+    @WithAuthUser
+    @Test
+    @DisplayName("댓글 가져오기 컨트롤러 테스트")
+    void getComment() throws Exception{
+        CommentResponse commentResponse = CommentResponse.builder().body("body").build();
+        List<CommentResponse> commentResponses = List.of(commentResponse);
+
+        when(commentService.getComments(any(UserAuth.class), eq(slug))).thenReturn(commentResponses);
+
+        mockMvc.perform(get("/api/articles/" + slug + "/comments"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.comments[0]",Matchers.notNullValue(CommentResponse.class)));
+    }
+
+    @GetMapping("/{slug}/comments")
+    public CommentResponse.MultiComments getComments(@AuthenticationPrincipal UserAuth userAuth, @PathVariable("slug") String slug){
+        return CommentResponse.MultiComments.builder().comments(commentService.getComments(userAuth, slug)).build();
     }
 
     @WithAuthUser
