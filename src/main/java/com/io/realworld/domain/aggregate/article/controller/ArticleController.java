@@ -24,7 +24,7 @@ public class ArticleController {
 
     @GetMapping()
     public List<ArticleResponse> getArticles(@AuthenticationPrincipal UserAuth userAuth, @ModelAttribute ArticleParam articleParam) {
-        return articleService.getArticles(articleParam);
+        return articleService.getArticles(userAuth, articleParam);
     }
 
     @GetMapping("/{slug}")

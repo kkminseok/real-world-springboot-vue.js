@@ -10,7 +10,7 @@ import java.util.List;
 
 
 public interface ArticleService {
-    List<ArticleResponse> getArticles(ArticleParam articleParam);
+    List<ArticleResponse> getArticles(UserAuth userAuth, ArticleParam articleParam);
 
     ArticleResponse getArticle(UserAuth userAuth, String slug);
 

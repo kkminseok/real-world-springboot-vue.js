@@ -44,7 +44,7 @@ public class ArticleServiceImpl implements ArticleService {
     private final FavoriteRepository favoriteRepository;
 
     @Override
-    public  List<ArticleResponse> getArticles(ArticleParam articleParam){
+    public  List<ArticleResponse> getArticles(UserAuth userAuth, ArticleParam articleParam){
         Pageable pageable = null;
         List<Article> articles = null;
 
