@@ -44,20 +44,22 @@ public class ArticleServiceImpl implements ArticleService {
     private final FavoriteRepository favoriteRepository;
 
     @Override
-    public  List<ArticleResponse> getArticles(UserAuth userAuth, ArticleParam articleParam){
+    public List<ArticleResponse> getArticles(UserAuth userAuth, ArticleParam articleParam) {
         Pageable pageable = null;
-        List<Article> articles = null;
+        List<Article> articles = new ArrayList<>();
 
-        if(articleParam.getOffset() != null){
+        if (articleParam.getOffset() != null) {
             pageable = PageRequest.of(articleParam.getOffset(), articleParam.getLimit());
         }
 
-        if(articleParam.getTag() != null){
-            articles = articleRepository.findByTag(articleParam.getTag(),pageable);
+        if (articleParam.getTag() != null) {
+            articles = articleRepository.findByTag(articleParam.getTag(), pageable);
         }
+        System.out.println(articles.size());
 
-
-        return List.of();
+        return articles.stream().map(article -> {
+            return convertDtoWithUser(article, userAuth);
+        }).collect(Collectors.toList());
     }
 
     // token을 받을수도 안 받을수도 있음.
@@ -91,18 +93,24 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public ArticleResponse updateArticle(UserAuth userAuth, String slug, ArticleUpdate articleUpdate) {
         Optional<Article> article = articleRepository.findAll().stream().filter(findArticle ->
-            findArticle.getSlug().equals(slug) && findArticle.getAuthor().getUsername().equals(userAuth.getUsername())
+                findArticle.getSlug().equals(slug) && findArticle.getAuthor().getUsername().equals(userAuth.getUsername())
         ).findAny();
-        if (article.isEmpty()) { throw new CustomException(Error.ARTICLE_NOT_FOUND); }
+        if (article.isEmpty()) {
+            throw new CustomException(Error.ARTICLE_NOT_FOUND);
+        }
 
         if (articleUpdate.getTitle() != null) {
             article.get().changeTitle(articleUpdate.getTitle());
             article.get().changeSlug(initSlug(articleUpdate.getTitle()));
         }
-        if(articleUpdate.getDescription() != null){ article.get().changeDescription(articleUpdate.getDescription()); }
-        if(articleUpdate.getBody() != null){ article.get().changeBody(articleUpdate.getBody()); }
+        if (articleUpdate.getDescription() != null) {
+            article.get().changeDescription(articleUpdate.getDescription());
+        }
+        if (articleUpdate.getBody() != null) {
+            article.get().changeBody(articleUpdate.getBody());
+        }
 
-        return convertDtoWithUser(article.get(),userAuth);
+        return convertDtoWithUser(article.get(), userAuth);
 
     }
 
@@ -115,21 +123,23 @@ public class ArticleServiceImpl implements ArticleService {
         }
     }
 
-    public ArticleResponse favoriteArticle(UserAuth userAuth, String slug){
+    public ArticleResponse favoriteArticle(UserAuth userAuth, String slug) {
         Optional<Article> article = articleRepository.findAll().stream().filter(findArticle ->
                 findArticle.getSlug().equals(slug)).findAny();
         Optional<User> user = userRepository.findById(userAuth.getId());
-        if(article.isEmpty()){
+        if (article.isEmpty()) {
             throw new CustomException(Error.ARTICLE_NOT_FOUND);
         }
-        if(user.isEmpty()){
+        if (user.isEmpty()) {
             throw new CustomException(Error.USER_NOT_FOUND);
         }
 
-        favoriteRepository.findByArticleIdAndUserId(article.get().getId(), userAuth.getId()).ifPresent(favoriteStatus -> {throw new CustomException(Error.ALREADY_FAVORITE_ARTICLE);});
+        favoriteRepository.findByArticleIdAndUserId(article.get().getId(), userAuth.getId()).ifPresent(favoriteStatus -> {
+            throw new CustomException(Error.ALREADY_FAVORITE_ARTICLE);
+        });
         Favorite favorite = Favorite.builder().article(article.get()).user(user.get()).build();
         favoriteRepository.save(favorite);
-        return convertDtoWithUser(article.get(),userAuth);
+        return convertDtoWithUser(article.get(), userAuth);
 
     }
 
@@ -138,10 +148,10 @@ public class ArticleServiceImpl implements ArticleService {
         Optional<Article> article = articleRepository.findAll().stream().filter(findArticle ->
                 findArticle.getSlug().equals(slug)).findAny();
         Optional<User> user = userRepository.findById(userAuth.getId());
-        if(article.isEmpty()){
+        if (article.isEmpty()) {
             throw new CustomException(Error.ARTICLE_NOT_FOUND);
         }
-        if(user.isEmpty()){
+        if (user.isEmpty()) {
             throw new CustomException(Error.USER_NOT_FOUND);
         }
 
@@ -149,7 +159,7 @@ public class ArticleServiceImpl implements ArticleService {
             throw new CustomException(Error.ALREADY_UN_FAVORITE_ARTICLE);
         });
         favoriteRepository.delete(favorite);
-        return convertDtoWithUser(article.get(),userAuth);
+        return convertDtoWithUser(article.get(), userAuth);
     }
 
     private String initSlug(String title) {
@@ -186,6 +196,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     private Boolean getFavoritesStatus(UserAuth userAuth, Article article) {
+        if (userAuth == null) return false;
         Optional<Favorite> favoriteStatus = favoriteRepository.findByArticleIdAndUserId(article.getId(), userAuth.getId());
         return favoriteStatus.isEmpty() ? false : true;
     }
