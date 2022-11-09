@@ -55,7 +55,14 @@ public class ArticleServiceImpl implements ArticleService {
         if (articleParam.getTag() != null) {
             articles = articleRepository.findByTag(articleParam.getTag(), pageable);
         }
-        System.out.println(articles.size());
+
+        if(articleParam.getAuthor() != null){
+            articles = articleRepository.findByAuthorName(articleParam.getAuthor(), pageable);
+        }
+
+        if(articleParam.getFavorited() != null){
+            articles = articleRepository.findByFavoritedUser(articleParam.getFavorited(), pageable);
+        }
 
         return articles.stream().map(article -> {
             return convertDtoWithUser(article, userAuth);
