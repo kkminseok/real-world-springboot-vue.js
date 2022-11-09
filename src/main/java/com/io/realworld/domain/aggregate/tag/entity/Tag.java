@@ -1,5 +1,6 @@
 package com.io.realworld.domain.aggregate.tag.entity;
 
+import com.io.realworld.base.entity.DateEntity;
 import com.io.realworld.domain.aggregate.article.entity.Article;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +15,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Table(name = "tags")
-public class Tag {
+public class Tag extends DateEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

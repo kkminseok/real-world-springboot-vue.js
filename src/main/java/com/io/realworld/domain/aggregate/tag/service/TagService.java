@@ -10,6 +10,5 @@ import java.util.List;
 
 
 public interface TagService {
-    void save(Article article);
     List<String> getTags();
 }

@@ -10,8 +10,6 @@ import java.util.List;
 
 @Builder
 @Getter
-@JsonTypeName("article")
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)
 public class ArticleResponse {
     private String slug;
     private String title;
@@ -34,6 +32,19 @@ public class ArticleResponse {
         private String bio;
         private String image;
         private Boolean following;
+    }
+
+    @Builder
+    @Getter
+    public static class SingleArticle{
+        ArticleResponse article;
+    }
+
+    @Builder
+    @Getter
+    public static class MultiArticles{
+        List<ArticleResponse> articles;
+        Integer articlesCount;
     }
 
 

@@ -23,23 +23,24 @@ public class ArticleController {
     }
 
     @GetMapping()
-    public List<ArticleResponse> getArticles(@AuthenticationPrincipal UserAuth userAuth, @ModelAttribute ArticleParam articleParam) {
-        return articleService.getArticles(userAuth, articleParam);
+    public ArticleResponse.MultiArticles getArticles(@AuthenticationPrincipal UserAuth userAuth, @ModelAttribute ArticleParam articleParam) {
+        List<ArticleResponse> articles = articleService.getArticles(userAuth, articleParam);
+        return ArticleResponse.MultiArticles.builder().articles(articles).articlesCount(articles.size()).build();
     }
 
     @GetMapping("/{slug}")
-    public ArticleResponse getArticle(@AuthenticationPrincipal UserAuth userAuth, @PathVariable("slug") String slug) {
-        return articleService.getArticle(userAuth, slug);
+    public ArticleResponse.SingleArticle getArticle(@AuthenticationPrincipal UserAuth userAuth, @PathVariable("slug") String slug) {
+        return ArticleResponse.SingleArticle.builder().article(articleService.getArticle(userAuth, slug)).build();
     }
 
     @PostMapping
-    public ArticleResponse createArticle(@AuthenticationPrincipal UserAuth userAuth, @Valid @RequestBody Articledto articledto) {
-        return articleService.createArticle(userAuth, articledto);
+    public ArticleResponse.SingleArticle createArticle(@AuthenticationPrincipal UserAuth userAuth, @Valid @RequestBody Articledto articledto) {
+        return ArticleResponse.SingleArticle.builder().article(articleService.createArticle(userAuth, articledto)).build();
     }
 
     @PutMapping("/{slug}")
-    public ArticleResponse updateArticle(@AuthenticationPrincipal UserAuth userAuth, @PathVariable("slug") String slug, @Valid @RequestBody ArticleUpdate articleUpdate) {
-        return articleService.updateArticle(userAuth, slug, articleUpdate);
+    public ArticleResponse.SingleArticle updateArticle(@AuthenticationPrincipal UserAuth userAuth, @PathVariable("slug") String slug, @Valid @RequestBody ArticleUpdate articleUpdate) {
+        return ArticleResponse.SingleArticle.builder().article(articleService.updateArticle(userAuth, slug, articleUpdate)).build();
     }
 
     @DeleteMapping("/{slug}")
@@ -48,13 +49,13 @@ public class ArticleController {
     }
 
     @PostMapping("/{slug}/favorite")
-    public ArticleResponse favoriteArticle(@AuthenticationPrincipal UserAuth userAuth, @PathVariable("slug") String slug) {
-        return articleService.favoriteArticle(userAuth, slug);
+    public ArticleResponse.SingleArticle favoriteArticle(@AuthenticationPrincipal UserAuth userAuth, @PathVariable("slug") String slug) {
+        return ArticleResponse.SingleArticle.builder().article(articleService.favoriteArticle(userAuth, slug)).build();
     }
 
     @DeleteMapping("/{slug}/favorite")
-    public ArticleResponse unFavoriteArticle(@AuthenticationPrincipal UserAuth userAuth, @PathVariable("slug") String slug) {
-        return articleService.unFavoriteArticle(userAuth, slug);
+    public ArticleResponse.SingleArticle unFavoriteArticle(@AuthenticationPrincipal UserAuth userAuth, @PathVariable("slug") String slug) {
+        return ArticleResponse.SingleArticle.builder().article(articleService.unFavoriteArticle(userAuth, slug)).build();
     }
 
     @GetMapping("/{slug}/comments")

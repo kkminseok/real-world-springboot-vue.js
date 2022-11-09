@@ -4,14 +4,11 @@ import com.io.realworld.base.entity.DateEntity;
 import com.io.realworld.domain.aggregate.tag.entity.Tag;
 import com.io.realworld.domain.aggregate.user.entity.User;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Immutable;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Entity
@@ -53,6 +50,16 @@ public class Article extends DateEntity {
         if(this.getTagList() == null){
             this.tagList = new ArrayList<>();
         }
+        Collections.sort(tags, new Comparator<Tag>() {
+            @Override
+            public int compare(Tag tag1, Tag tag2) {
+                if (tag1.getTagName() == tag2.getTagName()) {
+                    return tag1.getCreatedDate().compareTo(tag2.getCreatedDate());
+                }else{
+                    return tag1.getTagName().compareTo(tag2.getTagName());
+                }
+            }
+        });
         this.tagList.addAll(tags);
     }
 

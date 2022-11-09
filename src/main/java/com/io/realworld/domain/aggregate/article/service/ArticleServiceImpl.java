@@ -89,7 +89,6 @@ public class ArticleServiceImpl implements ArticleService {
         articleEntity.setTagList(tags);
 
         articleRepository.save(articleEntity);
-        tagService.save(articleEntity);
 
         return convertDtoWithUser(articleEntity, userAuth);
     }
