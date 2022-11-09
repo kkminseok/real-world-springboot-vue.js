@@ -28,6 +28,12 @@ public class ArticleController {
         return ArticleResponse.MultiArticles.builder().articles(articles).articlesCount(articles.size()).build();
     }
 
+    @GetMapping("/feed")
+    public ArticleResponse.MultiArticles getFeed(@AuthenticationPrincipal UserAuth userAuth, @ModelAttribute FeedParam feedParam){
+        List<ArticleResponse> articles = articleService.getFeed(userAuth, feedParam);
+        return ArticleResponse.MultiArticles.builder().articles(articles).articlesCount(articles.size()).build();
+    }
+
     @GetMapping("/{slug}")
     public ArticleResponse.SingleArticle getArticle(@AuthenticationPrincipal UserAuth userAuth, @PathVariable("slug") String slug) {
         return ArticleResponse.SingleArticle.builder().article(articleService.getArticle(userAuth, slug)).build();

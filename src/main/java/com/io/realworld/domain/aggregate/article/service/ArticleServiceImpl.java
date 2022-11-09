@@ -1,14 +1,13 @@
 package com.io.realworld.domain.aggregate.article.service;
 
-import com.io.realworld.domain.aggregate.article.dto.ArticleParam;
-import com.io.realworld.domain.aggregate.article.dto.ArticleUpdate;
-import com.io.realworld.domain.aggregate.article.dto.Articledto;
-import com.io.realworld.domain.aggregate.article.dto.ArticleResponse;
+import com.io.realworld.domain.aggregate.article.dto.*;
 import com.io.realworld.domain.aggregate.article.entity.Article;
 import com.io.realworld.domain.aggregate.article.entity.Favorite;
 import com.io.realworld.domain.aggregate.article.repository.ArticleRepository;
 import com.io.realworld.domain.aggregate.article.repository.FavoriteRepository;
 import com.io.realworld.domain.aggregate.profile.dto.ProfileResponse;
+import com.io.realworld.domain.aggregate.profile.entity.Follow;
+import com.io.realworld.domain.aggregate.profile.repository.ProfileRepository;
 import com.io.realworld.domain.aggregate.profile.service.ProfileService;
 import com.io.realworld.domain.aggregate.tag.entity.Tag;
 import com.io.realworld.domain.aggregate.tag.service.TagService;
@@ -35,7 +34,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class ArticleServiceImpl implements ArticleService {
 
-    private final TagService tagService;
+    private final ProfileRepository profileRepository;
     private final ProfileService profileService;
     private final UserRepository userRepository;
     private final ArticleRepository articleRepository;
@@ -66,6 +65,21 @@ public class ArticleServiceImpl implements ArticleService {
         return articles.stream().map(article -> {
             return convertDtoWithUser(article, userAuth);
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ArticleResponse> getFeed(UserAuth userAuth, FeedParam feedParam){
+        List<Article> articles = new ArrayList<>();
+        Integer offset = feedParam.getOffset() == null ? 0 : feedParam.getOffset();
+        Integer limit = feedParam.getLimit() == null ? 20 : feedParam.getLimit();
+
+        Pageable pageable = PageRequest.of(offset,limit);
+
+        List<Follow> follows = profileRepository.findByFollowerId(userAuth.getId());
+        System.out.println(follows.size());
+        follows.stream().forEach(follow -> System.out.println(follow.getFollower().getUsername()));
+
+        return List.of();
     }
 
     // token을 받을수도 안 받을수도 있음.

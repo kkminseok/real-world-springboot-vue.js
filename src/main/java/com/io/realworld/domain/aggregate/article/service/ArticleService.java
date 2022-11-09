@@ -1,9 +1,6 @@
 package com.io.realworld.domain.aggregate.article.service;
 
-import com.io.realworld.domain.aggregate.article.dto.ArticleParam;
-import com.io.realworld.domain.aggregate.article.dto.ArticleUpdate;
-import com.io.realworld.domain.aggregate.article.dto.Articledto;
-import com.io.realworld.domain.aggregate.article.dto.ArticleResponse;
+import com.io.realworld.domain.aggregate.article.dto.*;
 import com.io.realworld.domain.aggregate.user.dto.UserAuth;
 
 import java.util.List;
@@ -11,6 +8,8 @@ import java.util.List;
 
 public interface ArticleService {
     List<ArticleResponse> getArticles(UserAuth userAuth, ArticleParam articleParam);
+
+    List<ArticleResponse> getFeed(UserAuth userAuth, FeedParam feedParam);
 
     ArticleResponse getArticle(UserAuth userAuth, String slug);
 
@@ -23,6 +22,7 @@ public interface ArticleService {
     ArticleResponse favoriteArticle(UserAuth userAuth, String slug);
 
     ArticleResponse unFavoriteArticle(UserAuth userAuth, String slug);
+
 
 
 }
