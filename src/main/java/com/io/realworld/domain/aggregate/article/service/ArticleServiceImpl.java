@@ -24,7 +24,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -45,12 +44,12 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public List<ArticleResponse> getArticles(UserAuth userAuth, ArticleParam articleParam) {
-        Pageable pageable = null;
-        List<Article> articles = new ArrayList<>();
 
-        if (articleParam.getOffset() != null) {
-            pageable = PageRequest.of(articleParam.getOffset(), articleParam.getLimit());
-        }
+        List<Article> articles = new ArrayList<>();
+        Integer offset = articleParam.getOffset() == null ? 0 : articleParam.getOffset();
+        Integer limit = articleParam.getLimit() == null ? 20 : articleParam.getLimit();
+
+        Pageable pageable = PageRequest.of(offset,limit);
 
         if (articleParam.getTag() != null) {
             articles = articleRepository.findByTag(articleParam.getTag(), pageable);
