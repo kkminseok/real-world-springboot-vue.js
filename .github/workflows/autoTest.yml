@@ -64,4 +64,16 @@ jobs:
           AWS_REGION: ap-northeast-2
         run: |
           aws s3 cp --region ap-northeast-2 --acl private ./realworld.zip s3://$AWS_S3_BUCKET
-
+          
+    # 배포
+      - name: CodeDeploy
+        env:
+          AWS_S3_BUCKET: ${{secrets.AWS_PRODUCTION_BUCKET_NAME}}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_IAM_MANAGER_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_IAM_MANAGER_SECRET_ACCESS_KEY }}
+        run: |
+          aws deploy create-deployment \
+            --application-name real-world \
+            --deployment-group-name real-world-group \
+            --s3-location bucket=$AWS_S3_BUCKET,key=realworld.zip,bundleType=zip \
+            --region ap-northeast-2
