@@ -76,10 +76,14 @@ public class ArticleServiceImpl implements ArticleService {
         Pageable pageable = PageRequest.of(offset,limit);
 
         List<Follow> follows = profileRepository.findByFollowerId(userAuth.getId());
-        System.out.println(follows.size());
-        follows.stream().forEach(follow -> System.out.println(follow.getFollower().getUsername()));
+        follows.stream().forEach(follow -> {
+            String followerName = follow.getFollower().getUsername();
+            articles.addAll(articleRepository.findByAuthorName(followerName,pageable));
+        });
 
-        return List.of();
+        return articles.stream().map(article -> {
+            return convertDtoWithUser(article,userAuth);
+        }).collect(Collectors.toList());
     }
 
     // token을 받을수도 안 받을수도 있음.
