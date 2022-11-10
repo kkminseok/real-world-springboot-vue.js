@@ -1,32 +1,36 @@
 package com.io.realworld.domain.aggregate.article.service;
 
-import com.io.realworld.domain.aggregate.article.dto.ArticleResponse;
-import com.io.realworld.domain.aggregate.article.dto.ArticleUpdate;
-import com.io.realworld.domain.aggregate.article.dto.Articledto;
+import com.io.realworld.domain.aggregate.article.dto.*;
 import com.io.realworld.domain.aggregate.article.entity.Article;
 import com.io.realworld.domain.aggregate.article.entity.Favorite;
 import com.io.realworld.domain.aggregate.article.repository.ArticleRepository;
 import com.io.realworld.domain.aggregate.article.repository.FavoriteRepository;
 import com.io.realworld.domain.aggregate.profile.dto.ProfileResponse;
+import com.io.realworld.domain.aggregate.profile.entity.Follow;
+import com.io.realworld.domain.aggregate.profile.repository.ProfileRepository;
 import com.io.realworld.domain.aggregate.profile.service.ProfileService;
+import com.io.realworld.domain.aggregate.tag.entity.Tag;
 import com.io.realworld.domain.aggregate.tag.service.TagService;
 import com.io.realworld.domain.aggregate.user.dto.UserAuth;
 import com.io.realworld.domain.aggregate.user.entity.User;
 import com.io.realworld.domain.aggregate.user.repository.UserRepository;
 import com.io.realworld.exception.CustomException;
 import com.io.realworld.exception.Error;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -35,6 +39,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+
 
 @ExtendWith(MockitoExtension.class)
 class ArticleServiceImplTest {
@@ -56,6 +61,72 @@ class ArticleServiceImplTest {
 
     @Mock
     ProfileService profileService;
+
+    @Mock
+    ProfileRepository profileRepository;
+
+
+    @Test
+    @DisplayName("sv: 게시글들 가져오기 - tag가 일치")
+    void getArticlesTag(){
+        UserAuth userAuth = UserAuth.builder().id(1L).username("kms").build();
+        List<Article> articles = new ArrayList<Article>(){{
+            add(articlesListGet().get(0));
+        }};
+        ArticleParam articleParam = new ArticleParam();
+        articleParam.setTag("blogTag");
+
+        when(profileService.getProfile(eq(userAuth), any(String.class))).thenReturn(ProfileResponse.builder().username(articles.get(0).getAuthor().getUsername()).build());
+        when(articleRepository.findByTag(eq(articleParam.getTag()),any(Pageable.class))).thenReturn(articles);
+        List<ArticleResponse> articleResponses = articleService.getArticles(userAuth, articleParam);
+
+        assertThat(articleResponses.get(0).getTagList().get(0)).isEqualTo(articleParam.getTag());
+    }
+
+    @Test
+    @DisplayName("sv: 게시글들 가져오기 - author가 일치")
+    void getArticlesAuthor(){
+        UserAuth userAuth = UserAuth.builder().id(1L).username("kms").build();
+
+        ArticleParam articleParam = new ArticleParam();
+        articleParam.setAuthor("jyb");
+
+        List<Article> articles = articlesListGet().stream().filter(article -> {
+            return article.getAuthor().getUsername().equals(articleParam.getAuthor());
+        }).collect(Collectors.toList());
+
+
+        when(profileService.getProfile(eq(userAuth), any(String.class))).thenReturn(ProfileResponse.builder().username(articles.get(0).getAuthor().getUsername()).build());
+        when(articleRepository.findByAuthorName(eq(articleParam.getAuthor()),any(Pageable.class))).thenReturn(articles);
+        List<ArticleResponse> articleResponses = articleService.getArticles(userAuth, articleParam);
+
+        assertThat(articleResponses.get(0).getAuthor().getUsername()).isEqualTo(articleParam.getAuthor());
+    }
+
+    @Test
+    @DisplayName("sv: 피드 게시글 가져오기 ")
+    void getFeed(){
+        UserAuth userAuth = UserAuth.builder().id(1L).username("kms").build();
+
+        FeedParam feedParam = new FeedParam();
+
+        Article article = articlesListGet().get(2);
+        List<Article> articles = new ArrayList<>(){{
+            add(article);
+        }};
+
+        List<Follow> follows = new ArrayList<Follow>(){{
+            add(Follow.builder().followee(User.builder().username("kms").build()).follower(User.builder().username("eden").build()).build());
+        }};
+
+        when(profileService.getProfile(eq(userAuth), any(String.class))).thenReturn(ProfileResponse.builder().username(articles.get(0).getAuthor().getUsername()).build());
+        when(profileRepository.findByFollowerId(any(Long.class))).thenReturn(follows);
+        when(articleRepository.findByAuthorName(any(String.class),any(Pageable.class))).thenReturn(articles);
+        List<ArticleResponse> articleResponses = articleService.getFeed(userAuth, feedParam);
+
+        assertThat(articleResponses.get(0).getAuthor().getUsername()).isEqualTo(follows.get(0).getFollower().getUsername());
+    }
+
 
     @Test
     @DisplayName("sv: 게시글 만들기 성공")
@@ -395,6 +466,65 @@ class ArticleServiceImplTest {
             assertThat(e.getError().getStatus()).isEqualTo(Error.ALREADY_UN_FAVORITE_ARTICLE.getStatus());
         }
 
+    }
+
+    List<Article> articlesListGet(){
+        List<Tag> blogTags = new ArrayList<Tag>(){{
+         add(Tag.builder().tagName("blogTag").build());
+         add(Tag.builder().tagName("tutorial").build());
+        }};
+        List<Tag> dietTags = new ArrayList<Tag>(){{
+            add(Tag.builder().tagName("dietTag").build());
+            add(Tag.builder().tagName("tutorial").build());
+        }};
+        Article blogPost = Article.builder()
+                .id(1L)
+                .slug("post-my-blog")
+                .author(User.builder()
+                        .username("kms")
+                        .image("blog image")
+                        .bio("blog bio")
+                        .email("kms@naver.com").build())
+                .body("blog Post very ez")
+                .tagList(blogTags)
+                .description("blog create")
+                .title("Post My Blog")
+                .build();
+
+        Article dietPost = Article.builder()
+                .id(2L)
+                .slug("post-week-diet")
+                .author(User.builder()
+                        .username("jyb")
+                        .image("diet image")
+                        .bio("diet bio")
+                        .email("jyb@naver.com").build())
+                .body("diet very hard")
+                .tagList(dietTags)
+                .description("blog create")
+                .title("Post week diet")
+                .build();
+
+        Article codePost = Article.builder()
+                .id(3L)
+                .slug("post-coding-test")
+                .author(User.builder()
+                        .username("eden")
+                        .image("programmer")
+                        .bio("s")
+                        .email("tesla@google.com").build())
+                .body("Tesla very nice")
+                .tagList(dietTags)
+                .description("realworldApp")
+                .title("post Coding Test")
+                .build();
+
+        List<Article> articles = new ArrayList<Article>(){{
+            add(blogPost);
+            add(dietPost);
+            add(codePost);
+        }};
+        return articles;
     }
 
 

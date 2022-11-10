@@ -52,13 +52,9 @@ public class ArticleServiceImpl implements ArticleService {
 
         if (articleParam.getTag() != null) {
             articles = articleRepository.findByTag(articleParam.getTag(), pageable);
-        }
-
-        if(articleParam.getAuthor() != null){
+        }else if(articleParam.getAuthor() != null){
             articles = articleRepository.findByAuthorName(articleParam.getAuthor(), pageable);
-        }
-
-        if(articleParam.getFavorited() != null){
+        }else if(articleParam.getFavorited() != null){
             articles = articleRepository.findByFavoritedUser(articleParam.getFavorited(), pageable);
         }
 
