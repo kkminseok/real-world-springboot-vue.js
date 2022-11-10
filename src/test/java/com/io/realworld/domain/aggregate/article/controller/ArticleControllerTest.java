@@ -5,18 +5,12 @@ import com.io.realworld.config.WithAuthUser;
 import com.io.realworld.domain.aggregate.article.dto.*;
 import com.io.realworld.domain.aggregate.article.service.ArticleService;
 import com.io.realworld.domain.aggregate.article.service.CommentService;
-import com.io.realworld.domain.aggregate.profile.dto.ProfileResponse;
 import com.io.realworld.domain.aggregate.user.dto.UserAuth;
-import com.io.realworld.domain.aggregate.user.dto.UserUpdate;
 import com.io.realworld.domain.service.JwtService;
-import lombok.With;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -28,7 +22,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -70,6 +63,7 @@ class ArticleControllerTest {
         slug = title.toLowerCase().replace(' ','-');
         articleResponse = ArticleResponse.builder()
                 .author(ArticleResponse.Author.builder().bio("bio")
+                        .username("kms")
                         .following(false)
                         .username("madeArticle")
                         .image("image")
@@ -87,6 +81,40 @@ class ArticleControllerTest {
                 .description("create description")
                 .title("create title")
                 .build();
+    }
+
+    @WithAuthUser
+    @Test
+    @DisplayName("게시글들 가져오기 컨트롤러 테스트")
+    void getArticles() throws Exception{
+        List<ArticleResponse> articleResponses = List.of(articleResponse);
+        when(articleService.getArticles(any(UserAuth.class), any(ArticleParam.class))).thenReturn(articleResponses);
+
+        mockMvc.perform(get("/api/articles" + "?author=kms"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.articles[0]", Matchers.notNullValue(ArticleResponse.class)))
+                .andExpect(jsonPath("$.articles[0].title",Matchers.equalTo(articleResponses.get(0).getTitle())))
+                .andExpect(jsonPath("$.articles[0].description",Matchers.equalTo(articleResponses.get(0).getDescription())))
+                .andExpect(jsonPath("$.articles[0].body",Matchers.equalTo(articleResponses.get(0).getBody())))
+                .andExpect(jsonPath("$.articles[0].slug",Matchers.equalTo(articleResponses.get(0).getSlug())))
+                .andExpect(jsonPath("$.articles[0].tagList",Matchers.equalTo(articleResponses.get(0).getTagList())));
+    }
+
+    @WithAuthUser
+    @Test
+    @DisplayName("팔로우한 유저 게시글 가져오기 컨트롤러 테스트")
+    void getFeed() throws Exception{
+        List<ArticleResponse> articleResponses = List.of(articleResponse);
+        when(articleService.getFeed(any(UserAuth.class), any(FeedParam.class))).thenReturn(articleResponses);
+
+        mockMvc.perform(get("/api/articles/feed"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.articles[0]", Matchers.notNullValue(ArticleResponse.class)))
+                .andExpect(jsonPath("$.articles[0].title",Matchers.equalTo(articleResponses.get(0).getTitle())))
+                .andExpect(jsonPath("$.articles[0].description",Matchers.equalTo(articleResponses.get(0).getDescription())))
+                .andExpect(jsonPath("$.articles[0].body",Matchers.equalTo(articleResponses.get(0).getBody())))
+                .andExpect(jsonPath("$.articles[0].slug",Matchers.equalTo(articleResponses.get(0).getSlug())))
+                .andExpect(jsonPath("$.articles[0].tagList",Matchers.equalTo(articleResponses.get(0).getTagList())));
     }
 
     @WithAuthUser(email = "test@gmail.com", username = "kms", id = 1L)

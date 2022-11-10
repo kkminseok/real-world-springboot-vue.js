@@ -33,4 +33,52 @@ jobs:
         if: always()
         with:
           junit_files: "build/test-results/test/**/*.xml"
-
+          
+      # 전송할 파일을 담을 디렉토리 생성
+      - name: Make Directory for deliver
+        run: mkdir deploy
+        
+      # Jar 파일 Copy
+      - name: Copy Jar
+        run: cp ./build/libs/*.jar ./deploy/
+      
+      # appspec.yml 파일 복사
+      - name: Copy appspec.yml
+        run: cp appspec.yml ./deploy
+      
+      # deploy.sh 파일 복사
+      - name: Copy deploy.sh
+        run: cp deploy.sh ./deploy
+        
+      # test 파일 넘기기
+      - name: Copy doc
+        run: cp -r doc/ ./deploy
+        working-directory: ${{env.working-directory}}
+        
+      # 압축파일 형태로 전달
+      - name: Make zip file
+        run: zip -r -qq -j ./realworld.zip ./deploy
+        working-directory: ${{env.working-directory}}
+        
+      # S3 Bucket으로 copy
+      - name: Deliver to AWS S3
+        env:
+          AWS_S3_BUCKET: ${{secrets.AWS_PRODUCTION_BUCKET_NAME}}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_IAM_MANAGER_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_IAM_MANAGER_SECRET_ACCESS_KEY }}
+          AWS_REGION: ap-northeast-2
+        run: |
+          aws s3 cp --region ap-northeast-2 --acl private ./realworld.zip s3://$AWS_S3_BUCKET
+          
+    # 배포
+      - name: CodeDeploy
+        env:
+          AWS_S3_BUCKET: ${{secrets.AWS_PRODUCTION_BUCKET_NAME}}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_IAM_MANAGER_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_IAM_MANAGER_SECRET_ACCESS_KEY }}
+        run: |
+          aws deploy create-deployment \
+            --application-name real-world \
+            --deployment-group-name real-world-group \
+            --s3-location bucket=$AWS_S3_BUCKET,key=realworld.zip,bundleType=zip \
+            --region ap-northeast-2
