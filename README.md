@@ -10,3 +10,9 @@ This codebase was created to demonstrate a fully fledged fullstack application b
 We've gone to great lengths to adhere to the **[Spring Boot]** community styleguides & best practices.
 
 For more information on how to this works with other frontends/backends, head over to the [RealWorld](https://github.com/gothinkster/realworld) repo.
+
+## Enter
+
+```text
+<http://3.35.44.58:8080/>  //temp
+```
