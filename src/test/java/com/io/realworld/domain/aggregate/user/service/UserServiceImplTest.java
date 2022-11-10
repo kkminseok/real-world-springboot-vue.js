@@ -1,4 +1,4 @@
-package com.io.realworld.service;
+package com.io.realworld.domain.aggregate.user.service;
 
 import com.io.realworld.domain.aggregate.user.dto.*;
 import com.io.realworld.domain.aggregate.user.entity.User;
