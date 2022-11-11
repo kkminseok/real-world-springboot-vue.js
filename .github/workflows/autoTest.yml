@@ -23,7 +23,7 @@ jobs:
         run: npm -v
 
       - name: vue cli install
-        run: npm i @vue/cli-service
+        run: npm install -g @vue/cli
 
       - name: Grant execute permission gradlew
         run: chmod +x gradlew
