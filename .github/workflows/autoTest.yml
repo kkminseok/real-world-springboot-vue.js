@@ -17,6 +17,12 @@ jobs:
           java-version: '18'
           cache: gradle
 
+      - name: vue cli install
+        run: npm install -g @vue/cli
+
+      - name: vue cli install
+        run: npm i @vue/cli-service
+
       - name: Grant execute permission gradlew
         run: chmod +x gradlew
 
