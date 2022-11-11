@@ -53,6 +53,12 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+task setUp(type: NpmTask){
+    description = "Install pacakges"
+    args = ['install']
+    inputs.files file('./src/frontend/package.json')
+    outputs.files file('./src/frontend/node_modules')
+}
 
 task buildFrontEnd(type: NpmTask){
     description = "Build Vue.js"
