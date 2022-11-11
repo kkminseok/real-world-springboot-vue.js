@@ -16,6 +16,11 @@ jobs:
           distribution: 'temurin'
           java-version: '18'
           cache: gradle
+      - name: check node version
+        run: node -v
+
+      - name: check npm version
+        run: npm -v
 
       - name: Grant execute permission gradlew
         run: chmod +x gradlew
