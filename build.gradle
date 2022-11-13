@@ -2,7 +2,25 @@ plugins {
     id 'org.springframework.boot' version '2.7.3'
     id 'io.spring.dependency-management' version '1.0.13.RELEASE'
     id 'java'
+    id 'com.github.node-gradle.node' version '3.5.0'
 }
+
+println "### project.projectDir: ${project.projectDir}"
+// https://herojoon-dev.tistory.com/25
+node {
+
+
+    npmInstallCommand = "install"
+
+    workDir = file("${project.projectDir}/.gradle/nodejs")
+
+    npmWorkDir = file("${project.projectDir}/.gradle/npm")
+    nodeModulesDir = file("${project.projectDir}/src/frontend")
+
+    nodeProxySettings = ProxySettings.SMART
+}
+
+
 
 group = 'com.io'
 version = '0.0.1-SNAPSHOT'
@@ -10,6 +28,9 @@ sourceCompatibility = '18'
 
 repositories {
     mavenCentral()
+
+    //node gradle
+    gradlePluginPortal()
 }
 
 dependencies {
@@ -42,3 +63,15 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+apply plugin: 'com.github.node-gradle.node'
+
+task deleteVueBuildFiles(type: Delete) {
+    delete "src/main/resources/static/static", "src/main/resources/static/index.html", "${project.projectDir}/src/frontend/node_modules"
+}
+
+task npmBuild(type: NpmTask, dependsOn: ['deleteVueBuildFiles', 'npmInstall']) {
+    args = ["run", "build"]
+}
+
+processResources.dependsOn 'npmBuild'

@@ -3,6 +3,7 @@ package com.io.realworld.security;
 
 import com.io.realworld.security.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.boot.test.json.GsonTester;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +13,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -30,11 +33,16 @@ public class WebConfig {
     }
 
     @Bean
+    public WebSecurityCustomizer configure(){
+        return (web) -> web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+    }
+
+    @Bean
     @Order(0)
     public SecurityFilterChain resources(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .requestMatchers((matchers) -> {matchers.antMatchers("/h2-console/**");
-                matchers.antMatchers(HttpMethod.GET,"/api/articles/**","/");})
+                    matchers.antMatchers(HttpMethod.GET,"/api/articles/**","/");})
                 .authorizeHttpRequests((authorize) -> authorize.anyRequest().permitAll())
                 .requestCache().disable()
                 .securityContext().disable()
