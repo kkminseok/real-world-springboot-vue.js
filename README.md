@@ -13,9 +13,10 @@ For more information on how to this works with other frontends/backends, head ov
 
 ## Enter
 
-```text
-<http://3.35.44.58:8080/>  //temp
-```
+you can See Vue.js + SpringBoot FullStack Web Site Demo
+
+<http://3.35.44.58:8080/>
+
 
 ## BackEnd - Spring
 
