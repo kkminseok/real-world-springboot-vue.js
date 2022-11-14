@@ -1,11 +1,10 @@
 <template>
   <TheHeader></TheHeader>
-  <TheHome></TheHome>
+  <router-view></router-view>
   <TheFooter></TheFooter>
 </template>
 
 <script>
-import TheHome from '@/views/TheHome'
 import TheHeader from '@/components/TheHeader.vue'
 import TheFooter from "@/components/TheFooter";
 
@@ -13,7 +12,6 @@ export default {
   name: 'App',
   components: {
     TheHeader,
-    TheHome,
     TheFooter
   },
 

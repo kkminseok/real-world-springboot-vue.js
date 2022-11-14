@@ -42,7 +42,7 @@ public class WebConfig {
     public SecurityFilterChain resources(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .requestMatchers((matchers) -> {matchers.antMatchers("/h2-console/**");
-                    matchers.antMatchers(HttpMethod.GET,"/api/articles/**","/");})
+                    matchers.antMatchers(HttpMethod.GET,"/api/articles/**","/**");})
                 .authorizeHttpRequests((authorize) -> authorize.anyRequest().permitAll())
                 .requestCache().disable()
                 .securityContext().disable()

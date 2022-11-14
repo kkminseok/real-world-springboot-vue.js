@@ -13,7 +13,8 @@
     "https-browserify": "^1.0.0",
     "path": "^0.12.7",
     "request": "^2.88.2",
-    "vue": "^3.2.13"
+    "vue": "^3.2.13",
+    "vue-router": "^4.0.13"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
