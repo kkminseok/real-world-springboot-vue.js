@@ -20,13 +20,13 @@
 
           <form>
             <fieldset class="form-group">
-              <input class="form-control form-control-lg" type="text" placeholder="Your Name" id="username">
+              <input class="form-control form-control-lg" type="text" placeholder="Your Name" v-model="user.username">
             </fieldset>
             <fieldset class="form-group">
-              <input class="form-control form-control-lg" type="text" placeholder="Email" id="email">
+              <input class="form-control form-control-lg" type="text" placeholder="Email" v-model="user.email">
             </fieldset>
             <fieldset class="form-group">
-              <input class="form-control form-control-lg" type="password" placeholder="Password" id="password">
+              <input class="form-control form-control-lg" type="password" placeholder="Password" v-model="user.password">
             </fieldset>
             <button @click = "signup"  class="btn btn-lg btn-primary pull-xs-right">
               Sign up
@@ -43,58 +43,63 @@
 
 import axios from "axios";
 import router from "@/router";
-import {reactive} from "vue";
+import {reactive, ref} from "vue";
 
 export default {
   name: "TheRegister.vue",
   setup(){
-    const emailDuplicate = false;
-    const usernameDuplicate = false;
+    let emailDuplicate = ref(false);
+    let usernameDuplicate = ref(false);
 
-    const form = reactive({
+    const user = reactive({
       username: "",
       email: "",
       password: "",
     })
 
+    const allHideError = () => {
+      emailDuplicate.value = false;
+      usernameDuplicate.value = false;
+    }
+
     const showEmailUsernameError = () => {
-      this.emailDuplicate = true;
-      this.usernameDuplicate = true
+      emailDuplicate.value = true;
+      usernameDuplicate.value = true
     };
 
     const showEmailError = () => {
-      this.emailDuplicate = true;
-      this.usernameDuplicate = false;
+      emailDuplicate.value = true;
+      usernameDuplicate.value = false;
     };
     const showUsernameError = () => {
-      this.usernameDuplicate = true;
-      this.emailDuplicate = false;
+      usernameDuplicate.value = true;
+      emailDuplicate.value = false;
     };
 
     const signup = () => {
+      console.log(user)
       axios.post('http://3.35.44.58:8080/api/users',{
-        form
+        user
       })
           .then(response => {
             window.localStorage.setItem("token",response.data.user.token);
-            this.emailDuplicate = false;
-            this.usernameDuplicate = false;
+            allHideError();
             router.push("/");
           })
           .catch(error =>{
             console.log(error);
             const code = error.response.data.errors.code;
             if(code == "DUPLICATE_EMAIL_USERNAME"){
-              this.showEmailUsernameError();
+              showEmailUsernameError();
             }else if(code == "DUPLICATE_EMAIL"){
-              this.showEmailError();
+              showEmailError();
             }else if(code == "DUPLICATE_USERNAME"){
-              this.showUsernameError();
+              showUsernameError();
             }
           })
     }
 
-    return { emailDuplicate, usernameDuplicate, signup, showEmailUsernameError,showEmailError, showUsernameError }
+    return { user, emailDuplicate, usernameDuplicate,  signup, showEmailUsernameError,showEmailError, showUsernameError, allHideError }
   },
 
 }
