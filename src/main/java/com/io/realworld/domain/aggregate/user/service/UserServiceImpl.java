@@ -13,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Log4j2
@@ -25,9 +27,17 @@ public class UserServiceImpl implements UserService {
     private final JwtService jwtService;
 
     public UserResponse signup(UserSignupRequest userSignupRequest) {
-        if (userRepository.findByEmail(userSignupRequest.getEmail()) != null) {
-            throw new CustomException(Error.DUPLICATE_USER);
-        } else {
+        User findEmail = userRepository.findByEmail(userSignupRequest.getEmail());
+        Optional<User> findUsername = userRepository.findByUsername(userSignupRequest.getUsername());
+
+        if ( findEmail != null &&  !findUsername.isEmpty()) {
+            throw new CustomException(Error.DUPLICATE_EMAIL_USERNAME);
+        }else if(findEmail != null){
+            throw new CustomException(Error.DUPLICATE_EMAIL);
+        }else if(!findUsername.isEmpty()){
+            throw new CustomException(Error.DUPLICATE_USERNAME);
+        }
+        else {
             return convertUser(userRepository.save(User.builder().
                             username(userSignupRequest.getUsername()).
                             email(userSignupRequest.getEmail()).
@@ -67,7 +77,7 @@ public class UserServiceImpl implements UserService {
         if(userUpdate.getEmail() != null){
             userRepository.findAllByEmail(userUpdate.getEmail())
                     .stream().filter(found -> !found.getId().equals(userRepository.findById(user.getId())))
-                        .findAny().ifPresent(found -> new CustomException(Error.DUPLICATE_USER));
+                        .findAny().ifPresent(found -> new CustomException(Error.DUPLICATE_EMAIL));
             user.changeEmail(userUpdate.getEmail());
         }
         userUpdate.setId(user.getId());

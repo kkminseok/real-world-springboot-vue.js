@@ -29,7 +29,7 @@
           <router-link to="/login" class="nav-link" active-class="active">Sign in</router-link>
         </li>
         <li class="nav-item">
-          <router-link to="/signup" class="nav-link" active-class="active">Sign up</router-link>
+          <router-link to="/register" class="nav-link" active-class="active">Sign up</router-link>
         </li>
       </ul>
     </div>

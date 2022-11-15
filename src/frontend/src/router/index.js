@@ -1,4 +1,4 @@
-import { createWebHistory, createRouter } from "vue-router";
+import { createWebHashHistory, createRouter } from "vue-router";
 
 const routes = [
     {
@@ -7,8 +7,8 @@ const routes = [
         component: () => import(/* webpackChunkName "home" */ '@/views/TheHome.vue')
     },
     {
-        path: "/setting",
-        name: "Setting",
+        path: "/settings",
+        name: "Settings",
         component: () => import(/* webpackChunkName "inputTag" */ '@/views/TheSetting.vue')
     },
     {
@@ -17,9 +17,9 @@ const routes = [
         component: () => import(/* webpackChunkName "inputTag" */ '@/views/TheLogin.vue')
     },
     {
-        path: "/signup",
-        name: "SignUp",
-        component: () => import(/* webpackChunkName "inputTag" */ '@/views/TheSignUp.vue')
+        path: "/register",
+        name: "Register",
+        component: () => import(/* webpackChunkName "inputTag" */ '@/views/TheRegister.vue')
     },
     {
         path: "/article",
@@ -29,7 +29,7 @@ const routes = [
 ];
 
 const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHashHistory(),
     routes,
 });
 

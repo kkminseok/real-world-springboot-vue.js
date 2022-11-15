@@ -5,7 +5,10 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public enum Error {
-    DUPLICATE_USER("duplicate user", HttpStatus.CONFLICT),
+    DUPLICATE_EMAIL_USERNAME("duplicate user email, username",HttpStatus.CONFLICT),
+    DUPLICATE_EMAIL("duplicate user email", HttpStatus.CONFLICT),
+
+    DUPLICATE_USERNAME("duplicate user username", HttpStatus.CONFLICT),
     SIGNUP_NULL_DATA("request body include null",HttpStatus.BAD_REQUEST),
     EMAIL_NULL_OR_INVALID("email is blank or invalid check plz",HttpStatus.BAD_REQUEST),
     USER_NOT_FOUND("user not found check your info",HttpStatus.NOT_FOUND),

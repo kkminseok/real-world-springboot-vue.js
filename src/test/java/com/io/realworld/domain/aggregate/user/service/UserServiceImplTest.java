@@ -87,7 +87,7 @@ class UserServiceImplTest {
                 .password(requestUser.getPassword())
                 .build();
 
-        when(userRepository.findByEmail(any(String.class))).thenReturn(null).thenThrow(new CustomException(Error.DUPLICATE_USER));
+        when(userRepository.findByEmail(any(String.class))).thenReturn(null).thenThrow(new CustomException(Error.DUPLICATE_EMAIL));
         when(userRepository.save(any(User.class))).thenReturn(user);
         userService.signup(requestUser);
     }
@@ -178,12 +178,12 @@ class UserServiceImplTest {
         when(userRepository.findById(AdditionalMatchers.not(eq(repoUser.getId())))).thenThrow(new CustomException(Error.USER_NOT_FOUND));
         // case 2
         if(userUpdate.getEmail() != null){
-            lenient().when(userRepository.findByEmail(eq(repoUser.getEmail()))).thenThrow(new CustomException(Error.DUPLICATE_USER));
+            lenient().when(userRepository.findByEmail(eq(repoUser.getEmail()))).thenThrow(new CustomException(Error.DUPLICATE_EMAIL));
             try{
                 userService.updateUser(userUpdate,userAuth);
             }catch(CustomException e){
-                assertThat(e.getError().equals(Error.DUPLICATE_USER));
-                assertThat(e.getError().getMessage().equals(Error.DUPLICATE_USER.getMessage()));
+                assertThat(e.getError().equals(Error.DUPLICATE_EMAIL));
+                assertThat(e.getError().getMessage().equals(Error.DUPLICATE_EMAIL.getMessage()));
             }
         }
         // case 1

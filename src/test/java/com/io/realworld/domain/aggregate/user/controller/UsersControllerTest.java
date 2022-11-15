@@ -75,7 +75,7 @@ class UsersControllerTest {
     @MethodSource("validUsers")
     @ParameterizedTest(name = "conroller:회원가입 중복 테스트")
     void signupDuplicate(UserSignupRequest user) throws Exception {
-        when(userService.signup(any(UserSignupRequest.class))).thenThrow(new CustomException(Error.DUPLICATE_USER));
+        when(userService.signup(any(UserSignupRequest.class))).thenThrow(new CustomException(Error.DUPLICATE_EMAIL));
 
         mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -83,7 +83,7 @@ class UsersControllerTest {
                         .with(csrf())
                 )
                 .andExpect(MockMvcResultMatchers.status().isConflict())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errors.message", Matchers.equalTo(Error.DUPLICATE_USER.getMessage())));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors.message", Matchers.equalTo(Error.DUPLICATE_EMAIL.getMessage())));
     }
 
     @WithMockUser
