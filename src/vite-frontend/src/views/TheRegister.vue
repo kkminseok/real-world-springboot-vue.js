@@ -42,7 +42,7 @@
 <script>
 
 import axios from "axios";
-import router from "@/router";
+import router from "../router";
 import {reactive, ref} from "vue";
 
 export default {
