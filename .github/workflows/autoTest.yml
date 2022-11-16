@@ -24,10 +24,6 @@ jobs:
       - name: Make Directory for deliver
         run: mkdir deploy
 
-      - name: ls
-        run: ls -al
-        working-directory: ${{env.working-directory}}
-
       # 환경변수 셋팅
       - name: Make env file
         run: |
