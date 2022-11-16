@@ -49,7 +49,8 @@ export default {
     let loginValidation = ref(false);
 
     const signin = () => {
-      axios.post('http://localhost:8080/api/users/login',{
+      const url = import.meta.env.VITE_BASE_URL;
+      axios.post(url+'/api/users/login',{
         user
       })
           .then(response => {
