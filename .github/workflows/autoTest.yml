@@ -7,6 +7,9 @@ on:
 jobs:
   real-world:
     runs-on: ubuntu-latest
+    env:
+      working-directory: .
+
     steps:
       - uses: actions/checkout@v3
 
@@ -20,6 +23,10 @@ jobs:
       # 전송할 파일을 담을 디렉토리 생성
       - name: Make Directory for deliver
         run: mkdir deploy
+
+      - name: ls
+        run: ls -al
+        working-directory: ${{env.working-directory}}
 
       # 환경변수 셋팅
       - name: Make env file
