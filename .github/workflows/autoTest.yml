@@ -17,6 +17,19 @@ jobs:
           java-version: '18'
           cache: gradle
 
+      # 전송할 파일을 담을 디렉토리 생성
+      - name: Make Directory for deliver
+        run: mkdir deploy
+
+      # 환경변수 셋팅
+      - name: Make env file
+        run: |
+          touch .env.production
+          echo VITE_BASE_URL="http://3.35.44.58:8080" >> .env.production
+          cat .env.production
+          cp .env.production ${{env.working-directory}}/deploy
+        working-directory: ${{env.working-directory}}/src/vite-frontend
+
       - name: Grant execute permission gradlew
         run: chmod +x gradlew
 
@@ -33,18 +46,7 @@ jobs:
         if: always()
         with:
           junit_files: "build/test-results/test/**/*.xml"
-          
-      # 전송할 파일을 담을 디렉토리 생성
-      - name: Make Directory for deliver
-        run: mkdir deploy
 
-      # 환경변수 셋팅
-      - name: Make env file
-        run: |
-          touch .env.production
-          echo VITE_BASE_URL="http://3.35.44.58:8080" >> .env.production
-          cat .env.production
-        working-directory: ${{env.working-directory}}/src/vite-frontend
         
       # Jar 파일 Copy
       - name: Copy Jar
@@ -58,7 +60,7 @@ jobs:
       - name: Copy deploy.sh
         run: cp deploy.sh ./deploy
         
-      # test 파일 넘기기
+      # 파일 넘기기
       - name: Copy doc
         run: cp -r doc/ ./deploy
         working-directory: ${{env.working-directory}}
