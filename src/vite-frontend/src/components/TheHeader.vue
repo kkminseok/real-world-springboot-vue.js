@@ -23,7 +23,7 @@
           <router-link to="/article" class="nav-link" active-class="active">New Article</router-link>
         </li>
         <li class="nav-item">
-            <router-link to="/setting" class="nav-link" active-class="active"><i class="ion-gear-a"></i>Settings</router-link>
+            <router-link to="/settings" class="nav-link" active-class="active"><i class="ion-gear-a"></i>Settings</router-link>
         </li>
         <li class="nav-item">
           <router-link to="/login" class="nav-link" active-class="active">Sign in</router-link>
@@ -38,7 +38,7 @@
 
 </template>
 
-<script>
+<script lang="ts">
 export default {
   name: "TheHeader"
 }

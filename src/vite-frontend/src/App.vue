@@ -4,7 +4,7 @@
   <TheFooter></TheFooter>
 </template>
 
-<script>
+<script lang="ts">
 import TheHeader from '@/components/TheHeader.vue'
 import TheFooter from "@/components/TheFooter.vue";
 

@@ -5,27 +5,24 @@
       <div class="row">
 
         <div class="col-md-6 offset-md-3 col-xs-12">
-          <h1 class="text-xs-center">Sign up</h1>
+          <h1 class="text-xs-center">Sign in</h1>
           <p class="text-xs-center">
-            <a href="">Have an account?</a>
+            <router-link to="/register">Need an account?</router-link>
           </p>
 
-          <ul class="error-messages">
-            <li>That email is already taken</li>
+          <ul class="error-messages" v-if="loginValidation">
+            <li align="left">email or password is invalid</li>
           </ul>
 
           <form>
             <fieldset class="form-group">
-              <input class="form-control form-control-lg" type="text" placeholder="Your Name">
+              <input class="form-control form-control-lg" type="email" placeholder="Email" v-model="user.email">
             </fieldset>
             <fieldset class="form-group">
-              <input class="form-control form-control-lg" type="text" placeholder="Email">
+              <input class="form-control form-control-lg" type="password" placeholder="Password" v-model="user.password">
             </fieldset>
-            <fieldset class="form-group">
-              <input class="form-control form-control-lg" type="password" placeholder="Password">
-            </fieldset>
-            <button class="btn btn-lg btn-primary pull-xs-right">
-              Sign up
+            <button @click = "signin" class="btn btn-lg btn-primary pull-xs-right">
+              Sign in
             </button>
           </form>
         </div>
@@ -35,9 +32,42 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import {reactive, ref} from "vue";
+import axios from "axios";
+import router from "@/router";
+
 export default {
-  name: "TheLogin"
+  name: "TheLogin",
+
+  setup() {
+    const user = reactive({
+      email: "",
+      password: "",
+    })
+
+    let loginValidation = ref(false);
+
+    const signin = () => {
+      axios.post('http://localhost:8080/api/users/login',{
+        user
+      })
+          .then(response => {
+            window.localStorage.setItem("token",response.data.user.token);
+            router.push("/");
+          })
+          .catch(error =>{
+            console.log(error);
+            const code = error.response.data.errors.code;
+            if(code == "EMAIL_NULL_OR_INVALID"){
+              loginValidation.value = true;
+            }
+          })
+    }
+    return {user, loginValidation, signin};
+  }
+
+
 }
 </script>
 

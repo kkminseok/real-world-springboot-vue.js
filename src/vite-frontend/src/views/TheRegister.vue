@@ -7,7 +7,7 @@
         <div class="col-md-6 offset-md-3 col-xs-12">
           <h1 class="text-xs-center">Sign up</h1>
           <p class="text-xs-center">
-            <a href="">Have an account?</a>
+            <router-link to="/login">Have an account?</router-link>
           </p>
 
           <ul class="error-messages" v-if="emailDuplicate">
@@ -39,7 +39,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 
 import axios from "axios";
 import router from "@/router";
@@ -77,7 +77,6 @@ export default {
     };
 
     const signup = () => {
-      console.log(user)
       axios.post('http://localhost:8080/api/users',{
         user
       })
