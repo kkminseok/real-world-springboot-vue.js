@@ -41,7 +41,7 @@ node {
     workDir = file("${project.projectDir}/.gradle/nodejs")
 
     npmWorkDir = file("${project.projectDir}/.gradle/npm")
-    nodeModulesDir = file("${project.projectDir}/src/frontend")
+    nodeModulesDir = file("${project.projectDir}/src/vite-frontend")
 
     nodeProxySettings = ProxySettings.SMART
 }
@@ -93,7 +93,7 @@ tasks.named('test') {
 apply plugin: 'com.github.node-gradle.node'
 
 task deleteVueBuildFiles(type: Delete) {
-    delete "src/main/resources/static/static", "src/main/resources/static/index.html", "${project.projectDir}/src/frontend/node_modules"
+    delete "src/main/resources/static/static", "src/main/resources/static/index.html"
 }
 
 task npmBuild(type: NpmTask, dependsOn: ['deleteVueBuildFiles', 'npmInstall']) {
