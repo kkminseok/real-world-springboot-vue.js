@@ -87,7 +87,6 @@ export default {
             router.push("/");
           })
           .catch(error =>{
-            console.log(error);
             const code = error.response.data.errors.code;
             if(code == "DUPLICATE_EMAIL_USERNAME"){
               showEmailUsernameError();

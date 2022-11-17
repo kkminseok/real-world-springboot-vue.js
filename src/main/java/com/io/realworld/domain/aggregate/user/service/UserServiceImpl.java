@@ -80,6 +80,16 @@ public class UserServiceImpl implements UserService {
                         .findAny().ifPresent(found -> new CustomException(Error.DUPLICATE_EMAIL));
             user.changeEmail(userUpdate.getEmail());
         }
+
+        if(userUpdate.getUsername() != null){
+            userRepository.findAllByUsername(userUpdate.getUsername())
+                    .stream().filter(found -> !found.getId().equals(userRepository.findById(user.getId())))
+                    .findAny().ifPresent(found -> new CustomException(Error.DUPLICATE_EMAIL));
+            user.changeUsername(userUpdate.getUsername());
+        }
+        if(userUpdate.getPassword() != null){
+            user.changePassword(madeHash(userUpdate.getPassword()));
+        }
         userUpdate.setId(user.getId());
         user.update(userUpdate);
         return convertUser(userRepository.save(user));

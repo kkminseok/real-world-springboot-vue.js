@@ -83,4 +83,8 @@ public class User implements UserDetails {
         this.bio = userUpdate.getBio();
         this.image = userUpdate.getImage();
     }
+
+    public void changePassword(String password) {
+        this.password = password;
+    }
 }

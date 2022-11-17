@@ -10,22 +10,22 @@
           <form>
             <fieldset>
               <fieldset class="form-group">
-                <input class="form-control" type="text" placeholder="URL of profile picture">
+                <input class="form-control" type="text" placeholder="URL of profile picture" v-model="user.image">
               </fieldset>
               <fieldset class="form-group">
-                <input class="form-control form-control-lg" type="text" placeholder="Your Name">
+                <input class="form-control form-control-lg" type="text" placeholder="Your Name" v-model="user.username">
               </fieldset>
               <fieldset class="form-group">
-                            <textarea class="form-control form-control-lg" rows="8"
-                                      placeholder="Short bio about you"></textarea>
+                      <textarea class="form-control form-control-lg" rows="8" placeholder="Short bio about you" v-model="user.bio">
+                      </textarea>
               </fieldset>
               <fieldset class="form-group">
-                <input class="form-control form-control-lg" type="text" placeholder="Email">
+                <input class="form-control form-control-lg" type="text" placeholder="Email" v-model="user.email">
               </fieldset>
               <fieldset class="form-group">
-                <input class="form-control form-control-lg" type="password" placeholder="Password">
+                <input class="form-control form-control-lg" type="password" placeholder="Password" v-model="password">
               </fieldset>
-              <button class="btn btn-lg btn-primary pull-xs-right">
+              <button @click = "updateUser" class="btn btn-lg btn-primary pull-xs-right">
                 Update Settings
               </button>
             </fieldset>
@@ -38,8 +38,69 @@
 </template>
 
 <script lang="ts">
+import axios from "axios";
+import router from "@/router";
+import {onMounted, reactive} from "vue";
+
 export default {
-  name: "TheSetting"
+  name: "TheSetting",
+  setup() {
+    const url = import.meta.env.VITE_BASE_URL;
+    const token = localStorage.getItem("token");
+    const user = reactive({
+      bio: "",
+      email: "",
+      image: "",
+      username: "",
+      password: "",
+    })
+    const password = "";
+
+    const getUser = (getuser: { bio: string; email: string; username: string; image: string; }) => {
+      user.bio = getuser.bio
+      user.email = getuser.email
+      user.username = getuser.username
+      user.image = user.image
+    }
+
+    const updateUser = () => {
+      console.log(token,user);
+      axios.put(url+'/api/user',{user},{
+        headers:{
+          Authorization : "TOKEN " + token,
+          "Content-Type": `application/json`,
+        }})
+          .then(response => {
+            console.log(response);
+            router.push('/@'+ response.data.user.username);
+
+          })
+          .catch(error =>{
+            const code = error.response.data.errors.code;
+            //TODO 예외처리
+          })
+    }
+
+
+    onMounted(() => {
+      axios.get(url+'/api/user',{
+        headers:{
+          Authorization : "TOKEN " + token
+        }
+      })
+          .then(response => {
+            console.log(response)
+            window.localStorage.setItem("token",response.data.user.token);
+            getUser(response.data.user);
+
+          })
+          .catch(error =>{
+            const code = error.response.data.errors.code;
+            //TODO 예외처리
+          })
+    })
+    return {user, password, url, token, getUser, updateUser};
+  }
 }
 </script>
 

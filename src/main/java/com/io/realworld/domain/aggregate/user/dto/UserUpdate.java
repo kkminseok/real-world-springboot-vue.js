@@ -22,4 +22,6 @@ public class UserUpdate {
     private String email;
     private String bio;
     private String image;
+    private String password;
+    private String username;
 }
