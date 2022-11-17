@@ -44,6 +44,7 @@
 import axios from "axios";
 import router from "@/router";
 import {reactive, ref} from "vue";
+import { useStore } from "vuex";
 
 export default {
   name: "TheRegister.vue",
@@ -51,6 +52,7 @@ export default {
     let emailDuplicate = ref(false);
     let usernameDuplicate = ref(false);
 
+    const store = useStore();
     const user = reactive({
       username: "",
       email: "",
@@ -77,25 +79,29 @@ export default {
     };
 
     const signup = () => {
-      const url = import.meta.env.VITE_BASE_URL;
-      axios.post(url+'/api/users',{
-        user
-      })
-          .then(response => {
-            window.localStorage.setItem("token",response.data.user.token);
-            allHideError();
-            router.push("/");
-          })
-          .catch(error =>{
-            const code = error.response.data.errors.code;
-            if(code == "DUPLICATE_EMAIL_USERNAME"){
-              showEmailUsernameError();
-            }else if(code == "DUPLICATE_EMAIL"){
-              showEmailError();
-            }else if(code == "DUPLICATE_USERNAME"){
-              showUsernameError();
-            }
-          })
+      console.log(store.state)
+      store.commit('REGISTER',user)
+
+
+
+      // axios.post(url+'/api/users',{
+      //   user
+      // })
+      //     .then(response => {
+      //       window.localStorage.setItem("token",response.data.user.token);
+      //       allHideError();
+      //       router.push("/");
+      //     })
+      //     .catch(error =>{
+      //       const code = error.response.data.errors.code;
+      //       if(code == "DUPLICATE_EMAIL_USERNAME"){
+      //         showEmailUsernameError();
+      //       }else if(code == "DUPLICATE_EMAIL"){
+      //         showEmailError();
+      //       }else if(code == "DUPLICATE_USERNAME"){
+      //         showUsernameError();
+      //       }
+      //     })
     }
 
     return { user, emailDuplicate, usernameDuplicate,  signup, showEmailUsernameError,showEmailError, showUsernameError, allHideError }
