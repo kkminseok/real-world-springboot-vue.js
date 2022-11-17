@@ -11,12 +11,15 @@ We've gone to great lengths to adhere to the **[Spring Boot]** community stylegu
 
 For more information on how to this works with other frontends/backends, head over to the [RealWorld](https://github.com/gothinkster/realworld) repo.
 
+-----
+
 ## Enter
 
 you can See Vue.js + SpringBoot FullStack Web Site Demo
 
 <http://3.35.44.58:8080/>
 
+------
 
 ## BackEnd - Spring
 
@@ -24,3 +27,12 @@ you can See Vue.js + SpringBoot FullStack Web Site Demo
 
 <img width="464" alt="image" src="https://user-images.githubusercontent.com/30401054/201084053-60be024d-0615-40e1-9234-ceb926f402e5.png">
 
+-----
+
+### `Jacoco` Code Coverage (2022.11.17)
+
+![image](https://user-images.githubusercontent.com/30401054/202404202-4c0879b8-a859-4f6a-b8d5-ccf28eef3fd9.png)
+
+#### **Total 82% Code Coverage**
+
+------
