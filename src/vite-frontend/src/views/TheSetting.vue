@@ -40,7 +40,8 @@
 <script lang="ts">
 import axios from "axios";
 import router from "@/router";
-import {onMounted, reactive} from "vue";
+import { useStore } from "vuex";
+import { onMounted, reactive } from "vue";
 
 export default {
   name: "TheSetting",
@@ -55,6 +56,7 @@ export default {
       password: "",
     })
     const password = "";
+    const store = useStore();
 
     const getUser = (getuser: { bio: string; email: string; username: string; image: string; }) => {
       user.bio = getuser.bio
@@ -64,14 +66,13 @@ export default {
     }
 
     const updateUser = () => {
-      console.log(token,user);
       axios.put(url+'/api/user',{user},{
         headers:{
           Authorization : "TOKEN " + token,
           "Content-Type": `application/json`,
         }})
           .then(response => {
-            console.log(response);
+            store.dispatch("LOGIN",response.data.user);
             router.push('/@'+ response.data.user.username);
 
           })

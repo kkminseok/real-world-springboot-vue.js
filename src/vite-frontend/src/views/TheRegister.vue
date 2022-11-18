@@ -79,29 +79,25 @@ export default {
     };
 
     const signup = () => {
-      console.log(store.state)
-      store.commit('REGISTER',user)
-
-
-
-      // axios.post(url+'/api/users',{
-      //   user
-      // })
-      //     .then(response => {
-      //       window.localStorage.setItem("token",response.data.user.token);
-      //       allHideError();
-      //       router.push("/");
-      //     })
-      //     .catch(error =>{
-      //       const code = error.response.data.errors.code;
-      //       if(code == "DUPLICATE_EMAIL_USERNAME"){
-      //         showEmailUsernameError();
-      //       }else if(code == "DUPLICATE_EMAIL"){
-      //         showEmailError();
-      //       }else if(code == "DUPLICATE_USERNAME"){
-      //         showUsernameError();
-      //       }
-      //     })
+      const url = import.meta.env.VITE_BASE_URL;
+      axios.post(url+'/api/users',{
+        user
+      })
+          .then(response => {
+            store.dispatch("LOGIN",response.data.user);
+            allHideError();
+            router.push("/");
+          })
+          .catch(error =>{
+            const code = error.response.data.errors.code;
+            if(code == "DUPLICATE_EMAIL_USERNAME"){
+              showEmailUsernameError();
+            }else if(code == "DUPLICATE_EMAIL"){
+              showEmailError();
+            }else if(code == "DUPLICATE_USERNAME"){
+              showUsernameError();
+            }
+          })
     }
 
     return { user, emailDuplicate, usernameDuplicate,  signup, showEmailUsernameError,showEmailError, showUsernameError, allHideError }

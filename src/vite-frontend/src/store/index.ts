@@ -1,9 +1,6 @@
 import axios from "axios";
 import { createStore } from 'vuex';
 
-
-const url = import.meta.env.VITE_BASE_URL;
-
 export default createStore({
     state: {
         token: localStorage.getItem("token") || '',
@@ -18,12 +15,12 @@ export default createStore({
         },
     },
     actions: {
-        REGISTER({commit},{user}){
-            return axios.post(url+'/api/users',{
-                user
-            }).then(response =>{
-                console.log(response)
-            })
-        }
-    },
-})
+        LOGIN({commit}, user){
+                commit("setUsername", user.username);
+                commit("setToken", user.token);
+                localStorage.setItem("username", user.username);
+                localStorage.setItem("token", user.token);
+            }
+        },
+    }
+)

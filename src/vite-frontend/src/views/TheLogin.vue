@@ -36,6 +36,7 @@
 import {reactive, ref} from "vue";
 import axios from "axios";
 import router from "@/router";
+import { useStore } from "vuex";
 
 export default {
   name: "TheLogin",
@@ -46,6 +47,8 @@ export default {
       password: "",
     })
 
+    const store = useStore();
+
     let loginValidation = ref(false);
 
     const signin = () => {
@@ -54,11 +57,10 @@ export default {
         user
       })
           .then(response => {
-            window.localStorage.setItem("token",response.data.user.token);
+            store.dispatch("LOGIN",response.data.user);
             router.push("/");
           })
           .catch(error =>{
-            console.log(error);
             const code = error.response.data.errors.code;
             if(code == "EMAIL_NULL_OR_INVALID"){
               loginValidation.value = true;
