@@ -12,9 +12,6 @@ export default createStore({
         },
         setToken(state, token){
             state.token = token;
-        },
-        getToken(state){
-            return state.token
         }
     },
     actions: {
@@ -23,6 +20,12 @@ export default createStore({
                 commit("setToken", user.token);
                 localStorage.setItem("username", user.username);
                 localStorage.setItem("token", user.token);
+            },
+        LOGOUT({commit}){
+            commit("setUsername","");
+            commit("setToken","");
+            localStorage.removeItem("username");
+            localStorage.removeItem("token");
             },
         },
     }

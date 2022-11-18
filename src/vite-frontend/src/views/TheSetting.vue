@@ -30,6 +30,10 @@
               </button>
             </fieldset>
           </form>
+          <hr>
+          <button class="btn btn-outline-danger" @click="logout">
+            Or click here to logout.
+          </button>
         </div>
 
       </div>
@@ -84,6 +88,12 @@ export default {
           })
     }
 
+    const logout = () =>{
+      store.dispatch("LOGOUT").then(()=>{
+        router.push({name: "Home"});
+      })
+    }
+
 
     onMounted(() => {
       axios.get(url+'/api/user',{
@@ -100,7 +110,7 @@ export default {
             //TODO 예외처리
           })
     })
-    return {user, password, url, token, getUser, updateUser};
+    return {user, password, url, token, getUser, updateUser, logout};
   }
 }
 </script>

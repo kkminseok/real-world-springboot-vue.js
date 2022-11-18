@@ -58,7 +58,7 @@ export default {
       })
           .then(response => {
             store.dispatch("LOGIN",response.data.user);
-            router.push("/");
+            router.push({name:"Home"});
           })
           .catch(error =>{
             const code = error.response.data.errors.code;

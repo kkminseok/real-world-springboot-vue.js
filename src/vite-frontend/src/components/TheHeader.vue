@@ -19,16 +19,16 @@
           <!-- Add "active" class when you're on that page" -->
           <router-link to="/" class="nav-link active" active-class="active">Home</router-link>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" v-if="isLogin">
           <router-link to="/article" class="nav-link" active-class="active">New Article</router-link>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" v-if="isLogin">
             <router-link to="/settings" class="nav-link" active-class="active"><i class="ion-gear-a"></i>Settings</router-link>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" v-if="!isLogin">
           <router-link to="/login" class="nav-link" active-class="active">Sign in</router-link>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" v-if="!isLogin">
           <router-link to="/register" class="nav-link" active-class="active">Sign up</router-link>
         </li>
       </ul>
@@ -39,8 +39,31 @@
 </template>
 
 <script lang="ts">
+import { onMounted, ref } from "vue";
+import { useStore } from "vuex";
+
 export default {
-  name: "TheHeader"
+  name: "TheHeader",
+  setup(){
+    const store = useStore();
+
+    const token = ref("");
+    const username = ref("");
+
+    const isLogin = ref(false);
+
+    onMounted(()=> {
+      console.log("mounted!", isLogin.value);
+        if(store.state.token == ""){
+          isLogin.value = false;
+        }else{
+          isLogin.value = true;
+        }
+    })
+
+    return { isLogin}
+  }
+
 }
 </script>
 
