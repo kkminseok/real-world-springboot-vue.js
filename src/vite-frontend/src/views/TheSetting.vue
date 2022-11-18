@@ -62,7 +62,7 @@ export default {
       user.bio = getuser.bio
       user.email = getuser.email
       user.username = getuser.username
-      user.image = user.image
+      user.image = getuser.image
     }
 
     const updateUser = () => {
@@ -73,7 +73,9 @@ export default {
         }})
           .then(response => {
             store.dispatch("LOGIN",response.data.user);
-            router.push('/@'+ response.data.user.username);
+            router.push({
+              name: 'Profile',
+              params: {username: response.data.user.username}})
 
           })
           .catch(error =>{
@@ -90,10 +92,8 @@ export default {
         }
       })
           .then(response => {
-            console.log(response)
-            window.localStorage.setItem("token",response.data.user.token);
+            store.dispatch("LOGIN",response.data.user)
             getUser(response.data.user);
-
           })
           .catch(error =>{
             const code = error.response.data.errors.code;

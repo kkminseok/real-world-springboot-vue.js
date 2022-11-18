@@ -7,16 +7,29 @@
         <div class="row">
 
           <div class="col-xs-12 col-md-10 offset-md-1">
-            <img src="http://i.imgur.com/Qr71crq.jpg" class="user-img"/>
-            <h4>Eric Simons</h4>
+            <img :src="profile.image" class="user-img"/>
+            <h4>{{ profile.username }}</h4>
             <p>
-              Cofounder @GoThinkster, lived in Aol's HQ for a few months, kinda looks like Peeta from the
-              Hunger Games
+              {{ profile.bio }}
             </p>
-            <button class="btn btn-sm btn-outline-secondary action-btn">
-              <i class="ion-plus-round"></i>
-              &nbsp;
-              Follow Eric Simons
+            <button class="btn btn-sm btn-outline-secondary action-btn" @click="stateUpdate">
+              <div v-if="isMe">
+                <i class="ion-gear-a"></i>
+                &nbsp;
+                Edit Profile Settings
+              </div>
+              <div v-else>
+                <div v-if="profile.following">
+                  <i class="ion-plus-round"></i>
+                  &nbsp;
+                  unFollow {{profile.username}}
+                </div>
+                <div v-else>
+                  <i class="ion-plus-round"></i>
+                  &nbsp;
+                  Follow {{profile.username}}
+                </div>
+              </div>
             </button>
           </div>
 
@@ -89,9 +102,84 @@
 </template>
 
 <script lang="ts">
-export default {
-  name: "TheProfile.vue"
-}
+import {onMounted, reactive, ref, UnwrapNestedRefs} from "vue";
+import { useStore } from "vuex";
+import axios from "axios";
+import { defineComponent } from 'vue';
+import router from "@/router";
+
+export default defineComponent({
+  name: "TheProfile.vue",
+  props:{
+    username: String,
+  },
+  setup(props){
+
+    const url = import.meta.env.VITE_BASE_URL;
+    const store = useStore();
+    const token = store.state.token;
+
+    const isMe = ref(false);
+    const profile = reactive({
+      image: "",
+      username: "",
+      bio: "",
+      following: false,
+    })
+
+
+
+    const setProfile = ( data: any ) => {
+      profile.image = data.image;
+      profile.bio = data.bio;
+      profile.following = data.following;
+      profile.username = data.username;
+    }
+
+    const stateUpdate = () => {
+       if(isMe.value){
+         router.push({name:"Settings"});
+       }else{
+         if(profile.following){
+            axios.delete(url + "/api/profiles/" + profile.username + "/follow",{
+              headers:{
+                Authorization : "TOKEN " + token,
+                "Content-Type": `application/json`,
+              }
+            }).then(response => {
+              setProfile(response.data.profile)
+              console.log(response)
+            })
+         }else{
+           axios.post(url + "/api/profiles/" + profile.username + "/follow",{
+             headers:{
+               Authorization : "TOKEN " + token,
+               "Content-Type": `application/json`,
+             }
+           }).then(response => {
+             setProfile(response.data.profile)
+             console.log(response)
+           })
+         }
+       }
+    }
+
+
+    onMounted(() =>{
+        axios.get(url + "/api/profiles/" + props.username)
+            .then(response => {
+              const getProfile = response.data.profile;
+              setProfile(getProfile)
+              if(getProfile.username.localeCompare(store.state.username) == 0){
+                isMe.value = true;
+              }else{
+                isMe.value = false;
+              }
+            })
+    })
+    return { url, isMe, profile, stateUpdate }
+  }
+})
 </script>
 
 <style scoped>

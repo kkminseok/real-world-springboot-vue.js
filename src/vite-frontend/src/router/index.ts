@@ -30,7 +30,8 @@ const routes = [
     {
         path: "/@:username",
         name: "Profile",
-        component: () => import(/* webpackChunkName "inputTag" */ '@/views/TheProfile.vue')
+        component: () => import(/* webpackChunkName "inputTag" */ '@/views/TheProfile.vue'),
+        props: true
     }
 ];
 
