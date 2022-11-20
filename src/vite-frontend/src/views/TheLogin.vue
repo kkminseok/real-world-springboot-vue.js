@@ -64,6 +64,8 @@ export default {
             const code = error.response.data.errors.code;
             if(code == "EMAIL_NULL_OR_INVALID"){
               loginValidation.value = true;
+            }else if(code == "PASSWORD_WORNG"){
+              loginValidation.value = true;
             }
           })
     }

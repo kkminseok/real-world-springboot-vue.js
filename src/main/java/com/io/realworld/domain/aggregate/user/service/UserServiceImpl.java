@@ -55,7 +55,12 @@ public class UserServiceImpl implements UserService {
         User findUser = userRepository.findByEmail(userSigninRequest.getEmail());
         if (findUser == null) {
             throw new CustomException(Error.EMAIL_NULL_OR_INVALID);
+        }else{
+            if(!passwordEncoder.matches(userSigninRequest.getPassword(), findUser.getPassword())){
+                throw new CustomException(Error.PASSWORD_WRONG);
+            }
         }
+
         return convertUser(findUser);
     }
 
