@@ -99,23 +99,42 @@ class UserServiceImplTest {
                 .bio("")
                 .email(userSigninRequest.getEmail())
                 .image("")
-                .password(userSigninRequest.getPassword())
+                .password(passwordEncoder.encode(userSigninRequest.getPassword()))
                 .build();
 
         when(userRepository.findByEmail(any(String.class))).thenReturn(user);
+
         userService.signin(userSigninRequest);
     }
 
     @MethodSource("invalidLoginUsers")
     @ParameterizedTest(name = "sv:로그인 실패 테스트")
     void loginFail(UserSigninRequest userSigninRequest){
-
         when(userRepository.findByEmail(any(String.class))).thenReturn(null);
         try {
             userService.signin(userSigninRequest);
         }catch (CustomException e){
             assertThat(e.getError().equals(Error.EMAIL_NULL_OR_INVALID));
             assertThat(e.getError().getMessage().equals(Error.EMAIL_NULL_OR_INVALID.getMessage()));
+        }
+    }
+
+    @MethodSource("invalidLoginUsers")
+    @ParameterizedTest(name="로그인 실패 테스트 : 패스워드 틀림")
+    void loginFailPasswordWrong(UserSigninRequest userSigninRequest){
+        User user = User.builder()
+                .bio("")
+                .email(userSigninRequest.getEmail())
+                .image("")
+                .password(passwordEncoder.encode("wrong password"))
+                .build();
+
+        when(userRepository.findByEmail(any(String.class))).thenReturn(user);
+        try{
+            userService.signin(userSigninRequest);
+        }catch (CustomException e){
+            assertThat(e.getError().equals(Error.PASSWORD_WRONG));
+            assertThat(e.getError().getMessage().equals(Error.PASSWORD_WRONG.getMessage()));
         }
     }
 
