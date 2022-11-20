@@ -148,7 +148,6 @@ export default defineComponent({
               }
             }).then(response => {
               setProfile(response.data.profile)
-              console.log(response)
             })
          }else{
            axios.post(url + "/api/profiles/" + profile.username + "/follow",{
@@ -158,7 +157,6 @@ export default defineComponent({
              }
            }).then(response => {
              setProfile(response.data.profile)
-             console.log(response)
            })
          }
        }

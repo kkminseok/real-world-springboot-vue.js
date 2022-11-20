@@ -85,10 +85,8 @@ export default {
       })
           .then(response => {
             store.dispatch("LOGIN",response.data.user)
-                .then(()=>{
-                  allHideError();
-                  router.push({name: "Home"});
-                });
+            allHideError();
+            router.push({name: "Home"});
           })
           .catch(error =>{
             const code = error.response.data.errors.code;

@@ -20,7 +20,7 @@
           <router-link to="/" class="nav-link active" active-class="active">Home</router-link>
         </li>
         <li class="nav-item" v-if="isLogin">
-          <router-link to="/article" class="nav-link" active-class="active">New Article</router-link>
+          <router-link to="/editor/" class="nav-link" active-class="active">New Article</router-link>
         </li>
         <li class="nav-item" v-if="isLogin">
             <router-link to="/settings" class="nav-link" active-class="active"><i class="ion-gear-a"></i>Settings</router-link>
@@ -46,14 +46,9 @@ export default {
   name: "TheHeader",
   setup(){
     const store = useStore();
-
-    const token = ref("");
-    const username = ref("");
-
     const isLogin = ref(false);
 
     onMounted(()=> {
-      console.log("mounted!", isLogin.value);
         if(store.state.token == ""){
           isLogin.value = false;
         }else{

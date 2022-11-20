@@ -8,20 +8,20 @@
           <form>
             <fieldset>
               <fieldset class="form-group">
-                <input type="text" class="form-control form-control-lg" placeholder="Article Title">
+                <input type="text" class="form-control form-control-lg" placeholder="Article Title" v-model="article.title">
               </fieldset>
               <fieldset class="form-group">
-                <input type="text" class="form-control" placeholder="What's this article about?">
+                <input type="text" class="form-control" placeholder="What's this article about?" v-model="article.description">
               </fieldset>
               <fieldset class="form-group">
                             <textarea class="form-control" rows="8"
-                                      placeholder="Write your article (in markdown)"></textarea>
+                                      placeholder="Write your article (in markdown)" v-model="article.body"></textarea>
               </fieldset>
               <fieldset class="form-group">
-                <input type="text" class="form-control" placeholder="Enter tags">
+                <input type="text" class="form-control" placeholder="Enter tags" v-model="tag">
                 <div class="tag-list"></div>
               </fieldset>
-              <button class="btn btn-lg pull-xs-right btn-primary" type="button">
+              <button @click="addArticle" class="btn btn-lg pull-xs-right btn-primary" type="button">
                 Publish Article
               </button>
             </fieldset>
@@ -36,8 +36,35 @@
 </template>
 
 <script lang="ts">
+import {reactive ,ref } from "vue";
+import axios from "axios";
+import { useStore } from "vuex";
+
 export default {
-  name: "TheArticle"
+  name: "TheArticle",
+  setup(){
+    const url = import.meta.env.VITE_BASE_URL;
+    const store = useStore();
+    const token = store.state.token
+    const tag = ref("")
+    const article = reactive({
+      title: "",
+      description: "",
+      body: "",
+      tagList: new Array(tag),
+    })
+
+    const addArticle = () => {
+      console.log(article)
+      axios.post(url+"/api/articles",JSON.stringify({article}) ,{headers:{
+          Authorization : "TOKEN " + token,
+          "Content-Type": `application/json`,
+        }})
+      .then(response => {console.log(response)})
+    }
+
+    return { article,tag, addArticle }
+  }
 }
 </script>
 
