@@ -18,7 +18,7 @@
                                       placeholder="Write your article (in markdown)" v-model="article.body"></textarea>
               </fieldset>
               <fieldset class="form-group">
-                <input type="text" class="form-control" placeholder="Enter tags" v-model="tag">
+                <input type="text" class="form-control" placeholder="Enter tags" v-model="article.tagList">
                 <div class="tag-list"></div>
               </fieldset>
               <button @click="addArticle" class="btn btn-lg pull-xs-right btn-primary" type="button">
@@ -46,16 +46,18 @@ export default {
     const url = import.meta.env.VITE_BASE_URL;
     const store = useStore();
     const token = store.state.token
-    const tag = ref("")
     const article = reactive({
       title: "",
       description: "",
       body: "",
-      tagList: new Array(tag),
+      tagList: [],
     })
 
     const addArticle = () => {
       console.log(article)
+      console.log(JSON.stringify(article));
+      console.log(JSON.stringify({article}));
+      console.log({article});
       axios.post(url+"/api/articles",JSON.stringify({article}) ,{headers:{
           Authorization : "TOKEN " + token,
           "Content-Type": `application/json`,
@@ -63,7 +65,7 @@ export default {
       .then(response => {console.log(response)})
     }
 
-    return { article,tag, addArticle }
+    return { article, addArticle }
   }
 }
 </script>
