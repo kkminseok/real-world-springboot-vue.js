@@ -18,7 +18,7 @@
                                       placeholder="Write your article (in markdown)" v-model="article.body"></textarea>
               </fieldset>
               <fieldset class="form-group">
-                <input type="text" class="form-control" placeholder="Enter tags" v-model="article.tagList">
+                <input type="text" class="form-control" placeholder="Enter tags using ',' Add tag" v-model="tag">
                 <div class="tag-list"></div>
               </fieldset>
               <button @click="addArticle" class="btn btn-lg pull-xs-right btn-primary" type="button">
@@ -39,6 +39,7 @@
 import {reactive ,ref } from "vue";
 import axios from "axios";
 import { useStore } from "vuex";
+import router from "@/router";
 
 export default {
   name: "TheArticle",
@@ -46,26 +47,39 @@ export default {
     const url = import.meta.env.VITE_BASE_URL;
     const store = useStore();
     const token = store.state.token
+    const tag = ref("");
     const article = reactive({
       title: "",
       description: "",
       body: "",
-      tagList: [],
+      tagList: new Array(),
     })
 
+    const parsingTag = () => {
+      let tags: string = tag.value;
+      return tags.split(',');
+    }
+
+    const getSlug = (title:string) => {
+      return title.replace(' ','-');
+    }
+
     const addArticle = () => {
-      console.log(article)
-      console.log(JSON.stringify(article));
-      console.log(JSON.stringify({article}));
-      console.log({article});
-      axios.post(url+"/api/articles",JSON.stringify({article}) ,{headers:{
+      let tags = parsingTag();
+      let slug = getSlug(article.title);
+      article.tagList = tags;
+      axios.post(url+"/api/articles" ,JSON.stringify({article}) ,{headers:{
           Authorization : "TOKEN " + token,
           "Content-Type": `application/json`,
         }})
-      .then(response => {console.log(response)})
+      .then(() => {
+        router.push({
+          name:"ArticleDetail",
+          params: {slug}})
+      })
     }
 
-    return { article, addArticle }
+    return { article, tag, addArticle, parsingTag, getSlug }
   }
 }
 </script>
