@@ -23,41 +23,28 @@
               </li>
             </ul>
           </div>
+          <div v-for="(article, index) in articles" >
+            {{article}} : {{index}}
 
-          <div class="article-preview">
-            <div class="article-meta">
-              <a href="profile.html"><img src="http://i.imgur.com/Qr71crq.jpg"/></a>
-              <div class="info">
-                <a href="" class="author">Eric Simons</a>
-                <span class="date">January 20th</span>
+            <!--
+            <div class="article-preview">
+              <div class="article-meta">
+                <a href="profile.html"><img :src="data.author.image"/></a>
+                <div class="info">
+                  <a href="" class="author">{{data.author.username}}</a>
+                  <span class="date">202202020</span>
+                </div>
+                <button class="btn btn-outline-primary btn-sm pull-xs-right">
+                  <i class="ion-heart"></i> {{data.favoritesCount}}
+                </button>
               </div>
-              <button class="btn btn-outline-primary btn-sm pull-xs-right">
-                <i class="ion-heart"></i> 29
-              </button>
+              <a href="" class="preview-link">
+                {{data.description}}
+                <span>Read more...</span>
+              </a>
             </div>
-            <a href="" class="preview-link">
-              <h1>How to build webapps that scale</h1>
-              <p>This is the description for the post.</p>
-              <span>Read more...</span>
-            </a>
-          </div>
+            -->
 
-          <div class="article-preview">
-            <div class="article-meta">
-              <a href="profile.html"><img src="http://i.imgur.com/N4VcUeJ.jpg"/></a>
-              <div class="info">
-                <a href="" class="author">Albert Pai</a>
-                <span class="date">January 20th</span>
-              </div>
-              <button class="btn btn-outline-primary btn-sm pull-xs-right">
-                <i class="ion-heart"></i> 32
-              </button>
-            </div>
-            <a href="" class="preview-link">
-              <h1>The song you won't ever stop singing. No matter how hard you try.</h1>
-              <p>This is the description for the post.</p>
-              <span>Read more...</span>
-            </a>
           </div>
 
         </div>
@@ -86,8 +73,28 @@
 </template>
 
 <script lang="ts">
+import {onMounted, reactive} from "vue";
+import axios from "axios";
+
 export default {
-  name: "TheHome"
+  name: "TheHome",
+  setup(){
+    const url = import.meta.env.VITE_BASE_URL;
+    const articles = reactive({
+      article:{},
+    })
+
+    onMounted(() => {
+        axios.get(url + "/api/articles")
+            .then(response => {
+              console.log(response);
+              articles.article = response.data.articles;
+              console.log(articles.article);
+            });
+    })
+
+    return { articles }
+  }
 }
 </script>
 

@@ -56,6 +56,8 @@ public class ArticleServiceImpl implements ArticleService {
             articles = articleRepository.findByAuthorName(articleParam.getAuthor(), pageable);
         }else if(articleParam.getFavorited() != null){
             articles = articleRepository.findByFavoritedUser(articleParam.getFavorited(), pageable);
+        }else{
+            articles = articleRepository.findByAll(pageable);
         }
 
         return articles.stream().map(article -> {

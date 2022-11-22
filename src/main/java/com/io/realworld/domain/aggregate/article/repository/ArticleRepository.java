@@ -22,4 +22,8 @@ public interface ArticleRepository extends JpaRepository<Article,Long> {
     @EntityGraph(attributePaths = "tagList")
     @Query("SELECT a FROM Article a LEFT JOIN Favorite f ON f.article.id = a.id WHERE f.user.username =:username ORDER BY a.createdDate DESC")
     List<Article> findByFavoritedUser(String username, Pageable pageable);
+
+    @EntityGraph(attributePaths = "tagList" )
+    @Query("SELECT a FROM Article a ORDER BY a.createdDate DESC")
+    List<Article> findByAll(Pageable pageable);
 }
