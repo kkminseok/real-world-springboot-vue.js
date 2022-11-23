@@ -23,8 +23,13 @@
               </li>
             </ul>
           </div>
-          <div v-for="(article, index) in articles" >
-            {{article}} : {{index}}
+
+            <div v-for = "(art,index2) in articles.article">
+              {{ art }} : {{index2}}
+              {{art.slug}}
+
+              !!
+            </div>
 
             <!--
             <div class="article-preview">
@@ -47,7 +52,7 @@
 
           </div>
 
-        </div>
+
 
         <div class="col-md-3">
           <div class="sidebar">
@@ -73,15 +78,17 @@
 </template>
 
 <script lang="ts">
-import {onMounted, reactive} from "vue";
+import {onMounted, reactive, ref} from "vue";
 import axios from "axios";
 
 export default {
   name: "TheHome",
   setup(){
     const url = import.meta.env.VITE_BASE_URL;
+
     const articles = reactive({
-      article:{},
+      article: {art:{slug: String}},
+      articlesCount: "",
     })
 
     onMounted(() => {
@@ -89,7 +96,10 @@ export default {
             .then(response => {
               console.log(response);
               articles.article = response.data.articles;
-              console.log(articles.article);
+              articles.articlesCount = response.data.articlesCount;
+              articles.article = JSON.parse(JSON.stringify(articles.article));
+              console.log(typeof(articles.article));
+              console.log(articles.articlesCount);
             });
     })
 
