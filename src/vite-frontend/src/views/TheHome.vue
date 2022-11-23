@@ -24,32 +24,25 @@
             </ul>
           </div>
 
-            <div v-for = "(art,index2) in articles.article">
-              {{ art }} : {{index2}}
-              {{art.slug}}
-
-              !!
-            </div>
-
-            <!--
-            <div class="article-preview">
-              <div class="article-meta">
-                <a href="profile.html"><img :src="data.author.image"/></a>
-                <div class="info">
-                  <a href="" class="author">{{data.author.username}}</a>
-                  <span class="date">202202020</span>
+            <div v-for = "art in articles.article">
+              <div class="article-preview">
+                <div class="article-meta">
+                  <a href="profile.html"><img :src="art.author.image"/></a>
+                  <div class="info">
+                    <a href="" class="author">{{art.author.username}}</a>
+                    <span class="date">{{ art.createdAt }}</span>
+                  </div>
+                  <button class="btn btn-outline-primary btn-sm pull-xs-right">
+                    <i class="ion-heart"></i> {{art.favoritesCount}}
+                  </button>
                 </div>
-                <button class="btn btn-outline-primary btn-sm pull-xs-right">
-                  <i class="ion-heart"></i> {{data.favoritesCount}}
-                </button>
+                <a href="" class="preview-link">
+                  <h1>{{art.title}}</h1>
+                  <p>{{art.description}}</p>
+                  <span>Read more...</span>
+                </a>
               </div>
-              <a href="" class="preview-link">
-                {{data.description}}
-                <span>Read more...</span>
-              </a>
             </div>
-            -->
-
           </div>
 
 
@@ -87,7 +80,17 @@ export default {
     const url = import.meta.env.VITE_BASE_URL;
 
     const articles = reactive({
-      article: {art:{slug: String}},
+      article: {art:{
+          slug: String,
+          title: String,
+          description: String,
+          favoritesCount: Number,
+          createdAt: String,
+          author: {
+            username: String,
+            image: String
+          }
+      }},
       articlesCount: "",
     })
 
