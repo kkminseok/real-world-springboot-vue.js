@@ -41,7 +41,8 @@ public class UserServiceImpl implements UserService {
             return convertUser(userRepository.save(User.builder().
                             username(userSignupRequest.getUsername()).
                             email(userSignupRequest.getEmail()).
-                            password(madeHash(userSignupRequest.getPassword())).build()));
+                            password(madeHash(userSignupRequest.getPassword())).
+                            image("https://api.realworld.io/images/smiley-cyrus.jpeg").build()));
         }
     }
 
