@@ -12,7 +12,7 @@ export default createStore({
         },
         setToken(state, token){
             state.token = token;
-        }
+        },
     },
     actions: {
         LOGIN({commit}, user){

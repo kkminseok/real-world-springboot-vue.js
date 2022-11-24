@@ -1,5 +1,4 @@
 <template>
-
   <div v-for = "art in articles.article">
     <div class="article-preview">
       <div class="article-meta">
@@ -22,17 +21,22 @@
 </template>
 
 <script lang="ts">
-import {onMounted, reactive, ref, defineEmits} from "vue";
+import {onMounted, reactive, ref, defineComponent} from "vue";
+import {useStore} from "vuex";
 import axios from "axios";
 
-export default {
-  name: "TheArticleList",
+export default defineComponent({
+  name: "ArticleListFeed",
   props:{
+    isEmpty: Boolean,
     isLoading: Boolean
   },
-  setup(){
+  setup(props,{emit}){
     const url = import.meta.env.VITE_BASE_URL;
-    const emit = defineEmits(["loading"])
+    const store = useStore();
+    const token = store.state.token;
+    const empty = ref(false);
+
     const articles = reactive({
       article: {art:{
           slug: String,
@@ -49,7 +53,10 @@ export default {
     })
 
     onMounted(() => {
-      axios.get(url + "/api/articles")
+      axios.get(url + "/api/articles/feed",{
+        headers:{
+          Authorization : "TOKEN " + token
+        }})
           .then(response => {
             console.log(response);
             articles.article = response.data.articles;
@@ -58,12 +65,15 @@ export default {
             console.log(typeof(articles.article));
             console.log(articles.articlesCount);
             emit("loading",false);
+            if(parseInt(articles.articlesCount) == 0) {
+              emit("emptied",true);
+            }
           });
     })
-    return { articles }
+    return { empty, articles }
 
   }
-}
+})
 </script>
 
 <style scoped>
