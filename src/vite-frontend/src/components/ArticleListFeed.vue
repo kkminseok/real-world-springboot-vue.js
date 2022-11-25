@@ -35,7 +35,6 @@ export default defineComponent({
     const url = import.meta.env.VITE_BASE_URL;
     const store = useStore();
     const token = store.state.token;
-    const empty = ref(false);
 
     const articles = reactive({
       article: {art:{
@@ -58,19 +57,16 @@ export default defineComponent({
           Authorization : "TOKEN " + token
         }})
           .then(response => {
-            console.log(response);
             articles.article = response.data.articles;
             articles.articlesCount = response.data.articlesCount;
             articles.article = JSON.parse(JSON.stringify(articles.article));
-            console.log(typeof(articles.article));
-            console.log(articles.articlesCount);
             emit("loading",false);
             if(parseInt(articles.articlesCount) == 0) {
               emit("emptied",true);
             }
           });
     })
-    return { empty, articles }
+    return { articles }
 
   }
 })
