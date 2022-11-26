@@ -33,24 +33,21 @@
                 No articles are here... yet.
               </div>
             </div>
-            <div v-if="isLogin && feedActive">
               <article-list
-                  :value="isLoading"
+                  v-if="isLogin && feedActive"
+                  :value="isLogin"
                   :value2="isEmpty"
                   @loading="onChangeLoading"
                   @emptied="emptyCheck">
               </article-list>
-            </div>
-            <div v-else>
               <article-list-global
-                :value="isLoading"
+                v-else
+                :value="isLogin"
                 :value2="isEmpty"
                 @loading="onChangeLoading"
                 @emptied="emptyCheck">
 
               </article-list-global>
-
-            </div>
           </div>
         <div class="col-md-3">
           <div class="sidebar">
@@ -85,7 +82,8 @@ export default {
   name: "TheHome",
   components: {
     'article-list': articleList,
-    'article-list-global': articleListGlobal},
+    'article-list-global': articleListGlobal
+  },
   setup(){
     const isLoading = ref(true);
     const isEmpty = ref(false);
@@ -109,8 +107,8 @@ export default {
     }
 
     const globalSelect = () => {
-      feedActive.value = false;
-      globalActive.value = true;
+      feedActive.value=false;
+      globalActive.value=true;
       isEmpty.value=false;
       isLoading.value=true;
     }
