@@ -4,25 +4,22 @@
 
     <div class="banner">
       <div class="container">
-
-        <h1>{{ article.title }}</h1>
+        <h1>{{ articleDetail.article.title }}</h1>
 
         <div class="article-meta">
-          <a href=""><img :src="article.author.image"/></a>
           <div class="info">
-            <a href="" class="author">{{ article.author.username }}</a>
-            <span class="date">{{article.createdAt}}</span>
+            <a href="javascript:void(0)" class="author" @click="viewProfile">{{ articleDetail.article.author.username }}</a>
+            <span class="date">{{articleDetail.article.createdAt}}</span>
           </div>
           <button class="btn btn-sm btn-outline-secondary">
             <i class="ion-plus-round"></i>
-            &nbsp;
-            Follow Eric Simons <span class="counter">10</span>
+            Follow {{articleDetail.article.author.username}}
           </button>
           &nbsp;&nbsp;
           <button class="btn btn-sm btn-outline-primary">
             <i class="ion-heart"></i>
             &nbsp;
-            Favorite Post <span class="counter">{{article.favoritesCount}}</span>
+            Favorite Post (<span class="counter">{{articleDetail.article.favoritesCount}}</span>)
           </button>
         </div>
 
@@ -33,7 +30,7 @@
 
       <div class="row article-content">
         <div class="col-md-12">
-          {{article.body}}
+          {{articleDetail.article.body}}
         </div>
       </div>
 
@@ -41,22 +38,21 @@
 
       <div class="article-actions">
         <div class="article-meta">
-          <a href="profile.html"><img src="http://i.imgur.com/Qr71crq.jpg"/></a>
+          <a href="javascript:void(0)"><img :src="articleDetail.article.author.image"></a>
           <div class="info">
-            <a href="" class="author">Eric Simons</a>
-            <span class="date">January 20th</span>
+            <a href="" class="author">{{ articleDetail.article.author.username }}</a>
+            <span class="date">{{articleDetail.article.createdAt}}</span>
           </div>
 
           <button class="btn btn-sm btn-outline-secondary">
             <i class="ion-plus-round"></i>
-            &nbsp;
-            Follow Eric Simons
+            Follow {{articleDetail.article.author.username}}
           </button>
           &nbsp;
           <button class="btn btn-sm btn-outline-primary">
             <i class="ion-heart"></i>
             &nbsp;
-            Favorite Post <span class="counter">(29)</span>
+            Favorite Post (<span class="counter">{{articleDetail.article.favoritesCount}}</span>)
           </button>
         </div>
       </div>
@@ -121,7 +117,7 @@
 <script lang="ts">
 import {onMounted, defineComponent, reactive} from "vue";
 import axios from "axios";
-import {useStore} from "vuex";
+import router from "@/router";
 
 export default defineComponent({
   name: "TheArticleDetail.vue",
@@ -130,44 +126,41 @@ export default defineComponent({
   },
   setup(props){
     const url = import.meta.env.VITE_BASE_URL;
-    const store = useStore();
-    const token = store.state.token;
-    const article = reactive({
-       slug: "",
-       title: "",
-       description: "",
-       body: "",
-       tagList: new Array(),
-       createdAt: "",
-       updatedAt: "",
-       favorited: Boolean,
-       favoritesCount: 0,
-       author: {
-         username: "",
-         bio: "",
-         image: "",
-         following: Boolean
+    const articleDetail = reactive({
+      article: {
+        slug: "",
+        title: "",
+        description: "",
+        body: "",
+        tagList: new Array(),
+        createdAt: "",
+        updatedAt: "",
+        favorited: false,
+        favoritesCount: 0,
+        author: {
+          username: "",
+          bio: "",
+          image: "",
+          following: false
+        }
       }
     })
 
-    const setArticle = ( data: any ) => {
-      article.slug = data.slug;
-      article.title = data.title;
-      article.description = data.description;
-      article.body = data.body;
+    const viewProfile = () => {
+      router.push({
+        name: 'Profile',
+        params: {username: articleDetail.article.author.username}})
     }
 
+
     onMounted(()=>{
-      axios.get(url + "/api/articles/" + props.slug,{
-        headers:{
-          Authorization : "TOKEN " + token,
-        }
-      }).then(response => {
-          setArticle(response.data.article);
+      axios.get(url + "/api/articles/" + props.slug,)
+          .then(response => {
+        articleDetail.article = response.data.article;
       })
     })
 
-    return { article, }
+    return { articleDetail, viewProfile, }
   }
 })
 </script>
