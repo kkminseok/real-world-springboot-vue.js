@@ -4,7 +4,9 @@
       <div class="article-meta">
         <a href="profile.html"><img :src="art.author.image"/></a>
         <div class="info">
-          <a href="" class="author">{{art.author.username}}</a>
+          <a class="author"
+             href="javascript:void(0)"
+             @click="showProfile(art.author.username)">{{art.author.username}}</a>
           <span class="date">{{ art.createdAt }}</span>
         </div>
         <button class="btn btn-outline-primary btn-sm pull-xs-right">
@@ -23,6 +25,7 @@
 <script lang="ts">
 import {onMounted, reactive, ref, defineComponent} from "vue";
 import axios from "axios";
+import router from "@/router";
 
 export default defineComponent({
   name: "ArticleListGlobal",
@@ -36,19 +39,26 @@ export default defineComponent({
     const articles = reactive({
       article: {
         art: {
-          slug: String,
-          title: String,
-          description: String,
-          favoritesCount: Number,
-          createdAt: String,
+          slug: "",
+          title: "",
+          description: "",
+          favoritesCount: 0,
+          createdAt: "",
           author: {
-            username: String,
-            image: String
+            username: "",
+            image: ""
           }
         }
       },
       articlesCount: "",
     })
+
+    const showProfile = (username: string) => {
+      router.push({
+        name: 'Profile',
+        params: {username: username}
+      })
+    }
 
     onMounted(() => {
       axios.get(url + "/api/articles", )
@@ -62,7 +72,7 @@ export default defineComponent({
             }
           });
     })
-    return { articles }
+    return { articles, showProfile }
   }
 })
 </script>

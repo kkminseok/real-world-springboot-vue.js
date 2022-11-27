@@ -59,11 +59,6 @@ export default {
       password: "",
     })
 
-    const allHideError = () => {
-      emailDuplicate.value = false;
-      usernameDuplicate.value = false;
-    }
-
     const showEmailUsernameError = () => {
       emailDuplicate.value = true;
       usernameDuplicate.value = true
@@ -84,7 +79,6 @@ export default {
         user
       })
           .then(response => {
-            allHideError();
             store.dispatch("LOGIN",response.data.user);
             router.push({name:"Home"});
           })
@@ -100,7 +94,7 @@ export default {
           })
     }
 
-    return { user, emailDuplicate, usernameDuplicate,  signup, showEmailUsernameError,showEmailError, showUsernameError, allHideError }
+    return { user, emailDuplicate, usernameDuplicate,  signup, showEmailUsernameError,showEmailError, showUsernameError }
   },
 
 }
