@@ -52,17 +52,7 @@
         <div class="col-md-3">
           <div class="sidebar">
             <p>Popular Tags</p>
-
-            <div class="tag-list">
-              <a href="" class="tag-pill tag-default">programming</a>
-              <a href="" class="tag-pill tag-default">javascript</a>
-              <a href="" class="tag-pill tag-default">emberjs</a>
-              <a href="" class="tag-pill tag-default">angularjs</a>
-              <a href="" class="tag-pill tag-default">react</a>
-              <a href="" class="tag-pill tag-default">mean</a>
-              <a href="" class="tag-pill tag-default">node</a>
-              <a href="" class="tag-pill tag-default">rails</a>
-            </div>
+            <tag-lists></tag-lists>
           </div>
         </div>
 
@@ -76,13 +66,15 @@
 
 import articleList from '@/components/ArticleListFeed.vue'
 import articleListGlobal from "@/components/ArticleListGlobal.vue";
+import tagLists from "@/components/TagList.vue";
 import {ref} from "vue";
 import {useStore} from "vuex";
 export default {
   name: "TheHome",
   components: {
     'article-list': articleList,
-    'article-list-global': articleListGlobal
+    'article-list-global': articleListGlobal,
+    'tag-lists': tagLists,
   },
   setup(){
     const isLoading = ref(true);

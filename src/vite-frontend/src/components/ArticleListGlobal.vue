@@ -61,7 +61,7 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      axios.get(url + "/api/articles", )
+      axios.get(url + "/api/articles")
           .then(response => {
             articles.article = response.data.articles;
             articles.articlesCount = response.data.articlesCount;
