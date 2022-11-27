@@ -38,27 +38,19 @@ public class WebConfig {
     }
 
     @Bean
-    @Order(0)
-    public SecurityFilterChain resources(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .requestMatchers((matchers) -> {matchers.antMatchers("/h2-console/**");
-                    matchers.antMatchers(HttpMethod.GET,"/api/articles/**","/**");})
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.csrf()
+                .disable()
+                .requestMatchers((matchers) -> {
+                    matchers.antMatchers("/h2-console/**");
+                    matchers.antMatchers(HttpMethod.GET,"/api/articles/**","/**");
+                    matchers.mvcMatchers("/api/users/**");
+                })
                 .authorizeHttpRequests((authorize) -> authorize.anyRequest().permitAll())
                 .requestCache().disable()
                 .securityContext().disable()
                 .sessionManagement().disable()
-                .headers().frameOptions().disable();
-
-        return http.build();
-    }
-
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf()
-                .disable()
-                .authorizeRequests()
-                .mvcMatchers("/api/users/**").permitAll()
-                .anyRequest().authenticated()
+                .headers().frameOptions().disable()
                 .and()
                 .formLogin()
                 .disable()

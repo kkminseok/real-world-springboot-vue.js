@@ -13,7 +13,9 @@
           <i class="ion-heart"></i> {{art.favoritesCount}}
         </button>
       </div>
-      <a href="" class="preview-link">
+      <a href="javascript:(0)"
+         class="preview-link"
+         @click="showArticle(art.slug)">
         <h1>{{art.title}}</h1>
         <p>{{art.description}}</p>
         <span>Read more...</span>
@@ -23,7 +25,7 @@
 </template>
 
 <script lang="ts">
-import {onMounted, reactive, ref, defineComponent} from "vue";
+import {onMounted, reactive, ref, defineComponent, watch} from "vue";
 import axios from "axios";
 import router from "@/router";
 
@@ -31,7 +33,8 @@ export default defineComponent({
   name: "ArticleListGlobal",
   props:{
     isEmpty: Boolean,
-    isLoading: Boolean
+    isLoading: Boolean,
+    globalList: Boolean,
   },
   setup(props,{emit}) {
     const url = import.meta.env.VITE_BASE_URL;
@@ -53,14 +56,7 @@ export default defineComponent({
       articlesCount: "",
     })
 
-    const showProfile = (username: string) => {
-      router.push({
-        name: 'Profile',
-        params: {username: username}
-      })
-    }
-
-    onMounted(() => {
+    const getArticles = () => {
       axios.get(url + "/api/articles")
           .then(response => {
             articles.article = response.data.articles;
@@ -71,8 +67,26 @@ export default defineComponent({
               emit("emptied", true);
             }
           });
+    }
+
+    const showProfile = (username: string) => {
+      router.push({
+        name: 'Profile',
+        params: {username: username}
+      })
+    }
+
+    const showArticle = (slug: string) =>{
+      router.push({
+        name: 'ArticleDetail',
+        params: {slug: slug}
+      })
+    }
+
+    onMounted(() => {
+      getArticles();
     })
-    return { articles, showProfile }
+    return { articles, getArticles, showProfile, showArticle }
   }
 })
 </script>

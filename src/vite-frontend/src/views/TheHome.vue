@@ -46,7 +46,6 @@
                 :value2="isEmpty"
                 @loading="onChangeLoading"
                 @emptied="emptyCheck">
-
               </article-list-global>
           </div>
         <div class="col-md-3">
@@ -67,7 +66,7 @@
 import articleList from '@/components/ArticleListFeed.vue'
 import articleListGlobal from "@/components/ArticleListGlobal.vue";
 import tagLists from "@/components/TagList.vue";
-import {ref} from "vue";
+import {ref, getCurrentInstance, onMounted} from "vue";
 import {useStore} from "vuex";
 export default {
   name: "TheHome",
@@ -90,6 +89,7 @@ export default {
     const emptyCheck = (val: boolean) => {
       isEmpty.value = val;
     }
+
 
     const feedSelect = () => {
       feedActive.value=true;
