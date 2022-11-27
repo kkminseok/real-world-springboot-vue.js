@@ -16,19 +16,29 @@
       <ul class="nav navbar-nav pull-xs-right">
         <li class="nav-item">
           <!-- Add "active" class when you're on that page" -->
-          <router-link to="/" class="nav-link active" active-class="active">Home</router-link>
+          <router-link to="/" class="nav-link"
+                       @click="selected(home)"
+                       :class="{ active : home}" active-class="active">Home</router-link>
         </li>
         <li class="nav-item" v-if="isLogin">
-          <router-link to="/editor/" class="nav-link" active-class="active">New Article</router-link>
+          <router-link to="/editor/" class="nav-link"
+                       @click="selected(article)"
+                       :class="{ active : article}" active-class="active">New Article</router-link>
         </li>
         <li class="nav-item" v-if="isLogin">
-            <router-link to="/settings" class="nav-link" active-class="active"><i class="ion-gear-a"></i>Settings</router-link>
+            <router-link to="/settings" class="nav-link"
+                         @click="selected(setting)"
+                         :class="{ active : setting}" active-class="active"><i class="ion-gear-a"></i>Settings</router-link>
         </li>
         <li class="nav-item" v-if="!isLogin">
-          <router-link to="/login" class="nav-link" active-class="active">Sign in</router-link>
+          <router-link to="/login" class="nav-link"
+                       @click="selected(signIn)"
+                       :class="{ active : signIn}" active-class="active">Sign in</router-link>
         </li>
         <li class="nav-item" v-if="!isLogin">
-          <router-link to="/register" class="nav-link" active-class="active">Sign up</router-link>
+          <router-link to="/register" class="nav-link"
+                       @click="selected(signUp)"
+                       :class="{ active : signUp}" active-class="active">Sign up</router-link>
         </li>
       </ul>
     </div>
@@ -46,6 +56,23 @@ export default {
   setup(){
     const store = useStore();
     const isLogin = ref(false);
+    const home = ref(false);
+    const article = ref(false);
+    const setting = ref(false);
+    const signIn = ref(false);
+    const signUp = ref(false);
+    const allHide = () => {
+      home.value = false;
+      article.value = false;
+      setting.value = false;
+      signUp.value = false;
+      signIn.value = false;
+    }
+
+    const selected = (headerName : boolean) => {
+      allHide();
+      headerName = true;
+    }
 
     onMounted(()=> {
         if(store.state.token == ""){
@@ -55,7 +82,7 @@ export default {
         }
     })
 
-    return { isLogin}
+    return { isLogin, home, article, setting, signIn, signUp, allHide, selected }
   }
 
 }
