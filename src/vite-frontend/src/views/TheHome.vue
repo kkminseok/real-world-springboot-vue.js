@@ -66,7 +66,7 @@
 import articleList from '@/components/ArticleListFeed.vue'
 import articleListGlobal from "@/components/ArticleListGlobal.vue";
 import tagLists from "@/components/TagList.vue";
-import {ref, getCurrentInstance, onMounted} from "vue";
+import {ref} from "vue";
 import {useStore} from "vuex";
 export default {
   name: "TheHome",

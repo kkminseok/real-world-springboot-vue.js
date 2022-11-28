@@ -13,4 +13,6 @@ public interface ProfileRepository extends JpaRepository<Follow, Long> {
 
     List<Follow> findByFollowerId(Long followeeId);
 
+    List<Follow> findByFolloweeId(Long followerId);
+
 }
