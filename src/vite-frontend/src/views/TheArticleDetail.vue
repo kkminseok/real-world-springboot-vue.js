@@ -11,9 +11,15 @@
             <a href="javascript:void(0)" class="author" @click="viewProfile">{{ articleDetail.article.author.username }}</a>
             <span class="date">{{articleDetail.article.createdAt}}</span>
           </div>
-          <button class="btn btn-sm btn-outline-secondary">
-            <i class="ion-plus-round"></i>
-            Follow {{articleDetail.article.author.username}}
+          <button class="btn btn-sm btn-outline-secondary" @click="stateUpdate(articleDetail.article.author.following)">
+            <div v-if="articleDetail.article.author.following">
+              <i class="ion-minus-round"></i>
+              unFollow {{articleDetail.article.author.username}}
+            </div>
+            <div v-else>
+              <i class="ion-plus-round"></i>
+              Follow {{articleDetail.article.author.username}}
+            </div>
           </button>
           &nbsp;&nbsp;
           <button class="btn btn-sm btn-outline-primary">
@@ -40,13 +46,19 @@
         <div class="article-meta">
           <a href="javascript:void(0)"><img :src="articleDetail.article.author.image"></a>
           <div class="info">
-            <a href="" class="author">{{ articleDetail.article.author.username }}</a>
+            <a href="javascript:void(0)" class="author" @click="viewProfile">{{ articleDetail.article.author.username }}</a>
             <span class="date">{{articleDetail.article.createdAt}}</span>
           </div>
 
-          <button class="btn btn-sm btn-outline-secondary">
-            <i class="ion-plus-round"></i>
-            Follow {{articleDetail.article.author.username}}
+          <button class="btn btn-sm btn-outline-secondary" @click="stateUpdate(articleDetail.article.author.following)">
+            <div v-if="articleDetail.article.author.following">
+              <i class="ion-minus-round"></i>
+              unFollow {{articleDetail.article.author.username}}
+            </div>
+            <div v-else>
+              <i class="ion-plus-round"></i>
+              Follow {{articleDetail.article.author.username}}
+            </div>
           </button>
           &nbsp;
           <button class="btn btn-sm btn-outline-primary">
@@ -118,6 +130,7 @@
 import {onMounted, defineComponent, reactive} from "vue";
 import axios from "axios";
 import router from "@/router";
+import {useStore} from "vuex";
 
 export default defineComponent({
   name: "TheArticleDetail.vue",
@@ -126,6 +139,9 @@ export default defineComponent({
   },
   setup(props){
     const url = import.meta.env.VITE_BASE_URL;
+    const store = useStore();
+    const token = store.state.token;
+
     const articleDetail = reactive({
       article: {
         slug: "",
@@ -152,6 +168,32 @@ export default defineComponent({
         params: {username: articleDetail.article.author.username}})
     }
 
+    const stateUpdate = (followState : boolean) => {
+      if(token == ''){
+        router.push({name:"Login"});
+      }
+      if(followState){
+        axios.delete(url + "/api/profiles/" + articleDetail.article.author.username + "/follow",{
+          headers:{
+            Authorization : "TOKEN " + token,
+            "Content-Type": `application/json`,
+          }
+        }).then(response => {
+          articleDetail.article.author.following = response.data.profile.following;
+        })
+      }else{
+        axios.post(url + "/api/profiles/" + articleDetail.article.author.username + "/follow",{},{
+          headers:{
+            Authorization : "TOKEN " + token,
+            "Content-Type": `application/json`,
+          }
+        }).then(response => {
+          articleDetail.article.author.following = response.data.profile.following;
+        })
+      }
+
+    }
+
 
     onMounted(()=>{
       axios.get(url + "/api/articles/" + props.slug,)
@@ -160,7 +202,7 @@ export default defineComponent({
       })
     })
 
-    return { articleDetail, viewProfile, }
+    return { articleDetail, viewProfile, stateUpdate, }
   }
 })
 </script>

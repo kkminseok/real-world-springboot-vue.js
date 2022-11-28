@@ -15,18 +15,15 @@
             <button class="btn btn-sm btn-outline-secondary action-btn" @click="stateUpdate">
               <div v-if="isMe">
                 <i class="ion-gear-a"></i>
-                &nbsp;
                 Edit Profile Settings
               </div>
               <div v-else>
                 <div v-if="profile.following">
                   <i class="ion-plus-round"></i>
-                  &nbsp;
                   unFollow {{profile.username}}
                 </div>
                 <div v-else>
                   <i class="ion-plus-round"></i>
-                  &nbsp;
                   Follow {{profile.username}}
                 </div>
               </div>
@@ -150,7 +147,7 @@ export default defineComponent({
               setProfile(response.data.profile)
             })
          }else{
-           axios.post(url + "/api/profiles/" + profile.username + "/follow",{
+           axios.post(url + "/api/profiles/" + profile.username + "/follow",{},{
              headers:{
                Authorization : "TOKEN " + token,
                "Content-Type": `application/json`,
