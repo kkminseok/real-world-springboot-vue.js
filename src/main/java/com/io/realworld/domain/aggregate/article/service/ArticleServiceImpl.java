@@ -73,7 +73,7 @@ public class ArticleServiceImpl implements ArticleService {
 
         Pageable pageable = PageRequest.of(offset,limit);
 
-        List<Follow> follows = profileRepository.findByFollowerId(userAuth.getId());
+        List<Follow> follows = profileRepository.findByFolloweeId(userAuth.getId());
         follows.stream().forEach(follow -> {
             String followerName = follow.getFollower().getUsername();
             articles.addAll(articleRepository.findByAuthorName(followerName,pageable));

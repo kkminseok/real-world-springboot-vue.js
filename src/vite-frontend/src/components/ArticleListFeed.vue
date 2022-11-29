@@ -5,7 +5,7 @@
         <a href="profile.html"><img :src="art.author.image"/></a>
         <div class="info">
           <a href="" class="author">{{art.author.username}}</a>
-          <span class="date">{{ art.createdAt }}</span>
+          <span class="date">{{convertDate(art.createdAt)}}</span>
         </div>
         <button class="btn btn-outline-primary btn-sm pull-xs-right">
           <i class="ion-heart"></i> {{art.favoritesCount}}
@@ -24,6 +24,7 @@
 import {onMounted, reactive, ref, defineComponent} from "vue";
 import {useStore} from "vuex";
 import axios from "axios";
+import convertDate from "@/ts/common";
 
 export default defineComponent({
   name: "ArticleListFeed",
@@ -38,14 +39,14 @@ export default defineComponent({
 
     const articles = reactive({
       article: {art:{
-          slug: String,
-          title: String,
-          description: String,
-          favoritesCount: Number,
-          createdAt: String,
+          slug: "",
+          title: "",
+          description: "",
+          favoritesCount: 0,
+          createdAt: "",
           author: {
-            username: String,
-            image: String
+            username: "",
+            image: ""
           }
         }},
       articlesCount: "",
@@ -67,7 +68,7 @@ export default defineComponent({
             }
           });
     })
-    return { articles }
+    return { articles, convertDate }
 
   }
 })

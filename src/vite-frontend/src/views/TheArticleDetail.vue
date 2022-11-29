@@ -9,7 +9,7 @@
         <div class="article-meta">
           <div class="info">
             <a href="javascript:void(0)" class="author" @click="viewProfile">{{ articleDetail.article.author.username }}</a>
-            <span class="date">{{articleDetail.article.createdAt}}</span>
+            <span class="date">{{convertDate(articleDetail.article.createdAt)}}</span>
           </div>
           <button class="btn btn-sm btn-outline-secondary" @click="stateUpdate(articleDetail.article.author.following)">
             <div v-if="articleDetail.article.author.following">
@@ -47,7 +47,7 @@
           <a href="javascript:void(0)"><img :src="articleDetail.article.author.image"></a>
           <div class="info">
             <a href="javascript:void(0)" class="author" @click="viewProfile">{{ articleDetail.article.author.username }}</a>
-            <span class="date">{{articleDetail.article.createdAt}}</span>
+            <span class="date">{{convertDate(articleDetail.article.createdAt)}}</span>
           </div>
 
           <button class="btn btn-sm btn-outline-secondary" @click="stateUpdate(articleDetail.article.author.following)">
@@ -131,6 +131,7 @@ import {onMounted, defineComponent, reactive} from "vue";
 import axios from "axios";
 import router from "@/router";
 import {useStore} from "vuex";
+import convertDate from "@/ts/common";
 
 export default defineComponent({
   name: "TheArticleDetail.vue",
@@ -202,7 +203,7 @@ export default defineComponent({
       })
     })
 
-    return { articleDetail, viewProfile, stateUpdate, }
+    return { articleDetail, convertDate, viewProfile, stateUpdate, }
   }
 })
 </script>

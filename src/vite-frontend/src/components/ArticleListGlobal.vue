@@ -7,7 +7,7 @@
           <a class="author"
              href="javascript:void(0)"
              @click="showProfile(art.author.username)">{{art.author.username}}</a>
-          <span class="date">{{ art.createdAt }}</span>
+          <span class="date">{{convertDate(art.createdAt)}}</span>
         </div>
         <button class="btn btn-outline-primary btn-sm pull-xs-right">
           <i class="ion-heart"></i> {{art.favoritesCount}}
@@ -25,9 +25,10 @@
 </template>
 
 <script lang="ts">
-import {onMounted, reactive, ref, defineComponent, watch} from "vue";
+import {onMounted, reactive, defineComponent, computed } from "vue";
 import axios from "axios";
 import router from "@/router";
+import convertDate from '@/ts/common';
 
 export default defineComponent({
   name: "ArticleListGlobal",
@@ -38,7 +39,6 @@ export default defineComponent({
   },
   setup(props,{emit}) {
     const url = import.meta.env.VITE_BASE_URL;
-
     const articles = reactive({
       article: {
         art: {
@@ -83,10 +83,11 @@ export default defineComponent({
       })
     }
 
+
     onMounted(() => {
       getArticles();
     })
-    return { articles, getArticles, showProfile, showArticle }
+    return { articles, getArticles, convertDate, showProfile, showArticle }
   }
 })
 </script>
