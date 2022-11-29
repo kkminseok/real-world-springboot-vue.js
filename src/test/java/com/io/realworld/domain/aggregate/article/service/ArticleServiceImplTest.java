@@ -120,7 +120,7 @@ class ArticleServiceImplTest {
         }};
 
         when(profileService.getProfile(eq(userAuth), any(String.class))).thenReturn(ProfileResponse.builder().username(articles.get(0).getAuthor().getUsername()).build());
-        when(profileRepository.findByFollowerId(any(Long.class))).thenReturn(follows);
+        when(profileRepository.findByFolloweeId(any(Long.class))).thenReturn(follows);
         when(articleRepository.findByAuthorName(any(String.class),any(Pageable.class))).thenReturn(articles);
         List<ArticleResponse> articleResponses = articleService.getFeed(userAuth, feedParam);
 

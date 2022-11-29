@@ -31,7 +31,7 @@ class ProfileRepositoryTest {
 
         userRepository.save(followee);
         userRepository.save(follower);
-        Follow follow = Follow.builder().followee(followee).follower(follower).build();
+        Follow follow = Follow.builder().id(1L).followee(followee).follower(follower).build();
         //when
         Follow getFollow = profileRepository.save(follow);
 
@@ -58,7 +58,7 @@ class ProfileRepositoryTest {
         //given
         userRepository.save(followee);
         userRepository.save(follower);
-        Follow follow = Follow.builder().followee(followee).follower(follower).build();
+        Follow follow = Follow.builder().id(1L).followee(followee).follower(follower).build();
         //when
         profileRepository.save(follow);
         Optional<Follow> getFollow = profileRepository.findByFolloweeIdAndFollowerId(followee.getId(),follower.getId());
@@ -88,7 +88,6 @@ class ProfileRepositoryTest {
     void feedArticle(User followee, User follower){
         UserAuth userAuth = UserAuth.builder().id(1L).username("username").bio("bio").email("email").build();
         User follower2 = User.builder()
-                .id(3L)
                 .bio("follower bio")
                 .email("follower2@email.com")
                 .password("password")
@@ -99,13 +98,14 @@ class ProfileRepositoryTest {
         userRepository.save(follower);
         userRepository.save(follower2);
 
+        System.out.println(followee.getId() + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         Follow follow = Follow.builder().followee(followee).follower(follower).build();
         Follow follow2 = Follow.builder().followee(followee).follower(follower2).build();
 
         profileRepository.save(follow);
         profileRepository.save(follow2);
 
-        List<Follow> follows = profileRepository.findByFolloweeId(userAuth.getId());
+        List<Follow> follows = profileRepository.findByFolloweeId(followee.getId());
 
         assertThat(follows.get(0).getFollowee().getUsername()).isEqualTo(followee.getUsername());
         assertThat(follows.get(0).getFollower().getUsername()).isEqualTo(follower.getUsername());
@@ -120,7 +120,6 @@ class ProfileRepositoryTest {
         return Stream.of(
                 Arguments.of(
                 User.builder()
-                        .id(1L)
                         .bio("follow bio")
                         .email("follow@email.com")
                         .password("password")
@@ -128,7 +127,6 @@ class ProfileRepositoryTest {
                         .username("follow")
                         .build(),
                 User.builder()
-                        .id(2L)
                         .bio("follower bio")
                         .email("follower@email.com")
                         .password("password")
