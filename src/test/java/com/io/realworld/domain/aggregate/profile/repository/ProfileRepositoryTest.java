@@ -86,7 +86,6 @@ class ProfileRepositoryTest {
     @MethodSource("getFolloweeAndFollower")
     @ParameterizedTest(name = "repo:피드 테스트")
     void feedArticle(User followee, User follower){
-        UserAuth userAuth = UserAuth.builder().id(1L).username("username").bio("bio").email("email").build();
         User follower2 = User.builder()
                 .bio("follower bio")
                 .email("follower2@email.com")
@@ -98,14 +97,15 @@ class ProfileRepositoryTest {
         userRepository.save(follower);
         userRepository.save(follower2);
 
-        System.out.println(followee.getId() + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        UserAuth userAuth = UserAuth.builder().id(followee.getId()).username("username").bio("bio").email("email").build();
+
         Follow follow = Follow.builder().followee(followee).follower(follower).build();
         Follow follow2 = Follow.builder().followee(followee).follower(follower2).build();
 
         profileRepository.save(follow);
         profileRepository.save(follow2);
 
-        List<Follow> follows = profileRepository.findByFolloweeId(followee.getId());
+        List<Follow> follows = profileRepository.findByFolloweeId(userAuth.getId());
 
         assertThat(follows.get(0).getFollowee().getUsername()).isEqualTo(followee.getUsername());
         assertThat(follows.get(0).getFollower().getUsername()).isEqualTo(follower.getUsername());

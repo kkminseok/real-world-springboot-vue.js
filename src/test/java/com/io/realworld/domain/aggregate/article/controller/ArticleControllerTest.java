@@ -3,6 +3,8 @@ package com.io.realworld.domain.aggregate.article.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.io.realworld.config.WithAuthUser;
 import com.io.realworld.domain.aggregate.article.dto.*;
+import com.io.realworld.domain.aggregate.article.entity.Article;
+import com.io.realworld.domain.aggregate.article.repository.ArticleRepository;
 import com.io.realworld.domain.aggregate.article.service.ArticleService;
 import com.io.realworld.domain.aggregate.article.service.CommentService;
 import com.io.realworld.domain.aggregate.user.dto.UserAuth;
@@ -56,9 +58,10 @@ class ArticleControllerTest {
 
     private String slug;
 
+
+
     @BeforeEach
     void setup(){
-
         String title = "create title";
         slug = title.toLowerCase().replace(' ','-');
         articleResponse = ArticleResponse.builder()

@@ -11,7 +11,7 @@
             <a href="javascript:void(0)" class="author" @click="viewProfile">{{ articleDetail.article.author.username }}</a>
             <span class="date">{{convertDate(articleDetail.article.createdAt)}}</span>
           </div>
-          <button class="btn btn-sm btn-outline-secondary" @click="stateUpdate(articleDetail.article.author.following)">
+          <button class="btn btn-sm btn-outline-secondary" @click="followUpdate(articleDetail.article.author.following)">
             <div v-if="articleDetail.article.author.following">
               <i class="ion-minus-round"></i>
               unFollow {{articleDetail.article.author.username}}
@@ -22,10 +22,15 @@
             </div>
           </button>
           &nbsp;&nbsp;
-          <button class="btn btn-sm btn-outline-primary">
-            <i class="ion-heart"></i>
-            &nbsp;
-            Favorite Post (<span class="counter">{{articleDetail.article.favoritesCount}}</span>)
+          <button class="btn btn-sm btn-outline-primary" @click="favoriteUpdate()">
+            <div v-if="articleDetail.article.favorited">
+              <i class="ion-heart"></i>
+              unFavorite Article (<span class="counter">{{articleDetail.article.favoritesCount}}</span>)
+            </div>
+            <div v-else>
+              <i class="ion-heart"></i>
+              Favorite Article (<span class="counter">{{articleDetail.article.favoritesCount}}</span>)
+            </div>
           </button>
         </div>
 
@@ -50,7 +55,7 @@
             <span class="date">{{convertDate(articleDetail.article.createdAt)}}</span>
           </div>
 
-          <button class="btn btn-sm btn-outline-secondary" @click="stateUpdate(articleDetail.article.author.following)">
+          <button class="btn btn-sm btn-outline-secondary" @click="followUpdate(articleDetail.article.author.following)">
             <div v-if="articleDetail.article.author.following">
               <i class="ion-minus-round"></i>
               unFollow {{articleDetail.article.author.username}}
@@ -61,10 +66,15 @@
             </div>
           </button>
           &nbsp;
-          <button class="btn btn-sm btn-outline-primary">
-            <i class="ion-heart"></i>
-            &nbsp;
-            Favorite Post (<span class="counter">{{articleDetail.article.favoritesCount}}</span>)
+          <button class="btn btn-sm btn-outline-primary" @click="favoriteUpdate()">
+            <div v-if="articleDetail.article.favorited">
+              <i class="ion-heart"></i>
+              unFavorite Article (<span class="counter">{{articleDetail.article.favoritesCount}}</span>)
+            </div>
+            &nbsp;<div v-else>
+              <i class="ion-heart"></i>
+              Favorite Article (<span class="counter">{{articleDetail.article.favoritesCount}}</span>)
+            </div>
           </button>
         </div>
       </div>
@@ -169,7 +179,7 @@ export default defineComponent({
         params: {username: articleDetail.article.author.username}})
     }
 
-    const stateUpdate = (followState : boolean) => {
+    const followUpdate = (followState : boolean) => {
       if(token == ''){
         router.push({name:"Login"});
       }
@@ -192,7 +202,34 @@ export default defineComponent({
           articleDetail.article.author.following = response.data.profile.following;
         })
       }
+    }
 
+    const favoriteUpdate = () => {
+      if(token == ''){
+        router.push({name:"Login"});
+      }
+      const favoriteState: boolean = articleDetail.article.favorited;
+      if(favoriteState){
+        axios.delete(url + "/api/articles/" + articleDetail.article.slug + "/favorite",{
+          headers:{
+            Authorization : "TOKEN " + token,
+            "Content-Type": `application/json`,
+          }
+        }).then(response => {
+          articleDetail.article.favorited = response.data.article.favorited;
+          articleDetail.article.favoritesCount = response.data.article.favoritesCount;
+        })
+      }else{
+        axios.post(url + "/api/articles/" + articleDetail.article.slug + "/favorite",{},{
+          headers:{
+            Authorization : "TOKEN " + token,
+            "Content-Type": `application/json`,
+          }
+        }).then(response => {
+          articleDetail.article.favorited = response.data.article.favorited;
+          articleDetail.article.favoritesCount = response.data.article.favoritesCount;
+        })
+      }
     }
 
 
@@ -203,7 +240,7 @@ export default defineComponent({
       })
     })
 
-    return { articleDetail, convertDate, viewProfile, stateUpdate, }
+    return { articleDetail, convertDate, viewProfile, followUpdate, favoriteUpdate }
   }
 })
 </script>

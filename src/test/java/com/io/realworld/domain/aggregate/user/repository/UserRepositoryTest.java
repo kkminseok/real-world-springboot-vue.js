@@ -1,5 +1,7 @@
 package com.io.realworld.domain.aggregate.user.repository;
 
+import com.io.realworld.domain.aggregate.article.entity.Article;
+import com.io.realworld.domain.aggregate.article.repository.ArticleRepository;
 import com.io.realworld.domain.aggregate.user.entity.User;
 import com.io.realworld.domain.aggregate.user.repository.UserRepository;
 import org.hibernate.annotations.Filter;
