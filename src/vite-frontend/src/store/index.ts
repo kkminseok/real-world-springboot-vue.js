@@ -1,4 +1,3 @@
-import axios from "axios";
 import { createStore } from 'vuex';
 
 export default createStore({
@@ -12,7 +11,13 @@ export default createStore({
         },
         setToken(state, token){
             state.token = token;
-        },
+        }
+    },
+    getters: {
+        getToken(state){
+            console.log(state.token);
+            return state.token;
+        }
     },
     actions: {
         LOGIN({commit}, user){
@@ -22,11 +27,11 @@ export default createStore({
                 localStorage.setItem("token", user.token);
             },
         LOGOUT({commit}){
-            commit("setUsername","");
-            commit("setToken","");
-            localStorage.removeItem("username");
-            localStorage.removeItem("token");
-            },
+                commit("setUsername","");
+                commit("setToken","");
+                localStorage.removeItem("username");
+                localStorage.removeItem("token");
+                },
         },
     }
 )

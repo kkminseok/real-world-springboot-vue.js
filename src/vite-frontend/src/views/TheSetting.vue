@@ -25,7 +25,7 @@
               <fieldset class="form-group">
                 <input class="form-control form-control-lg" type="password" placeholder="Password" v-model="password">
               </fieldset>
-              <button @click = "updateUser" class="btn btn-lg btn-primary pull-xs-right">
+              <button @click="setUser" class="btn btn-lg btn-primary pull-xs-right">
                 Update Settings
               </button>
             </fieldset>
@@ -42,16 +42,15 @@
 </template>
 
 <script lang="ts">
-import axios from "axios";
-import router from "@/router";
+import { getCurrentUser, updateUser } from "@/api";
 import { useStore } from "vuex";
+import router from "@/router";
 import { onMounted, reactive } from "vue";
 
 export default {
   name: "TheSetting",
   setup() {
     const url = import.meta.env.VITE_BASE_URL;
-    const token = localStorage.getItem("token");
     const user = reactive({
       bio: "",
       email: "",
@@ -69,23 +68,21 @@ export default {
       user.image = getuser.image
     }
 
-    const updateUser = () => {
-      axios.put(url+'/api/user',{user},{
-        headers:{
-          Authorization : "TOKEN " + token,
-          "Content-Type": `application/json`,
-        }})
-          .then(response => {
-            store.dispatch("LOGIN",response.data.user);
-            router.push({
-              name: 'Profile',
-              params: {username: response.data.user.username}})
-
-          })
-          .catch(error =>{
-            const code = error.response.data.errors.code;
-            //TODO 예외처리
-          })
+    const setUser = async ()  => {
+      try{
+        console.log(await updateUser(user));
+        /*
+        const { data } = await updateUser(user);
+        store.dispatch("LOGIN", data.user);
+        router.push({
+          name: 'Profile',
+          params: {username: data.user.username}
+        })*/
+      }catch(error:any){
+        // Todo Error처리
+        const code = error.response.data.errors.code;
+        console.log(code);
+      }
     }
 
     const logout = () =>{
@@ -95,22 +92,18 @@ export default {
     }
 
 
-    onMounted(() => {
-      axios.get(url+'/api/user',{
-        headers:{
-          Authorization : "TOKEN " + token
-        }
-      })
-          .then(response => {
-            store.dispatch("LOGIN",response.data.user)
-            getUser(response.data.user);
-          })
-          .catch(error =>{
-            const code = error.response.data.errors.code;
-            //TODO 예외처리
-          })
+    onMounted(async () => {
+      try {
+        const { data } = await getCurrentUser();
+        store.dispatch("LOGIN", data.user)
+        getUser(data.user);
+      } catch (error: any) {
+        //TODO error처리
+        console.log(error);
+      }
     })
-    return {user, password, url, token, getUser, updateUser, logout};
+
+    return {user, password, url, getUser, setUser, logout};
   }
 }
 </script>

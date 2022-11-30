@@ -225,6 +225,7 @@ export default defineComponent({
           }
         }).then(response => {
           comment.body="";
+          getCommentList.comment.push(response.data.comment);
         })
     }
 
@@ -233,13 +234,12 @@ export default defineComponent({
       axios.get(url + "/api/articles/" + props.slug,)
           .then(response => {
         articleDetail.article = response.data.article;
+        console.log(articleDetail.article);
       })
 
       axios.get(url + "/api/articles/" + props.slug + "/comments")
           .then(response => {
             getCommentList.comment = response.data.comments;
-            console.log(getCommentList.comment);
-            console.log(response);
           })
     })
 

@@ -16,8 +16,6 @@
           <ul class="error-messages" v-if="usernameDuplicate">
             <li align="left">username has already been taken</li>
           </ul>
-
-
           <form>
             <fieldset class="form-group">
               <input class="form-control form-control-lg" type="text" placeholder="Your Name" v-model="user.username">
@@ -28,7 +26,7 @@
             <fieldset class="form-group">
               <input class="form-control form-control-lg" type="password" placeholder="Password" v-model="user.password">
             </fieldset>
-            <button @click = "signup"  class="btn btn-lg btn-primary pull-xs-right">
+            <button @click = "register"  class="btn btn-lg btn-primary pull-xs-right">
               Sign up
             </button>
           </form>
@@ -41,9 +39,9 @@
 
 <script lang="ts">
 
-import axios from "axios";
+import { signUp } from "@/api";
 import router from "@/router";
-import {reactive, ref} from "vue";
+import { reactive, ref } from "vue";
 import { useStore } from "vuex";
 
 export default {
@@ -73,28 +71,24 @@ export default {
       emailDuplicate.value = false;
     };
 
-    const signup = () => {
-      const url = import.meta.env.VITE_BASE_URL;
-      axios.post(url+'/api/users',{
-        user
-      })
-          .then(response => {
-            store.dispatch("LOGIN",response.data.user);
-            router.push({name:"Home"});
-          })
-          .catch(error =>{
-            const code = error.response.data.errors.code;
-            if(code == "DUPLICATE_EMAIL_USERNAME"){
-              showEmailUsernameError();
-            }else if(code == "DUPLICATE_EMAIL"){
-              showEmailError();
-            }else if(code == "DUPLICATE_USERNAME"){
-              showUsernameError();
-            }
-          })
+    const register = async () => {
+      try{
+        const { data } = await signUp(user);
+        store.dispatch("LOGIN",data.user);
+        router.push({name:"Home"});
+      }catch(error: any){
+        const code = error.response.data.errors.code;
+        if(code == "DUPLICATE_EMAIL_USERNAME"){
+          showEmailUsernameError();
+        }else if(code == "DUPLICATE_EMAIL"){
+          showEmailError();
+        }else if(code == "DUPLICATE_USERNAME"){
+          showUsernameError();
+        }
+      }
     }
 
-    return { user, emailDuplicate, usernameDuplicate,  signup, showEmailUsernameError,showEmailError, showUsernameError }
+    return { user, emailDuplicate, usernameDuplicate,  register, showEmailUsernameError,showEmailError, showUsernameError }
   },
 
 }

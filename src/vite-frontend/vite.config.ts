@@ -16,14 +16,6 @@ export default defineConfig({
   server: {
     https: true,
     port: 4000,
-    proxy:{
-      '/': {
-        target : "http://3.35.44.58:8080",
-        rewrite: (path) => path.replace(/^\//,''),
-        changeOrigin: true,
-        secure: false
-      }
-    }
   },
 
   plugins: [vue(),basicSsl()]

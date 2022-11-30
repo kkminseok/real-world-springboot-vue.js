@@ -21,7 +21,7 @@
             <fieldset class="form-group">
               <input class="form-control form-control-lg" type="password" placeholder="Password" v-model="user.password">
             </fieldset>
-            <button @click = "signin" class="btn btn-lg btn-primary pull-xs-right">
+            <button @click = "Login" class="btn btn-lg btn-primary pull-xs-right">
               Sign in
             </button>
           </form>
@@ -33,8 +33,8 @@
 </template>
 
 <script lang="ts">
-import {reactive, ref} from "vue";
-import axios from "axios";
+import { reactive, ref } from "vue";
+import { signIn } from "@/api";
 import router from "@/router";
 import { useStore } from "vuex";
 
@@ -51,25 +51,21 @@ export default {
 
     let loginValidation = ref(false);
 
-    const signin = () => {
-      const url = import.meta.env.VITE_BASE_URL;
-      axios.post(url+'/api/users/login',{
-        user
-      })
-          .then(response => {
-            store.dispatch("LOGIN",response.data.user);
-            router.push({name:"Home"});
-          })
-          .catch(error =>{
-            const code = error.response.data.errors.code;
-            if(code == "EMAIL_NULL_OR_INVALID"){
-              loginValidation.value = true;
-            }else if(code == "PASSWORD_WORNG"){
-              loginValidation.value = true;
-            }
-          })
+    const Login = async () => {
+      try{
+        const { data } = await signIn(user);
+        store.dispatch("LOGIN",data.user);
+        router.push({name:"Home"});
+      }catch(error: any){
+        const code = error.response.data.errors.code;
+        if(code == "EMAIL_NULL_OR_INVALID"){
+          loginValidation.value = true;
+        }else if(code == "PASSWORD_WRONG"){
+          loginValidation.value = true;
+        }
+      };
     }
-    return {user, loginValidation, signin};
+    return {user, loginValidation, Login};
   }
 
 
