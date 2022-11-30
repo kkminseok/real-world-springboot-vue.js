@@ -85,48 +85,19 @@
 
           <form class="card comment-form">
             <div class="card-block">
-              <textarea class="form-control" placeholder="Write a comment..." rows="3"></textarea>
+              <textarea class="form-control" placeholder="Write a comment..." rows="3" v-model="comment.body"></textarea>
             </div>
             <div class="card-footer">
-              <img src="http://i.imgur.com/Qr71crq.jpg" class="comment-author-img"/>
-              <button class="btn btn-sm btn-primary">
+              <img :src="articleDetail.article.author.image" class="comment-author-img"/>
+              <button class="btn btn-sm btn-primary" @click="sendComment()">
                 Post Comment
               </button>
             </div>
           </form>
-
-          <div class="card">
-            <div class="card-block">
-              <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-            </div>
-            <div class="card-footer">
-              <a href="" class="comment-author">
-                <img src="http://i.imgur.com/Qr71crq.jpg" class="comment-author-img"/>
-              </a>
-              &nbsp;
-              <a href="" class="comment-author">Jacob Schmidt</a>
-              <span class="date-posted">Dec 29th</span>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-block">
-              <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-            </div>
-            <div class="card-footer">
-              <a href="" class="comment-author">
-                <img src="http://i.imgur.com/Qr71crq.jpg" class="comment-author-img"/>
-              </a>
-              &nbsp;
-              <a href="" class="comment-author">Jacob Schmidt</a>
-              <span class="date-posted">Dec 29th</span>
-              <span class="mod-options">
-              <i class="ion-edit"></i>
-              <i class="ion-trash-a"></i>
-            </span>
-            </div>
-          </div>
-
+          <comment-list v-for="(comment,index) in getCommentList.comment"
+               :key="comment.id"
+               :comment="comment">
+          </comment-list>
         </div>
 
       </div>
@@ -137,7 +108,8 @@
 </template>
 
 <script lang="ts">
-import {onMounted, defineComponent, reactive} from "vue";
+import {onMounted, defineComponent, reactive, ref} from "vue";
+import commentList from "@/components/commentList.vue";
 import axios from "axios";
 import router from "@/router";
 import {useStore} from "vuex";
@@ -145,6 +117,9 @@ import convertDate from "@/ts/common";
 
 export default defineComponent({
   name: "TheArticleDetail.vue",
+  components:{
+    'comment-list': commentList,
+  },
   props:{
     slug: String,
   },
@@ -152,6 +127,14 @@ export default defineComponent({
     const url = import.meta.env.VITE_BASE_URL;
     const store = useStore();
     const token = store.state.token;
+
+    const comment = reactive({
+      body: ""
+    })
+
+    const getCommentList = reactive({
+      comment: reactive([{id:0}])
+    })
 
     const articleDetail = reactive({
       article: {
@@ -232,15 +215,35 @@ export default defineComponent({
       }
     }
 
+    const sendComment = () => {
+        axios.post(url + "/api/articles/"+ articleDetail.article.slug + "/comments",{
+          comment
+        },{
+          headers:{
+            Authorization : "TOKEN " + token,
+            "Content-Type": `application/json`,
+          }
+        }).then(response => {
+          comment.body="";
+        })
+    }
+
 
     onMounted(()=>{
       axios.get(url + "/api/articles/" + props.slug,)
           .then(response => {
         articleDetail.article = response.data.article;
       })
+
+      axios.get(url + "/api/articles/" + props.slug + "/comments")
+          .then(response => {
+            getCommentList.comment = response.data.comments;
+            console.log(getCommentList.comment);
+            console.log(response);
+          })
     })
 
-    return { articleDetail, convertDate, viewProfile, followUpdate, favoriteUpdate }
+    return { articleDetail, comment, getCommentList, convertDate, viewProfile, followUpdate, favoriteUpdate, sendComment }
   }
 })
 </script>
