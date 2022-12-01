@@ -11,13 +11,7 @@ export default createStore({
         },
         setToken(state, token){
             state.token = token;
-        }
-    },
-    getters: {
-        getToken(state){
-            console.log(state.token);
-            return state.token;
-        }
+        },
     },
     actions: {
         LOGIN({commit}, user){

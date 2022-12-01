@@ -4,17 +4,18 @@ const axiosService = axios.create({
     baseURL: import.meta.env.VITE_BASE_URL,
 })
 
+
 const signUp = async (user: object): Promise<AxiosResponse> => {
-    return axiosService.post('/api/users',{user});
+    return await axiosService.post('/api/users',{user});
 }
 
 const signIn = async (user: object): Promise<AxiosResponse> => {
-    return axiosService.post('/api/users/login',{user})
+    return await axiosService.post('/api/users/login',{user})
 }
 
 const getCurrentUser = async (): Promise<AxiosResponse> => {
     let currentToken = localStorage.getItem("token");
-    return axiosService.get('/api/user', {
+    return await axiosService.get('/api/user', {
         headers: {
             Authorization: "TOKEN " + currentToken
         }
@@ -23,7 +24,7 @@ const getCurrentUser = async (): Promise<AxiosResponse> => {
 
 const updateUser = async (user: object): Promise<AxiosResponse> => {
     let currentToken = localStorage.getItem("token");
-    return axiosService.put('/api/user', {user}, {
+    return await axiosService.put('/api/user', {user}, {
         headers: {
             Authorization: "TOKEN " + currentToken,
             "Content-Type": `application/json`,
@@ -46,7 +47,7 @@ const getProfile = async (username: string | undefined): Promise<AxiosResponse> 
 
 const followUser = async (username: string | undefined): Promise<AxiosResponse> => {
     let currentToken = localStorage.getItem("token");
-    return axiosService.post('/api/profiles/' + username + "/follow",{},{
+    return await axiosService.post('/api/profiles/' + username + "/follow",{},{
         headers:{
             Authorization : "TOKEN " + currentToken,
             "Content-Type": `application/json`,
@@ -56,19 +57,51 @@ const followUser = async (username: string | undefined): Promise<AxiosResponse> 
 
 const unfollowUser = async (username: string | undefined): Promise<AxiosResponse> => {
     let currentToken = localStorage.getItem("token");
-    return axiosService.delete('/api/profiles/' + username + "/follow",{
+    return await axiosService.delete('/api/profiles/' + username + "/follow",{
         headers:{
             Authorization : "TOKEN " + currentToken,
         }
     })
 }
 
+const createArticle = async (article: object | undefined): Promise<AxiosResponse> => {
+    let currentToken = localStorage.getItem("token");
+    return await axiosService.post('/api/articles', { article },{
+        headers :{
+            Authorization : "TOKEN " + currentToken,
+            "Content-Type": `application/json`,
+        }
+    })
+}
+
+const listArticles = async (): Promise<AxiosResponse> => {
+    let currentToken = localStorage.getItem("token");
+    if(currentToken == null){
+        return await axiosService.get('/api/articles');
+    }else{
+        return await axiosService.get('/api/articles',{
+            headers:{
+                Authorization: "TOKEN " + currentToken,
+            }
+        })
+    }
+}
+
+const feedArticle = async (): Promise<AxiosResponse> => {
+    let currentToken = localStorage.getItem("token");
+    return await axiosService.get('/api/articles/feed',{
+        headers:{
+            Authorization: "TOKEN " + currentToken,
+        }
+    });
+}
+
 const getArticle = async (slug: string | undefined): Promise<AxiosResponse> => {
     let currentToken = localStorage.getItem("token");
     if(currentToken == null){
-        return axiosService.get('/api/articles/' + slug);
+        return await axiosService.get('/api/articles/' + slug);
     }else{
-        return axiosService.get('/api/articles/' + slug,{
+        return await axiosService.get('/api/articles/' + slug,{
             headers:{
                 Authorization: "TOKEN " + currentToken,
             }
@@ -79,7 +112,7 @@ const getArticle = async (slug: string | undefined): Promise<AxiosResponse> => {
 
 const addCommentToArticle = async (slug: string | undefined, comment: object): Promise<AxiosResponse> => {
     let currentToken = localStorage.getItem("token");
-    return axiosService.post('/api/articles/' + slug + '/comments',{
+    return await axiosService.post('/api/articles/' + slug + '/comments',{
         comment
     },{
         headers:{
@@ -92,9 +125,9 @@ const addCommentToArticle = async (slug: string | undefined, comment: object): P
 const getCommentsFromArticle = async (slug: string | undefined): Promise<AxiosResponse> => {
     let currentToken = localStorage.getItem("token");
     if(currentToken == null){
-        return axiosService.get('/api/articles/' + slug + "/comments");
+        return await axiosService.get('/api/articles/' + slug + "/comments");
     }else {
-        return axiosService.get('/api/articles/' + slug + "/comments",{
+        return await axiosService.get('/api/articles/' + slug + "/comments",{
             headers:{
                 Authorization: "TOKEN " + currentToken,
             }
@@ -104,7 +137,7 @@ const getCommentsFromArticle = async (slug: string | undefined): Promise<AxiosRe
 
 const favoriteArticle = async (slug: string | undefined): Promise<AxiosResponse> => {
     let currentToken = localStorage.getItem("token");
-    return axiosService.post('/api/articles/' + slug + '/favorite',{},
+    return await axiosService.post('/api/articles/' + slug + '/favorite',{},
         {
             headers:{
                 Authorization : "TOKEN " + currentToken,
@@ -115,7 +148,7 @@ const favoriteArticle = async (slug: string | undefined): Promise<AxiosResponse>
 
 const unFavoriteArticle = async (slug: string | undefined): Promise<AxiosResponse> => {
     let currentToken = localStorage.getItem("token");
-    return axiosService.delete('/api/articles/' + slug + '/favorite',{
+    return await axiosService.delete('/api/articles/' + slug + '/favorite',{
         headers:{
             Authorization : "TOKEN " + currentToken,
             "Content-Type": `application/json`,
@@ -123,11 +156,18 @@ const unFavoriteArticle = async (slug: string | undefined): Promise<AxiosRespons
     });
 }
 
+const getTags = async (): Promise<AxiosResponse> => {
+    return await axiosService.get('/api/tags');
+}
+
 
 export { signUp, signIn,
          getCurrentUser, updateUser,
          getProfile, followUser,
+         createArticle, feedArticle,
+         listArticles,
          unfollowUser, getArticle,
          addCommentToArticle, getCommentsFromArticle,
-         favoriteArticle, unFavoriteArticle
+         favoriteArticle, unFavoriteArticle,
+         getTags
         }

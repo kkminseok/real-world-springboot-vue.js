@@ -1,9 +1,7 @@
 <template>
-
   <div class="editor-page">
     <div class="container page">
       <div class="row">
-
         <div class="col-md-10 offset-md-1 col-xs-12">
           <form>
             <fieldset>
@@ -27,7 +25,6 @@
             </fieldset>
           </form>
         </div>
-
       </div>
     </div>
   </div>
@@ -37,16 +34,12 @@
 
 <script lang="ts">
 import {reactive ,ref } from "vue";
-import axios from "axios";
-import { useStore } from "vuex";
 import router from "@/router";
+import {createArticle} from "@/api";
 
 export default {
   name: "TheArticle",
   setup(){
-    const url = import.meta.env.VITE_BASE_URL;
-    const store = useStore();
-    const token = store.state.token
     const tag = ref("");
     const article = reactive({
       title: "",
@@ -64,21 +57,20 @@ export default {
       return title.replace(' ','-');
     }
 
-    const addArticle = () => {
-      let tags = parsingTag();
-      let slug = getSlug(article.title);
+    const addArticle = async () => {
+      const tags = parsingTag();
+      const slug = getSlug(article.title);
       article.tagList = tags;
-      axios.post(url+"/api/articles" ,JSON.stringify({article}) ,{headers:{
-          Authorization : "TOKEN " + token,
-          "Content-Type": `application/json`,
-        }})
-      .then(() => {
-        router.push({
+      try{
+        await createArticle(article);
+        await router.push({
           name:"ArticleDetail",
-          params: {slug}})
-      })
+          params: {slug}
+        })
+      }catch (error: any){
+        alert(error);
+      }
     }
-
     return { article, tag, addArticle, parsingTag, getSlug }
   }
 }

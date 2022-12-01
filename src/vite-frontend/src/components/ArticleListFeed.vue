@@ -25,6 +25,7 @@ import {onMounted, reactive, ref, defineComponent} from "vue";
 import {useStore} from "vuex";
 import axios from "axios";
 import convertDate from "@/ts/common";
+import {feedArticle} from "@/api";
 
 export default defineComponent({
   name: "ArticleListFeed",
@@ -32,13 +33,10 @@ export default defineComponent({
     isEmpty: Boolean,
     isLoading: Boolean
   },
-  setup(props,{emit}){
-    const url = import.meta.env.VITE_BASE_URL;
-    const store = useStore();
-    const token = store.state.token;
-
+  setup(props,{ emit }){
     const articles = reactive({
-      article: {art:{
+      article:[
+        {
           slug: "",
           title: "",
           description: "",
@@ -48,25 +46,23 @@ export default defineComponent({
             username: "",
             image: ""
           }
-        }},
-      articlesCount: "",
-    })
+        }
+      ],
+      articlesCount: ""}
+    )
 
-    onMounted(() => {
-
-      axios.get(url + "/api/articles/feed",{
-        headers:{
-          Authorization : "TOKEN " + token
-        }})
-          .then(response => {
-            articles.article = response.data.articles;
-            articles.articlesCount = response.data.articlesCount;
-            articles.article = JSON.parse(JSON.stringify(articles.article));
-            emit("loading",false);
-            if(parseInt(articles.articlesCount) == 0) {
-              emit("emptied",true);
-            }
-          });
+    onMounted(async () => {
+      try {
+        const { data } = await feedArticle();
+        articles.article = data.articles.slice();
+        articles.articlesCount = data.articlesCount;
+        emit("loading",false);
+        if(parseInt(articles.articlesCount) == 0) {
+          emit("emptied",true);
+        }
+      }catch (error: any){
+        alert(error);
+      }
     })
     return { articles, convertDate }
 

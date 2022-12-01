@@ -8,20 +8,22 @@
 <script lang="ts">
 import {onMounted, defineComponent, reactive} from "vue";
 import axios from "axios";
+import {getTags} from "@/api";
 
 export default defineComponent({
   name: "TagList",
   setup(){
-    const url = import.meta.env.VITE_BASE_URL;
     const listTags = reactive({
       tags: new Array()
     })
 
-    onMounted(() => {
-      axios.get(url + "/api/tags")
-          .then(response => {
-            listTags.tags = response.data.tags
-          });
+    onMounted(async () => {
+      try{
+        const { data } = await getTags();
+        listTags.tags = data.tags;
+      }catch (error: any){
+        alert(error);
+      }
     })
 
     return { listTags }

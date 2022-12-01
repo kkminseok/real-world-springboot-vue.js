@@ -16,12 +16,12 @@
             <div class="feed-toggle">
               <ul class="nav nav-pills outline-active">
                 <li class="nav-item" v-if="isLogin">
-                  <a class="nav-link"
+                  <a href="javascript:(0)" class="nav-link"
                      @click="feedSelect"
                   :class="{ active : feedActive}">Your Feed</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link"
+                  <a href="javascript:(0)" class="nav-link"
                      @click="globalSelect"
                   :class="{ active : globalActive }">Global Feed</a>
                 </li>
@@ -66,8 +66,8 @@
 import articleList from '@/components/ArticleListFeed.vue'
 import articleListGlobal from "@/components/ArticleListGlobal.vue";
 import tagLists from "@/components/TagList.vue";
-import {ref} from "vue";
-import {useStore} from "vuex";
+import { ref } from "vue";
+import { useStore } from "vuex";
 export default {
   name: "TheHome",
   components: {
@@ -89,7 +89,6 @@ export default {
     const emptyCheck = (val: boolean) => {
       isEmpty.value = val;
     }
-
 
     const feedSelect = () => {
       feedActive.value=true;

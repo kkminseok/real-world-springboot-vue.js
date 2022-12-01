@@ -54,8 +54,8 @@ export default {
     const Login = async () => {
       try{
         const { data } = await signIn(user);
-        store.dispatch("LOGIN",data.user);
-        router.push({name:"Home"});
+        await store.dispatch("LOGIN",data.user);
+        await router.push({name:"Home"});
       }catch(error: any){
         const code = error.response.data.errors.code;
         if(code == "EMAIL_NULL_OR_INVALID"){
