@@ -8,6 +8,13 @@
           <h1 class="text-xs-center">Your Settings</h1>
 
           <form>
+            <ul class="error-messages" v-if="emailDuplicate">
+              <li align="left">email has already been taken</li>
+            </ul>
+            <ul class="error-messages" v-if="usernameDuplicate">
+              <li align="left">username has already been taken</li>
+            </ul>
+
             <fieldset>
               <fieldset class="form-group">
                 <input class="form-control" type="text" placeholder="URL of profile picture" v-model="user.image">
@@ -45,7 +52,7 @@
 import { getCurrentUser, updateUser } from "@/api";
 import { useStore } from "vuex";
 import router from "@/router";
-import { onMounted, reactive } from "vue";
+import {onMounted, reactive, ref} from "vue";
 
 export default {
   name: "TheSetting",
@@ -61,31 +68,44 @@ export default {
     const password = "";
     const store = useStore();
 
-    const getUser = (getuser: { bio: string; email: string; username: string; image: string; }) => {
+    const emailDuplicate = ref(false);
+    const usernameDuplicate = ref(false);
+
+    const getUser = async (getuser: { bio: string; email: string; username: string; image: string; }) => {
       user.bio = getuser.bio
       user.email = getuser.email
       user.username = getuser.username
       user.image = getuser.image
     }
 
+    const showEmailError = () => {
+      emailDuplicate.value = true;
+      usernameDuplicate.value = false;
+    };
+    const showUsernameError = () => {
+      usernameDuplicate.value = true;
+      emailDuplicate.value = false;
+    };
+
     const setUser = async ()  => {
       try{
-        console.log(await updateUser(user));
-        /*
         const { data } = await updateUser(user);
-        store.dispatch("LOGIN", data.user);
-        router.push({
+        await store.dispatch("LOGIN", data.user);
+        await router.push({
           name: 'Profile',
           params: {username: data.user.username}
-        })*/
-      }catch(error:any){
-        // Todo Error처리
+        })
+      }catch(error: any){
         const code = error.response.data.errors.code;
-        console.log(code);
+        if(code == "DUPLICATE_EMAIL"){
+          showEmailError();
+        }else if(code == "DUPLICATE_USERNAME"){
+          showUsernameError();
+        }
       }
     }
 
-    const logout = () =>{
+    const logout = async () =>{
       store.dispatch("LOGOUT").then(()=>{
         router.push({name: "Home"});
       })
@@ -95,15 +115,17 @@ export default {
     onMounted(async () => {
       try {
         const { data } = await getCurrentUser();
-        store.dispatch("LOGIN", data.user)
+        await store.dispatch("LOGIN", data.user)
         getUser(data.user);
       } catch (error: any) {
-        //TODO error처리
-        console.log(error);
+        const code = error.response.data.errors.code;
+        if(code == "EMAIL_NULL_OR_INVALID"){
+          await router.push({name:"home"});
+        }
       }
     })
 
-    return {user, password, url, getUser, setUser, logout};
+    return {user, password, url, emailDuplicate, usernameDuplicate, getUser, setUser, logout};
   }
 }
 </script>

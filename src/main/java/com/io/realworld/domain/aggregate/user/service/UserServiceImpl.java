@@ -78,19 +78,18 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserResponse updateUser(UserUpdate userUpdate, UserAuth userAuth){
-        User user = userRepository.findById(userAuth.getId()).orElseThrow(() -> new CustomException(Error.USER_NOT_FOUND));
-
+        User user = userRepository.findById(userAuth.getId()).orElseThrow(() -> {throw new CustomException(Error.USER_NOT_FOUND);});
         if(userUpdate.getEmail() != null){
             userRepository.findAllByEmail(userUpdate.getEmail())
-                    .stream().filter(found -> !found.getId().equals(userRepository.findById(user.getId())))
-                        .findAny().ifPresent(found -> new CustomException(Error.DUPLICATE_EMAIL));
+                    .stream().filter(found -> !found.getId().equals(user.getId()))
+                        .findFirst().ifPresent(found ->{throw new CustomException(Error.DUPLICATE_EMAIL);} );
             user.changeEmail(userUpdate.getEmail());
         }
 
         if(userUpdate.getUsername() != null){
             userRepository.findAllByUsername(userUpdate.getUsername())
-                    .stream().filter(found -> !found.getId().equals(userRepository.findById(user.getId())))
-                    .findAny().ifPresent(found -> new CustomException(Error.DUPLICATE_EMAIL));
+                    .stream().filter(found -> !found.getId().equals(user.getId()))
+                    .findFirst().ifPresent(found -> {throw new CustomException(Error.DUPLICATE_USERNAME);});
             user.changeUsername(userUpdate.getUsername());
         }
         if(userUpdate.getPassword() != null){
