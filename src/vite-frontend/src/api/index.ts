@@ -79,7 +79,7 @@ const getArticle = async (slug: string | undefined): Promise<AxiosResponse> => {
 
 const addCommentToArticle = async (slug: string | undefined, comment: object): Promise<AxiosResponse> => {
     let currentToken = localStorage.getItem("token");
-    return axiosService.post('/api/articles' + slug + '/comments',{
+    return axiosService.post('/api/articles/' + slug + '/comments',{
         comment
     },{
         headers:{
