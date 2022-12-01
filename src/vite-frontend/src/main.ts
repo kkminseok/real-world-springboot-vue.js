@@ -6,4 +6,5 @@ import '@/assets/css/font.css'
 import '@/assets/css/main.css'
 
 const app = createApp(App);
+app.config.performance=true;
 app.use(router).use(store).mount('#app');

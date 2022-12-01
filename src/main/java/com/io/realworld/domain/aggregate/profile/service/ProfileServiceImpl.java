@@ -22,7 +22,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public ProfileResponse getProfile(UserAuth userAuth, String username) {
-        Optional<User> wantFindUser = Optional.ofNullable(userRepository.findByUsername(username).orElseThrow(() -> new CustomException(Error.USER_NOT_FOUND)));
+        Optional<User> wantFindUser = Optional.ofNullable(userRepository.findByUsername(username).orElseThrow(() -> {throw new CustomException(Error.USER_NOT_FOUND);}));
         Boolean followStatus = null;
         if(userAuth == null){
             followStatus = false;
@@ -34,7 +34,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public ProfileResponse followUser(UserAuth userAuth, String username) {
-        Optional<User> follower = Optional.ofNullable(userRepository.findByUsername(username).orElseThrow(() -> new CustomException(Error.USER_NOT_FOUND)));
+        Optional<User> follower = Optional.ofNullable(userRepository.findByUsername(username).orElseThrow(() -> {throw new CustomException(Error.USER_NOT_FOUND);}));
         Optional<User> followee = userRepository.findById(userAuth.getId());
         profileRepository.findByFolloweeIdAndFollowerId(followee.get().getId(), follower.get().getId()).ifPresent(follow -> {
             throw new CustomException(Error.ALREADY_FOLLOW);
@@ -46,7 +46,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public ProfileResponse unfollowUser(UserAuth userAuth, String username) {
-        Optional<User> follower = Optional.ofNullable(userRepository.findByUsername(username).orElseThrow(() -> new CustomException(Error.USER_NOT_FOUND)));
+        Optional<User> follower = Optional.ofNullable(userRepository.findByUsername(username).orElseThrow(() -> {throw new CustomException(Error.USER_NOT_FOUND);}));
         Optional<User> followee = userRepository.findById(userAuth.getId());
         Follow follow = profileRepository.findByFolloweeIdAndFollowerId(followee.get().getId(), follower.get().getId()).orElseThrow(() -> {
             throw new CustomException(Error.ALREADY_UNFOLLOW);

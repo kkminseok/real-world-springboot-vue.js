@@ -19,7 +19,7 @@
               </div>
               <div v-else>
                 <div v-if="profile.following">
-                  <i class="ion-plus-round"></i>
+                  <i class="ion-minus-round"></i>
                   unFollow {{profile.username}}
                 </div>
                 <div v-else>
@@ -101,9 +101,9 @@
 <script lang="ts">
 import {onMounted, reactive, ref} from "vue";
 import { useStore } from "vuex";
-import axios from "axios";
 import { defineComponent } from 'vue';
 import router from "@/router";
+import {followUser, getProfile, unfollowUser} from "@/api";
 
 export default defineComponent({
   name: "TheProfile.vue",
@@ -114,7 +114,6 @@ export default defineComponent({
 
     const url = import.meta.env.VITE_BASE_URL;
     const store = useStore();
-    const token = store.state.token;
 
     const isMe = ref(false);
     const profile = reactive({
@@ -124,53 +123,50 @@ export default defineComponent({
       following: false,
     })
 
-
-
-    const setProfile = ( data: any ) => {
+    const setProfile = async ( data: any ) => {
       profile.image = data.image;
       profile.bio = data.bio;
       profile.following = data.following;
       profile.username = data.username;
     }
 
-    const stateUpdate = () => {
+    const stateUpdate = async () => {
        if(isMe.value){
-         router.push({name:"Settings"});
+         await router.push({name:"Settings"});
        }else{
          if(profile.following){
-            axios.delete(url + "/api/profiles/" + profile.username + "/follow",{
-              headers:{
-                Authorization : "TOKEN " + token,
-                "Content-Type": `application/json`,
-              }
-            }).then(response => {
-              setProfile(response.data.profile)
-            })
+           try {
+             const { data } = await unfollowUser(profile.username);
+             await setProfile(data.profile);
+           }catch (error: any){
+             alert("error");
+           }
          }else{
-           axios.post(url + "/api/profiles/" + profile.username + "/follow",{},{
-             headers:{
-               Authorization : "TOKEN " + token,
-               "Content-Type": `application/json`,
-             }
-           }).then(response => {
-             setProfile(response.data.profile)
-           })
+           try {
+             const { data } = await followUser(profile.username);
+             await setProfile(data.profile);
+           }catch (error: any){
+             alert("error");
+           }
          }
        }
     }
 
 
-    onMounted(() =>{
-        axios.get(url + "/api/profiles/" + props.username)
-            .then(response => {
-              const getProfile = response.data.profile;
-              setProfile(getProfile)
-              if(getProfile.username.localeCompare(store.state.username) == 0){
-                isMe.value = true;
-              }else{
-                isMe.value = false;
-              }
-            })
+    onMounted(async () =>{
+      try {
+       const { data } =  await getProfile(props.username)
+        await setProfile(data.profile);
+        if(data.profile.username.localeCompare(store.state.username) == 0){
+          isMe.value = true;
+        }else{
+          isMe.value = false;
+        }
+      }catch (error: any){
+        const code = error.response.data.errors.code;
+        if(code == "USER_NOT_FOUND")
+          await router.push({name:"home"});
+      }
     })
     return { url, isMe, profile, stateUpdate }
   }

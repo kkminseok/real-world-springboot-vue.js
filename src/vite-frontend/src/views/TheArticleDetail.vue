@@ -7,6 +7,7 @@
         <h1>{{ articleDetail.article.title }}</h1>
 
         <div class="article-meta">
+          <a href=""><img :src="articleDetail.article.author.image"/></a>
           <div class="info">
             <a href="javascript:void(0)" class="author" @click="viewProfile">{{ articleDetail.article.author.username }}</a>
             <span class="date">{{convertDate(articleDetail.article.createdAt)}}</span>
@@ -22,7 +23,7 @@
             </div>
           </button>
           &nbsp;&nbsp;
-          <button class="btn btn-sm btn-outline-primary" @click="favoriteUpdate()">
+          <button class="btn btn-sm btn-outline-primary" @click="favoriteUpdate(articleDetail.article.favorited)">
             <div v-if="articleDetail.article.favorited">
               <i class="ion-heart"></i>
               unFavorite Article (<span class="counter">{{articleDetail.article.favoritesCount}}</span>)
@@ -42,6 +43,7 @@
       <div class="row article-content">
         <div class="col-md-12">
           {{articleDetail.article.body}}
+          {{articleDetail}}
         </div>
       </div>
 
@@ -49,12 +51,11 @@
 
       <div class="article-actions">
         <div class="article-meta">
-          <a href="javascript:void(0)"><img :src="articleDetail.article.author.image"></a>
+          <a href="javascript:void(0)"><img :src="articleDetail.article.author.image"/></a>
           <div class="info">
             <a href="javascript:void(0)" class="author" @click="viewProfile">{{ articleDetail.article.author.username }}</a>
             <span class="date">{{convertDate(articleDetail.article.createdAt)}}</span>
           </div>
-
           <button class="btn btn-sm btn-outline-secondary" @click="followUpdate(articleDetail.article.author.following)">
             <div v-if="articleDetail.article.author.following">
               <i class="ion-minus-round"></i>
@@ -66,7 +67,7 @@
             </div>
           </button>
           &nbsp;
-          <button class="btn btn-sm btn-outline-primary" @click="favoriteUpdate()">
+          <button class="btn btn-sm btn-outline-primary" @click="favoriteUpdate(articleDetail.article.favorited)">
             <div v-if="articleDetail.article.favorited">
               <i class="ion-heart"></i>
               unFavorite Article (<span class="counter">{{articleDetail.article.favoritesCount}}</span>)
@@ -96,7 +97,8 @@
           </form>
           <comment-list v-for="(comment,index) in getCommentList.comment"
                :key="comment.id"
-               :comment="comment">
+               :comment="comment"
+               :imgs="comment.author.image">
           </comment-list>
         </div>
 
@@ -108,12 +110,19 @@
 </template>
 
 <script lang="ts">
-import {onMounted, defineComponent, reactive, ref} from "vue";
+import { onMounted, defineComponent, reactive } from "vue";
 import commentList from "@/components/commentList.vue";
-import axios from "axios";
 import router from "@/router";
-import {useStore} from "vuex";
+import { useStore } from "vuex";
 import convertDate from "@/ts/common";
+import {
+  addCommentToArticle,
+  favoriteArticle,
+  followUser,
+  getArticle,
+  getCommentsFromArticle, unFavoriteArticle,
+  unfollowUser
+} from "@/api";
 
 export default defineComponent({
   name: "TheArticleDetail.vue",
@@ -124,7 +133,6 @@ export default defineComponent({
     slug: String,
   },
   setup(props){
-    const url = import.meta.env.VITE_BASE_URL;
     const store = useStore();
     const token = store.state.token;
 
@@ -133,7 +141,7 @@ export default defineComponent({
     })
 
     const getCommentList = reactive({
-      comment: reactive([{id:0}])
+      comment: reactive([{id:0,author:{image:""}}])
     })
 
     const articleDetail = reactive({
@@ -162,85 +170,68 @@ export default defineComponent({
         params: {username: articleDetail.article.author.username}})
     }
 
-    const followUpdate = (followState : boolean) => {
+    const followUpdate = async (followState: boolean) => {
       if(token == ''){
-        router.push({name:"Login"});
+        await router.push({name:"Login"});
+        return;
       }
-      if(followState){
-        axios.delete(url + "/api/profiles/" + articleDetail.article.author.username + "/follow",{
-          headers:{
-            Authorization : "TOKEN " + token,
-            "Content-Type": `application/json`,
-          }
-        }).then(response => {
-          articleDetail.article.author.following = response.data.profile.following;
-        })
-      }else{
-        axios.post(url + "/api/profiles/" + articleDetail.article.author.username + "/follow",{},{
-          headers:{
-            Authorization : "TOKEN " + token,
-            "Content-Type": `application/json`,
-          }
-        }).then(response => {
-          articleDetail.article.author.following = response.data.profile.following;
-        })
+      try {
+        if(followState){
+            const { data } = await unfollowUser(articleDetail.article.author.username);
+            articleDetail.article.author.following = data.profile.following;
+
+        }else{
+            const { data } = await followUser(articleDetail.article.author.username);
+            articleDetail.article.author.following = data.profile.following;
+        }
+      }catch (error: any){
+        alert(error);
       }
     }
 
-    const favoriteUpdate = () => {
+    const favoriteUpdate = async (favoriteState: boolean) => {
       if(token == ''){
-        router.push({name:"Login"});
+        await router.push({name:"Login"});
+        return;
       }
-      const favoriteState: boolean = articleDetail.article.favorited;
-      if(favoriteState){
-        axios.delete(url + "/api/articles/" + articleDetail.article.slug + "/favorite",{
-          headers:{
-            Authorization : "TOKEN " + token,
-            "Content-Type": `application/json`,
-          }
-        }).then(response => {
-          articleDetail.article.favorited = response.data.article.favorited;
-          articleDetail.article.favoritesCount = response.data.article.favoritesCount;
-        })
-      }else{
-        axios.post(url + "/api/articles/" + articleDetail.article.slug + "/favorite",{},{
-          headers:{
-            Authorization : "TOKEN " + token,
-            "Content-Type": `application/json`,
-          }
-        }).then(response => {
-          articleDetail.article.favorited = response.data.article.favorited;
-          articleDetail.article.favoritesCount = response.data.article.favoritesCount;
-        })
+      try {
+        if (favoriteState) {
+          const {data} = await unFavoriteArticle(props.slug);
+          articleDetail.article = data.article;
+
+        } else {
+          const {data} = await favoriteArticle(props.slug);
+          articleDetail.article = data.article;
+        }
+      }catch (error: any){
+        alert(error);
       }
     }
 
-    const sendComment = () => {
-        axios.post(url + "/api/articles/"+ articleDetail.article.slug + "/comments",{
-          comment
-        },{
-          headers:{
-            Authorization : "TOKEN " + token,
-            "Content-Type": `application/json`,
-          }
-        }).then(response => {
-          comment.body="";
-          getCommentList.comment.push(response.data.comment);
-        })
+    const sendComment = async () => {
+      try{
+        const { data } = await addCommentToArticle(props.slug, comment);
+        comment.body = "";
+        getCommentList.comment.push(data.comment);
+      }catch (error: any){
+        alert(error);
+      }
     }
 
+    onMounted(async ()=>{
+      try{
+        const { data } = await getArticle(props.slug);
+        articleDetail.article = data.article;
+      }catch (error: any){
+        alert(error);
+      }
 
-    onMounted(()=>{
-      axios.get(url + "/api/articles/" + props.slug,)
-          .then(response => {
-        articleDetail.article = response.data.article;
-        console.log(articleDetail.article);
-      })
-
-      axios.get(url + "/api/articles/" + props.slug + "/comments")
-          .then(response => {
-            getCommentList.comment = response.data.comments;
-          })
+      try{
+        const { data } = await getCommentsFromArticle(props.slug);
+        getCommentList.comment = data.comments;
+      }catch (error: any){
+        alert(error);
+      }
     })
 
     return { articleDetail, comment, getCommentList, convertDate, viewProfile, followUpdate, favoriteUpdate, sendComment }

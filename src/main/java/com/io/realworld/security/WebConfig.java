@@ -43,7 +43,7 @@ public class WebConfig {
                 .disable()
                 .requestMatchers((matchers) -> {
                     matchers.antMatchers("/h2-console/**");
-                    matchers.antMatchers(HttpMethod.GET,"/api/articles/**","/**");
+                    matchers.antMatchers(HttpMethod.GET,"/api/articles/:slug","/**");
                     matchers.mvcMatchers("/api/users/**");
                 })
                 .authorizeHttpRequests((authorize) -> authorize.anyRequest().permitAll())
