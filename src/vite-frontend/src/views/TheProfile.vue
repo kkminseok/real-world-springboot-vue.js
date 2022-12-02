@@ -49,47 +49,9 @@
             </ul>
           </div>
 
-          <div class="article-preview">
-            <div class="article-meta">
-              <a href=""><img src="http://i.imgur.com/Qr71crq.jpg"/></a>
-              <div class="info">
-                <a href="" class="author">Eric Simons</a>
-                <span class="date">January 20th</span>
-              </div>
-              <button class="btn btn-outline-primary btn-sm pull-xs-right">
-                <i class="ion-heart"></i> 29
-              </button>
-            </div>
-            <a href="" class="preview-link">
-              <h1>How to build webapps that scale</h1>
-              <p>This is the description for the post.</p>
-              <span>Read more...</span>
-            </a>
-          </div>
-
-          <div class="article-preview">
-            <div class="article-meta">
-              <a href=""><img src="http://i.imgur.com/N4VcUeJ.jpg"/></a>
-              <div class="info">
-                <a href="" class="author">Albert Pai</a>
-                <span class="date">January 20th</span>
-              </div>
-              <button class="btn btn-outline-primary btn-sm pull-xs-right">
-                <i class="ion-heart"></i> 32
-              </button>
-            </div>
-            <a href="" class="preview-link">
-              <h1>The song you won't ever stop singing. No matter how hard you try.</h1>
-              <p>This is the description for the post.</p>
-              <span>Read more...</span>
-              <ul class="tag-list">
-                <li class="tag-default tag-pill tag-outline">Music</li>
-                <li class="tag-default tag-pill tag-outline">Song</li>
-              </ul>
-            </a>
-          </div>
-
-
+          <article-my v-for="(art,index) in articles.article"
+                        :art="art">
+          </article-my>
         </div>
 
       </div>
@@ -99,14 +61,18 @@
 </template>
 
 <script lang="ts">
-import {onMounted, reactive, ref} from "vue";
+import { onMounted, reactive, ref } from "vue";
 import { useStore } from "vuex";
 import { defineComponent } from 'vue';
 import router from "@/router";
-import {followUser, getProfile, unfollowUser} from "@/api";
+import { followUser, getProfile, listArticlesByUsername, unfollowUser } from "@/api";
+import ArticleMy from "@/components/ArticleMy.vue";
 
 export default defineComponent({
   name: "TheProfile.vue",
+  components: {
+    "article-my": ArticleMy,
+  },
   props:{
     username: String,
   },
@@ -121,6 +87,26 @@ export default defineComponent({
       username: "",
       bio: "",
       following: false,
+    })
+
+    const articles = reactive({
+      article: reactive({
+        slug: "",
+        title: "",
+        description: "",
+        body: "",
+        tagList: new Array(),
+        createdAt: "",
+        updatedAt: "",
+        favorited: false,
+        favoritesCount: 0,
+        author: {
+          username: "",
+          bio: "",
+          image: "",
+          following: false
+        }
+      })
     })
 
     const setProfile = async ( data: any ) => {
@@ -167,8 +153,15 @@ export default defineComponent({
         if(code == "USER_NOT_FOUND")
           await router.push({name:"home"});
       }
+
+      try{
+        const { data } = await listArticlesByUsername(profile.username);
+        articles.article = data.articles;
+      }catch (error: any){
+        alert(error);
+      }
     })
-    return { url, isMe, profile, stateUpdate }
+    return { url, isMe, profile, articles, stateUpdate }
   }
 })
 </script>

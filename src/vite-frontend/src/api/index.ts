@@ -87,6 +87,19 @@ const listArticles = async (): Promise<AxiosResponse> => {
     }
 }
 
+const listArticlesByUsername = async (author: string): Promise<AxiosResponse> => {
+    let currentToken = localStorage.getItem("token");
+    if(currentToken == null){
+        return await axiosService.get('/api/articles?author=' + author);
+    }else{
+        return await axiosService.get('/api/articles?author=' + author,{
+            headers:{
+                Authorization: "TOKEN " + currentToken,
+            }
+        })
+    }
+}
+
 const feedArticle = async (): Promise<AxiosResponse> => {
     let currentToken = localStorage.getItem("token");
     return await axiosService.get('/api/articles/feed',{
@@ -165,7 +178,7 @@ export { signUp, signIn,
          getCurrentUser, updateUser,
          getProfile, followUser,
          createArticle, feedArticle,
-         listArticles,
+         listArticles, listArticlesByUsername,
          unfollowUser, getArticle,
          addCommentToArticle, getCommentsFromArticle,
          favoriteArticle, unFavoriteArticle,
