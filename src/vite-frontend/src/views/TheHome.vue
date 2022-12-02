@@ -42,8 +42,9 @@
               </article-list>
               <article-list-global
                 v-else
-                :value="isLogin"
-                :value2="isEmpty"
+                :isLoading="isLoading"
+                :isEmpty="isEmpty"
+                :globalActive="globalActive"
                 @loading="onChangeLoading"
                 @emptied="emptyCheck">
               </article-list-global>

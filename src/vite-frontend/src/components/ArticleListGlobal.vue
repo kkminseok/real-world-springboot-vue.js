@@ -33,9 +33,9 @@ import {favoriteArticle, listArticles, unFavoriteArticle} from "@/api";
 export default defineComponent({
   name: "ArticleListGlobal",
   props:{
-    isEmpty: Boolean,
     isLoading: Boolean,
-    globalList: Boolean,
+    isEmpty: Boolean,
+    globalActive: Boolean,
   },
   setup(props,{emit}) {
     const articles = reactive({
@@ -80,6 +80,7 @@ export default defineComponent({
 
 
     onMounted(async () => {
+      console.log(props.isEmpty,props.globalActive,props.isLoading);
       try {
         const { data } = await listArticles();
         articles.article = data.articles.slice();

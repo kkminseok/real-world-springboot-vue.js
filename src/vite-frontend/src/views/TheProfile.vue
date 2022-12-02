@@ -41,7 +41,7 @@
           <div class="articles-toggle">
             <ul class="nav nav-pills outline-active">
               <li class="nav-item">
-                <a class="nav-link active" href="">My Articles</a>
+                <a class="nav-link active" href="javascript">My Articles</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="">Favorited Articles</a>
@@ -50,7 +50,7 @@
           </div>
 
           <article-my v-for="(art,index) in articles.article"
-                        :art="art">
+                        :article="art">
           </article-my>
         </div>
 
@@ -90,7 +90,7 @@ export default defineComponent({
     })
 
     const articles = reactive({
-      article: reactive({
+      article: reactive([{
         slug: "",
         title: "",
         description: "",
@@ -106,7 +106,7 @@ export default defineComponent({
           image: "",
           following: false
         }
-      })
+      }])
     })
 
     const setProfile = async ( data: any ) => {
