@@ -42,8 +42,6 @@
             <div v-else>
               <article-list-global v-for="(article,index) in articleLists"
                             :key="article.slug"
-                             :index="index"
-                             @update:Favorite="updateFavorite"
                             :article="article">
               </article-list-global>
             </div>
@@ -55,10 +53,8 @@
           </div>
         </div>
       </div>
+      <pagination-component v-model="currentPage" :numberOfPages="numberOfPages"></pagination-component>
     </div>
-    
-    <pagination-component v-model="currentPage" :numberOfPages="rowsPerPage"></pagination-component>
-
   </div>
 </template>
 
@@ -101,9 +97,6 @@ export default {
       globalActive.value=true;
       await loadLists();
     }
-    const updateFavorite = async (index: number) => {
-      console.log("index" , index);
-    }
 
     onMounted(async () => {
       isLogin.value = store.state.token ? true : false;
@@ -116,7 +109,7 @@ export default {
       }
     })
 
-    return { listsAreLoading, isEmpty, isLogin, currentPage, rowsPerPage, numberOfPages, feedActive, globalActive, articleLists, updateFavorite, feedSelect, globalSelect };
+    return { listsAreLoading, isEmpty, isLogin, currentPage, rowsPerPage, numberOfPages, feedActive, globalActive, articleLists, feedSelect, globalSelect };
   }
 }
 </script>

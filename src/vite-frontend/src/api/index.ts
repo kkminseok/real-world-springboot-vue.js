@@ -77,9 +77,9 @@ const createArticle = async (article: object | undefined): Promise<AxiosResponse
 const listArticles = async (): Promise<AxiosResponse> => {
     let currentToken = localStorage.getItem("token");
     if(currentToken == null){
-        return await axiosService.get('/api/articles');
+        return await axiosService.get('/api/articles?limit=1000&offset=0');
     }else{
-        return await axiosService.get('/api/articles',{
+        return await axiosService.get('/api/articles?limit=1000&offset=0',{
             headers:{
                 Authorization: "TOKEN " + currentToken,
             }
@@ -102,7 +102,7 @@ const listArticlesByUsername = async (author: string): Promise<AxiosResponse> =>
 
 const feedArticle = async (): Promise<AxiosResponse> => {
     let currentToken = localStorage.getItem("token");
-    return await axiosService.get('/api/articles/feed',{
+    return await axiosService.get('/api/articles/feed?limit=1000&offset=0',{
         headers:{
             Authorization: "TOKEN " + currentToken,
         }
@@ -120,8 +120,8 @@ const getArticle = async (slug: string | undefined): Promise<AxiosResponse> => {
             }
         });
     }
-
 }
+
 
 const addCommentToArticle = async (slug: string | undefined, comment: object): Promise<AxiosResponse> => {
     let currentToken = localStorage.getItem("token");

@@ -4,7 +4,7 @@ import { listArticles, feedArticle } from "@/api/index";
 import { usePagination } from "@/ts/usePagination";
 
 
-export interface ArticleList {
+export interface Article {
     slug: string,
     title: string,
     description: string,
@@ -21,12 +21,11 @@ export function usePaginationApi(
     currentPage: Ref<number>,
     rowsPerPage?: Ref<number>
 ) {
-    const articleLists: Ref<ArticleList[]> = ref([]);
-
+    const articleLists: Ref<Article[]> = ref([]);
     const listsAreLoading = ref(false);
     const isEmpty = ref(false);
 
-    const { paginatedArray, numberOfPages } = usePagination<ArticleList>({
+    const { paginatedArray, numberOfPages } = usePagination<Article>({
         rowsPerPage,
         arrayToPaginate: articleLists,
         currentPage
@@ -63,6 +62,7 @@ export function usePaginationApi(
             listsAreLoading.value = false;
         }
     };
+
 
     return {
         articleLists: paginatedArray,
