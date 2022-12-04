@@ -55,9 +55,13 @@
             <tag-lists></tag-lists>
           </div>
         </div>
-
+        <div v-for="test in articleLists">
+          {{test}}
+        </div>
       </div>
     </div>
+    
+    <pagination-component v-model="currentPage" :numberOfPages="rowsPerPage"></pagination-component>
 
   </div>
 </template>
@@ -67,7 +71,9 @@
 import articleList from '@/components/ArticleListFeed.vue'
 import articleListGlobal from "@/components/ArticleListGlobal.vue";
 import tagLists from "@/components/TagList.vue";
-import { ref } from "vue";
+import pagination from "@/components/PaginationComponent.vue";
+import { usePaginationApi } from "@/api/usePaginationAPI"
+import {onMounted, ref} from "vue";
 import { useStore } from "vuex";
 export default {
   name: "TheHome",
@@ -75,6 +81,7 @@ export default {
     'article-list': articleList,
     'article-list-global': articleListGlobal,
     'tag-lists': tagLists,
+    'pagination-component': pagination,
   },
   setup(){
     const isLoading = ref(true);
@@ -83,6 +90,11 @@ export default {
     const isLogin =  store.state.token == '' ? false : true;
     const feedActive = ref(true);
     const globalActive = ref(false);
+
+    const currentPage = ref(1);
+    const rowsPerPage = ref(20);
+
+    const { articleLists, listsAreLoading, loadLists, numberOfPages } = usePaginationApi(currentPage, rowsPerPage);
 
     const onChangeLoading = (val : boolean) => {
       isLoading.value = val;
@@ -105,11 +117,13 @@ export default {
       isLoading.value=true;
     }
 
-    return { isLoading, isEmpty, isLogin, feedActive, globalActive, onChangeLoading, emptyCheck, feedSelect, globalSelect };
+    onMounted(async () => loadLists())
+
+    return { isLoading, isEmpty, isLogin, currentPage, rowsPerPage, numberOfPages, feedActive, globalActive, articleLists, onChangeLoading, emptyCheck, feedSelect, globalSelect };
   }
 }
 </script>
 
-<style scoped>
+<style lang="scss">
 
 </style>
