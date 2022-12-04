@@ -26,37 +26,33 @@
                   :class="{ active : globalActive }">Global Feed</a>
                 </li>
               </ul>
-              <div v-if="isLoading">
+              <div v-if="listsAreLoading">
                 Loading articles...
               </div>
               <div v-if="isEmpty">
                 No articles are here... yet.
               </div>
             </div>
-              <article-list
-                  v-if="isLogin && feedActive"
-                  :value="isLogin"
-                  :value2="isEmpty"
-                  @loading="onChangeLoading"
-                  @emptied="emptyCheck">
-              </article-list>
-              <article-list-global
-                v-else
-                :isLoading="isLoading"
-                :isEmpty="isEmpty"
-                :globalActive="globalActive"
-                @loading="onChangeLoading"
-                @emptied="emptyCheck">
+            <div v-if="feedActive && isLogin">
+              <article-list-feed v-for="(article,index) in articleLists"
+                                   :key="article.slug"
+                                   :article="article">
+              </article-list-feed>
+            </div>
+            <div v-else>
+              <article-list-global v-for="(article,index) in articleLists"
+                            :key="article.slug"
+                             :index="index"
+                             @update:Favorite="updateFavorite"
+                            :article="article">
               </article-list-global>
+            </div>
           </div>
         <div class="col-md-3">
           <div class="sidebar">
             <p>Popular Tags</p>
             <tag-lists></tag-lists>
           </div>
-        </div>
-        <div v-for="test in articleLists">
-          {{test}}
         </div>
       </div>
     </div>
@@ -78,48 +74,49 @@ import { useStore } from "vuex";
 export default {
   name: "TheHome",
   components: {
-    'article-list': articleList,
+    'article-list-feed': articleList,
     'article-list-global': articleListGlobal,
     'tag-lists': tagLists,
     'pagination-component': pagination,
   },
   setup(){
-    const isLoading = ref(true);
-    const isEmpty = ref(false);
     const store = useStore();
-    const isLogin =  store.state.token == '' ? false : true;
+    const isLogin =  ref(false);
     const feedActive = ref(true);
     const globalActive = ref(false);
 
     const currentPage = ref(1);
     const rowsPerPage = ref(20);
 
-    const { articleLists, listsAreLoading, loadLists, numberOfPages } = usePaginationApi(currentPage, rowsPerPage);
+    const { articleLists, listsAreLoading, isEmpty, loadLists, feedLists, numberOfPages } = usePaginationApi(currentPage, rowsPerPage);
 
-    const onChangeLoading = (val : boolean) => {
-      isLoading.value = val;
-    }
-    const emptyCheck = (val: boolean) => {
-      isEmpty.value = val;
-    }
-
-    const feedSelect = () => {
+    const feedSelect = async () => {
       feedActive.value=true;
       globalActive.value=false;
-      isEmpty.value=false;
-      isLoading.value=true;
+      await feedLists();
     }
 
-    const globalSelect = () => {
+    const globalSelect = async () => {
       feedActive.value=false;
       globalActive.value=true;
-      isEmpty.value=false;
-      isLoading.value=true;
+      await loadLists();
+    }
+    const updateFavorite = async (index: number) => {
+      console.log("index" , index);
     }
 
-    onMounted(async () => loadLists())
+    onMounted(async () => {
+      isLogin.value = store.state.token ? true : false;
+      if(isLogin.value == false) {
+        await loadLists();
+        globalActive.value = true;
+      }else{
+        await feedLists();
+        feedActive.value = true;
+      }
+    })
 
-    return { isLoading, isEmpty, isLogin, currentPage, rowsPerPage, numberOfPages, feedActive, globalActive, articleLists, onChangeLoading, emptyCheck, feedSelect, globalSelect };
+    return { listsAreLoading, isEmpty, isLogin, currentPage, rowsPerPage, numberOfPages, feedActive, globalActive, articleLists, updateFavorite, feedSelect, globalSelect };
   }
 }
 </script>
