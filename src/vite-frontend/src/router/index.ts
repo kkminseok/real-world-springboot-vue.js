@@ -34,6 +34,12 @@ const routes = [
         component: () => import(/* webpackChunkName "inputTag" */ '@/views/TheArticle.vue')
     },
     {
+        path: "/editor/@:slug",
+        name: "ArticleUpdateEditor",
+        component: () => import(/* webpackChunkName "inputTag" */ '@/views/ArticleUpdate.vue'),
+        props: true
+    },
+    {
         path: "/@:username",
         name: "Profile",
         component: () => import(/* webpackChunkName "inputTag" */ '@/views/TheProfile.vue'),

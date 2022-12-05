@@ -12,7 +12,15 @@
             <a href="javascript:void(0)" class="author" @click="viewProfile">{{ articleDetail.article.author.username }}</a>
             <span class="date">{{convertDate(articleDetail.article.createdAt)}}</span>
           </div>
-          <button class="btn btn-sm btn-outline-secondary" @click="followUpdate(articleDetail.article.author.following)">
+          <button v-if= "isMe" class="btn btn-sm btn-outline-secondary" @click="articleUpdate()">
+              <i class="ion-edit"></i>
+              Edit Article
+          </button>
+          <button v-if= "isMe" class="btn btn-outline-danger btn-sm" @click="followUpdate(articleDetail.article.author.following)">
+              <i class="ion-trash-a"></i>
+              Delete Article
+          </button>
+          <button v-if= "!isMe" class="btn btn-sm btn-outline-secondary" @click="followUpdate(articleDetail.article.author.following)">
             <div v-if="articleDetail.article.author.following">
               <i class="ion-minus-round"></i>
               unFollow {{articleDetail.article.author.username}}
@@ -23,7 +31,7 @@
             </div>
           </button>
           &nbsp;&nbsp;
-          <button class="btn btn-sm btn-outline-primary" @click="favoriteUpdate(articleDetail.article.favorited)">
+          <button v-if="!isMe" class="btn btn-sm btn-outline-primary" @click="favoriteUpdate(articleDetail.article.favorited)">
             <div v-if="articleDetail.article.favorited">
               <i class="ion-heart"></i>
               unFavorite Article (<span class="counter">{{articleDetail.article.favoritesCount}}</span>)
@@ -45,7 +53,6 @@
           {{articleDetail.article.body}}
         </div>
       </div>
-
       <hr/>
 
       <div class="article-actions">
@@ -55,7 +62,15 @@
             <a href="javascript:void(0)" class="author" @click="viewProfile">{{ articleDetail.article.author.username }}</a>
             <span class="date">{{convertDate(articleDetail.article.createdAt)}}</span>
           </div>
-          <button class="btn btn-sm btn-outline-secondary" @click="followUpdate(articleDetail.article.author.following)">
+          <button v-if= "isMe" class="btn btn-sm btn-outline-secondary" @click="followUpdate(articleDetail.article.author.following)">
+            <i class="ion-edit"></i>
+            Edit Article
+          </button>
+          <button v-if= "isMe" class="btn btn-outline-danger btn-sm" @click="followUpdate(articleDetail.article.author.following)">
+            <i class="ion-trash-a"></i>
+            Delete Article
+          </button>
+          <button v-if= "!isMe" class="btn btn-sm btn-outline-secondary" @click="followUpdate(articleDetail.article.author.following)">
             <div v-if="articleDetail.article.author.following">
               <i class="ion-minus-round"></i>
               unFollow {{articleDetail.article.author.username}}
@@ -65,13 +80,13 @@
               Follow {{articleDetail.article.author.username}}
             </div>
           </button>
-          &nbsp;
-          <button class="btn btn-sm btn-outline-primary" @click="favoriteUpdate(articleDetail.article.favorited)">
+          &nbsp;&nbsp;
+          <button v-if="!isMe" class="btn btn-sm btn-outline-primary" @click="favoriteUpdate(articleDetail.article.favorited)">
             <div v-if="articleDetail.article.favorited">
               <i class="ion-heart"></i>
               unFavorite Article (<span class="counter">{{articleDetail.article.favoritesCount}}</span>)
             </div>
-            &nbsp;<div v-else>
+            <div v-else>
               <i class="ion-heart"></i>
               Favorite Article (<span class="counter">{{articleDetail.article.favoritesCount}}</span>)
             </div>
@@ -109,7 +124,7 @@
 </template>
 
 <script lang="ts">
-import { onMounted, defineComponent, reactive } from "vue";
+import {onMounted, defineComponent, reactive, ref} from "vue";
 import commentList from "@/components/commentList.vue";
 import router from "@/router";
 import { useStore } from "vuex";
@@ -134,6 +149,8 @@ export default defineComponent({
   setup(props){
     const store = useStore();
     const token = store.state.token;
+    const username = store.state.username;
+    const isMe = ref(false);
 
     const comment = reactive({
       body: ""
@@ -167,6 +184,13 @@ export default defineComponent({
       router.push({
         name: 'Profile',
         params: {username: articleDetail.article.author.username}})
+    }
+
+    const articleUpdate = async () => {
+      await router.push({
+        name: 'ArticleEditor',
+        params: {slug: articleDetail.article.slug}
+      })
     }
 
     const followUpdate = async (followState: boolean) => {
@@ -221,6 +245,9 @@ export default defineComponent({
       try{
         const { data } = await getArticle(props.slug);
         articleDetail.article = data.article;
+        if(articleDetail.article.author.username == username){
+          isMe.value = true;
+        }
       }catch (error: any){
         alert(error);
       }
@@ -233,7 +260,7 @@ export default defineComponent({
       }
     })
 
-    return { articleDetail, comment, getCommentList, convertDate, viewProfile, followUpdate, favoriteUpdate, sendComment }
+    return { isMe, articleDetail, comment, getCommentList, convertDate, viewProfile, articleUpdate, followUpdate, favoriteUpdate, sendComment }
   }
 })
 </script>

@@ -1,5 +1,5 @@
 import { ref, Ref } from "@vue/reactivity";
-import { listArticles, feedArticle } from "@/api/index";
+import {listArticles, feedArticle, listArticlesByUsername, listArticlesByFavorite} from "@/api/index";
 
 import { usePagination } from "@/ts/usePagination";
 
@@ -63,11 +63,45 @@ export function usePaginationApi(
         }
     };
 
+    const loadMyArticles = async (author: string) => {
+        listsAreLoading.value = true;
+        isEmpty.value = false;
+        try{
+            const { data } = await listArticlesByUsername(author);
+            articleLists.value = data.articles;
+            if(data.articlesCount == 0){
+                isEmpty.value = true;
+            }
+        }catch (err){
+            console.log(err);
+        }finally {
+            listsAreLoading.value = false;
+        }
+    }
+
+    const loadFavoriteArticles = async (author: string) => {
+        listsAreLoading.value = true;
+        isEmpty.value = false;
+        try{
+            const { data } = await listArticlesByFavorite(author);
+            articleLists.value = data.articles;
+            if(data.articlesCount == 0){
+                isEmpty.value = true;
+            }
+        }catch (err){
+            console.log(err);
+        }finally {
+            listsAreLoading.value = false;
+        }
+    }
+
 
     return {
         articleLists: paginatedArray,
         loadLists,
         feedLists,
+        loadMyArticles,
+        loadFavoriteArticles,
         listsAreLoading,
         isEmpty,
         numberOfPages
