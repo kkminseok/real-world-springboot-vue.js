@@ -60,6 +60,6 @@ you can See Vue.js + SpringBoot FullStack Web Site Demo
 
 **I don't know much about the front end. I wanted to create a visible application, so I adopted and implemented that framework.**
 
-
+But my codes are simple codes that even beginners can easily see.
 
 
