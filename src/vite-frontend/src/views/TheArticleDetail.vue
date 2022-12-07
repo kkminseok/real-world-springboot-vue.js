@@ -16,7 +16,7 @@
               <i class="ion-edit"></i>
               Edit Article
           </button>
-          <button v-if= "isMe" class="btn btn-outline-danger btn-sm" @click="followUpdate(articleDetail.article.author.following)">
+          <button v-if= "isMe" class="btn btn-outline-danger btn-sm" @click="articleDelete()">
               <i class="ion-trash-a"></i>
               Delete Article
           </button>
@@ -62,11 +62,11 @@
             <a href="javascript:void(0)" class="author" @click="viewProfile">{{ articleDetail.article.author.username }}</a>
             <span class="date">{{convertDate(articleDetail.article.createdAt)}}</span>
           </div>
-          <button v-if= "isMe" class="btn btn-sm btn-outline-secondary" @click="followUpdate(articleDetail.article.author.following)">
+          <button v-if= "isMe" class="btn btn-sm btn-outline-secondary" @click="articleUpdate()">
             <i class="ion-edit"></i>
             Edit Article
           </button>
-          <button v-if= "isMe" class="btn btn-outline-danger btn-sm" @click="followUpdate(articleDetail.article.author.following)">
+          <button v-if= "isMe" class="btn btn-outline-danger btn-sm" @click="articleDelete()">
             <i class="ion-trash-a"></i>
             Delete Article
           </button>
@@ -112,6 +112,7 @@
           <comment-list v-for="(comment,index) in getCommentList.comment"
                :key="comment.id"
                :comment="comment"
+               @delete:comment="deleteComment"
                :imgs="comment.author.image">
           </comment-list>
         </div>
@@ -130,7 +131,7 @@ import router from "@/router";
 import { useStore } from "vuex";
 import convertDate from "@/ts/common";
 import {
-  addCommentToArticle,
+  addCommentToArticle, deleteArticle, deleteCommentsFromArticle,
   favoriteArticle,
   followUser,
   getArticle,
@@ -157,7 +158,7 @@ export default defineComponent({
     })
 
     const getCommentList = reactive({
-      comment: reactive([{id:0,author:{image:""}}])
+      comment: reactive([{id:0,author:{username:"",image:""}}])
     })
 
     const articleDetail = reactive({
@@ -188,8 +189,15 @@ export default defineComponent({
 
     const articleUpdate = async () => {
       await router.push({
-        name: 'ArticleEditor',
+        name: 'ArticleUpdateEditor',
         params: {slug: articleDetail.article.slug}
+      })
+    }
+
+    const articleDelete = async () => {
+      await deleteArticle(articleDetail.article.slug);
+      await router.push({
+        name: 'Home'
       })
     }
 
@@ -241,6 +249,11 @@ export default defineComponent({
       }
     }
 
+    const deleteComment = async (commentId: number) => {
+      await deleteCommentsFromArticle(articleDetail.article.slug,commentId);
+      getCommentList.comment.splice(commentId,1);
+    }
+
     onMounted(async ()=>{
       try{
         const { data } = await getArticle(props.slug);
@@ -260,7 +273,7 @@ export default defineComponent({
       }
     })
 
-    return { isMe, articleDetail, comment, getCommentList, convertDate, viewProfile, articleUpdate, followUpdate, favoriteUpdate, sendComment }
+    return { isMe, articleDetail, comment, getCommentList, convertDate, deleteComment, viewProfile, articleUpdate, followUpdate, favoriteUpdate, sendComment, articleDelete }
   }
 })
 </script>
