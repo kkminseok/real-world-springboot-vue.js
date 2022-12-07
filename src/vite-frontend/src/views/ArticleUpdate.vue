@@ -31,33 +31,29 @@
 </template>
 
 <script lang="ts">
-import { reactive } from "vue";
+import { reactive, defineComponent } from "vue";
 import { updateArticle } from "@/api/index.js";
 import router from "@/router";
 
-export default {
+export default defineComponent({
   name: "ArticleUpdate",
   props:{
     slug: String,
   },
-  setup(){
+  setup(props){
     const article = reactive({
       title: "",
       description: "",
       body: "",
     })
 
-    const getSlug = (title:string) => {
-      return title.replace(' ','-');
-    }
 
     const updateContent = async () => {
-      const slug = getSlug(article.title);
       try{
-        await updateArticle(article, slug);
+        const { data } = await updateArticle(article, props.slug);
         await router.push({
           name:"ArticleDetail",
-          params: {slug}
+          params: {slug: data.article.slug}
         })
       }catch (error: any){
         alert(error);
@@ -66,7 +62,7 @@ export default {
 
     return { article, updateContent }
   }
-}
+})
 </script>
 
 <style scoped>

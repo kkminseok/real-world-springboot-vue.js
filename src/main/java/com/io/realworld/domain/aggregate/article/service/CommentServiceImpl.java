@@ -61,9 +61,10 @@ public class CommentServiceImpl implements CommentService {
         if (article.isEmpty()) {
             throw new CustomException(Error.ARTICLE_NOT_FOUND);
         }
+        System.out.println(user.get().getUsername()+"!!");
         Comment comment = commentRepository.save(Comment.builder().body(commentdto.getBody()).article(article.get()).author(user.get()).build());
 
-        return convertComment(userAuth, article.get(), comment);
+        return convertComment(userAuth, comment);
     }
 
     @Override
@@ -80,9 +81,9 @@ public class CommentServiceImpl implements CommentService {
         commentRepository.delete(comment.get());
     }
 
-    private CommentResponse convertComment(UserAuth userAuth, Article article, Comment comment) {
+    private CommentResponse convertComment(UserAuth userAuth, Comment comment) {
 
-        ProfileResponse profile = profileService.getProfile(userAuth, article.getAuthor().getUsername());
+        ProfileResponse profile = profileService.getProfile(userAuth, userAuth.getUsername());
 
         return CommentResponse.builder()
                 .id(comment.getId())

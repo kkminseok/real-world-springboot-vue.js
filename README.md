@@ -35,4 +35,31 @@ you can See Vue.js + SpringBoot FullStack Web Site Demo
 
 #### **Total 82% Code Coverage**
 
-------
+-----
+
+# How it works
+
+- Spring Boot(Java)
+  - JPA
+  - Security
+- H2
+- Vue3
+    - Vite
+    - vuerouter
+    - vuex
+- localStorage
+
+# Getting started
+
+## Run Local
+```shell
+./gradlew bootRun
+```
+
+# FrontEnd
+
+**I don't know much about the front end. I wanted to create a visible application, so I adopted and implemented that framework.**
+
+But my codes are simple codes that even beginners can easily see.
+
+

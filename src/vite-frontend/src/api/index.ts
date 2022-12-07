@@ -74,9 +74,19 @@ const createArticle = async (article: object | undefined): Promise<AxiosResponse
     })
 }
 
-const updateArticle = async (article: object | undefined, slug: string): Promise<AxiosResponse> => {
+const updateArticle = async (article: object | undefined, slug: string | undefined): Promise<AxiosResponse> => {
     let currentToken = localStorage.getItem("token");
     return await axiosService.put('/api/articles/' + slug, { article },{
+        headers :{
+            Authorization : "TOKEN " + currentToken,
+            "Content-Type": `application/json`,
+        }
+    })
+}
+
+const deleteArticle = async (slug: string | undefined): Promise<AxiosResponse> => {
+    let currentToken = localStorage.getItem("token");
+    return await axiosService.delete('/api/articles/' + slug,{
         headers :{
             Authorization : "TOKEN " + currentToken,
             "Content-Type": `application/json`,
@@ -171,6 +181,17 @@ const getCommentsFromArticle = async (slug: string | undefined): Promise<AxiosRe
     }
 }
 
+const deleteCommentsFromArticle = async (slug: string | undefined, id: number): Promise<AxiosResponse> => {
+    let currentToken = localStorage.getItem("token");
+    return await axiosService.delete('/api/articles/' + slug + '/comments/' + id,{
+        headers:{
+            Authorization : "TOKEN " + currentToken,
+            "Content-Type": `application/json`,
+        }
+    });
+}
+
+
 const favoriteArticle = async (slug: string | undefined): Promise<AxiosResponse> => {
     let currentToken = localStorage.getItem("token");
     return await axiosService.post('/api/articles/' + slug + '/favorite',{},
@@ -206,5 +227,6 @@ export { signUp, signIn,
          addCommentToArticle, getCommentsFromArticle,
          favoriteArticle, unFavoriteArticle,
          listArticlesByFavorite, updateArticle,
+         deleteArticle, deleteCommentsFromArticle,
          getTags
         }
