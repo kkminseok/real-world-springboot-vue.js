@@ -18,6 +18,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithAnonymousUser;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.stream.Stream;
@@ -64,10 +70,37 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.user.image", Matchers.equalTo(userResponse.getImage())));
     }
 
+    @Test
+    @DisplayName("현재유저 찾기 컨트롤러 테스트- 컨텍스트에 인증정보 직접 넣어서 해결.")
+    void currentUserSuccessContextWithHolder() throws Exception {
+        UserAuth userAuth = UserAuth.builder()
+                                    .username("kms")
+                                    .email("test@gmail.com")
+                                    .build();
+        Authentication auth = new UsernamePasswordAuthenticationToken(userAuth, "", null);
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        UserResponse userResponse = UserResponse.builder()
+                .username("kms")
+                .email("test@gmail.com")
+                .build();
+        when(userService.getCurrentUser(any(UserAuth.class))).thenReturn(userResponse);
+        mockMvc.perform(get("/api/user")
+                ).andExpect(status().isOk())
+                .andExpect(jsonPath("$.user.email", Matchers.equalTo(userResponse.getEmail())))
+                .andExpect(jsonPath("$.user.bio", Matchers.equalTo(userResponse.getBio())))
+                .andExpect(jsonPath("$.user.username", Matchers.equalTo(userResponse.getUsername())))
+                .andExpect(jsonPath("$.user.image", Matchers.equalTo(userResponse.getImage())));
+    }
+
+
+
+
     @WithAuthUser(email = "test@gmail.com",username = "kms",id = 1L)
     @MethodSource("updateUser")
     @ParameterizedTest(name = "controller:유저 업데이트 성공 테스트")
     void updateUserSuccess(UserUpdate userUpdate) throws Exception{
+
         UserResponse userResponse = UserResponse.builder()
                 .username("update name")
                 .email("update@gmail.com")
